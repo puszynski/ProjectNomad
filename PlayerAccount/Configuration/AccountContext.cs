@@ -10,59 +10,33 @@ namespace AccountModule.Configuration
         }
 
         public DbSet<Account> Accounts { get; set; }
-        public DbSet<RegisteredAccount> RegisteredAccounts { get; set; }
-        public DbSet<GuestAccount> GuestAccounts { get; set; }
+        //public DbSet<RegisteredAccount> RegisteredAccounts { get; set; }
+        //public DbSet<GuestAccount> GuestAccounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Account>().HasData(
-                    new Account { Id = 1 },
-                    new Account { Id = 2 },
-                    new Account { Id = 3 }
-                );
+            // note:    concept of Owned Entity Types, which can be used to implement DDD value types.
+            //          This would store Access objects in the same database table as AccessLevel objects,
+            //          and therefore requires no primary key.
+            // https://stackoverflow.com/questions/60600835/the-entity-type-access-requires-a-primary-key-to-be-defined-if-you-intended-t
+            //modelBuilder.Entity<Account>().OwnsOne(x => x.RegisteredAccount);
+            //modelBuilder.Entity<Account>().OwnsOne(x => x.GuestAccount);
 
-            modelBuilder.Entity<GuestAccount>().HasData(
-                    new GuestAccount { AccountId = 2, Name = "guest123", ReLoginToken = "123" },
-                    new GuestAccount { AccountId = 3, Name = "guest234", ReLoginToken = "123" }
-                );
 
-            modelBuilder.Entity<RegisteredAccount>().HasData(
-                    new RegisteredAccount { AccountId = 1, Name = "puch", Password = "123" }
-                );
+            //modelBuilder.Entity<Account>().HasData(
+            //        new Account { Id = 1, GuestAccount = new GuestAccount { Name = "guest123", ReLoginToken = "123" }, RegisteredAccount = null },
+            //        new Account { Id = 2, GuestAccount = new GuestAccount { Name = "guest234", ReLoginToken = "123" }, RegisteredAccount = null },
+            //        new Account { Id = 3, GuestAccount = null, RegisteredAccount = new RegisteredAccount { Name = "puch", Password = "123" } }
+            //    );
+
+            //modelBuilder.Entity<GuestAccount>().HasData(
+            //        new GuestAccount { Name = "guest123", ReLoginToken = "123" },
+            //        new GuestAccount { Name = "guest234", ReLoginToken = "123" }
+            //    );
+
+            //modelBuilder.Entity<RegisteredAccount>().HasData(
+            //        new RegisteredAccount { Name = "puch", Password = "123" }
+            //    );
         }
     }
-
-    //internal class AccountContextInitializer : DropCreateDatabaseIfModelChanges<AccountContext>
-    //{
-    //    protected override void Seed(AccountContext context)
-    //    {
-    //        var accounts = new List<Account>()
-    //        {
-    //            new Account { Id = 1 },
-    //            new Account { Id = 2 },
-    //            new Account { Id = 3 }
-    //        };
-
-    //        var guests = new List<GuestAccount>()
-    //        {
-    //            new GuestAccount { AccountId = 2, Name = "guest123", ReLoginToken = "123" },
-    //            new GuestAccount { AccountId = 3, Name = "guest234", ReLoginToken = "123" }
-    //        };
-
-    //        var registeredAccounts = new List<RegisteredAccount>()
-    //        {
-    //            new RegisteredAccount { AccountId = 1, Name = "puch", Password = "123" }
-    //        };
-
-    //        accounts.ForEach(x => context.Accounts.Add(x));
-    //        context.SaveChanges();
-
-    //        guests.ForEach(x => context.GuestAccounts.Add(x));
-    //        context.SaveChanges();
-
-    //        registeredAccounts.ForEach(x => context.RegisteredAccounts.Add(x));
-    //        context.SaveChanges();
-    //    }
-    //}
-
 }
