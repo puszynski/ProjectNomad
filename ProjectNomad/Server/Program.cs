@@ -1,14 +1,18 @@
-using Microsoft.AspNetCore.ResponseCompression;
+using AccountModule.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-builder.Services.AddDbContextFactory<AccountContext>(opt =>
-    opt.UseSqlite($"Data Source={nameof(ContactContext.ContactsDb)}.db"));
+AccountModuleDatabaseContextConfiguration.ConfigureSqlServerDataContext(
+    builder.Services, 
+    builder.Configuration.GetConnectionString("DefaultConnection"));
+
+//regular way
+//builder.Services.AddDbContextFactory<AccountContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
