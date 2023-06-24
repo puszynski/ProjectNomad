@@ -1,4 +1,4 @@
-﻿namespace PlayerAccount
+﻿namespace AccountModule
 {
     public class PlayerAccountModule : IPlayerAccountModule
     {

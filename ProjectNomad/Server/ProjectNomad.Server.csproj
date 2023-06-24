@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.16" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\PlayerAccount\AccountModule.csproj" />
     <ProjectReference Include="..\Client\ProjectNomad.Client.csproj" />
     <ProjectReference Include="..\Shared\ProjectNomad.Shared.csproj" />
   </ItemGroup>

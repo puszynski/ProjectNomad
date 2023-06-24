@@ -7,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+builder.Services.AddDbContextFactory<AccountContext>(opt =>
+    opt.UseSqlite($"Data Source={nameof(ContactContext.ContactsDb)}.db"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

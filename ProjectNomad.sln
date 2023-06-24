@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectNomad.Shared", "Proj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{A5A42E4E-E216-43A8-8F25-D1BD9CEDC747}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayerAccount", "PlayerAccount\PlayerAccount.csproj", "{E9BC3754-14F9-465F-8FE2-DEEC657399B4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountModule", "PlayerAccount\AccountModule.csproj", "{E9BC3754-14F9-465F-8FE2-DEEC657399B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
