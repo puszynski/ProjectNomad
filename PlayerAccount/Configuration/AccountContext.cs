@@ -13,8 +13,8 @@ namespace AccountModule.Configuration
         //public DbSet<RegisteredAccount> RegisteredAccounts { get; set; }
         //public DbSet<GuestAccount> GuestAccounts { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
             // note:    concept of Owned Entity Types, which can be used to implement DDD value types.
             //          This would store Access objects in the same database table as AccessLevel objects,
             //          and therefore requires no primary key.
@@ -37,6 +37,6 @@ namespace AccountModule.Configuration
             //modelBuilder.Entity<RegisteredAccount>().HasData(
             //        new RegisteredAccount { Name = "puch", Password = "123" }
             //    );
-        }
+        //}
     }
 }
