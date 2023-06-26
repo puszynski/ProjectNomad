@@ -1,6 +1,6 @@
-﻿using AccountModule.DataBaseModels.ValueObject;
+﻿using AccountModule.Entities.ValueObject;
 
-namespace AccountModule.DataBaseModels
+namespace AccountModule.Entities
 {
     internal class Account
     {

@@ -2,12 +2,16 @@
 {
     public class PlayerAccountModule : IPlayerAccountModule
     {
-        public void CreateAccount()
+        public int Register(string? accountName,
+            string? password,
+            bool isGuest = false)
         {
             throw new NotImplementedException();
         }
 
-        public void LogIn()
+        public int LogIn(string? accountName,
+            string? password,
+            string? guestToken)
         {
             throw new NotImplementedException();
         }

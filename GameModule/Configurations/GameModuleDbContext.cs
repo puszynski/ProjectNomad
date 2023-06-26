@@ -1,4 +1,4 @@
-﻿using GameModule.DataBaseModels;
+﻿using GameModule.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

@@ -1,6 +1,6 @@
-﻿using GameModule.DataBaseModels.ValueObjects;
+﻿using GameModule.Entities.ValueObjects;
 
-namespace GameModule.DataBaseModels
+namespace GameModule.Entities
 {
     internal class Tribe
     {

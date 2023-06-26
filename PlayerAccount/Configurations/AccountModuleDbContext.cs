@@ -1,4 +1,4 @@
-﻿using AccountModule.DataBaseModels;
+﻿using AccountModule.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace AccountModule.Configuration

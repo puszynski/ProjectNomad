@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AccountModule
+﻿namespace AccountModule
 {
     public interface IPlayerAccountModule
     {
-        void CreateAccount();
-        void LogIn();
+        int Register(string? accountName, 
+            string? password, 
+            bool isGuest = false);
+
+        int LogIn(string? accountName,
+            string? password,
+            string? guestToken);
     }
 }

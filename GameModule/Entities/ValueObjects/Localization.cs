@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace GameModule.DataBaseModels.ValueObjects
+namespace GameModule.Entities.ValueObjects
 {
     [Owned]
     internal class Localization
