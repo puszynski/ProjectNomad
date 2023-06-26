@@ -13,7 +13,7 @@ namespace GameModule.Configurations
         ///  plus specify context where multiple are detected by -c Name
         /// 
         /// others commends:
-        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ database update
+        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ database update -c GameModuleDbContext
         ///     
         /// 
         /// 

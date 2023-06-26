@@ -20,7 +20,6 @@ namespace GameModule.Configurations
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("GameModule");
-            //base.OnModelCreating(modelBuilder);
         }
     }
 }

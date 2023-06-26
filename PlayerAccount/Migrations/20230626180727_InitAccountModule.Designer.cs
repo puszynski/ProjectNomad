@@ -3,19 +3,23 @@ using AccountModule.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace AccountModule.Migrations
 {
-    [DbContext(typeof(AccountContext))]
-    partial class AccountContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AccountModuleDbContext))]
+    [Migration("20230626180727_InitAccountModule")]
+    partial class InitAccountModule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("AccountModule")
                 .HasAnnotation("ProductVersion", "7.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -31,12 +35,12 @@ namespace AccountModule.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", "AccountModule");
                 });
 
             modelBuilder.Entity("AccountModule.DataBaseModels.Account", b =>
                 {
-                    b.OwnsOne("AccountModule.DataBaseModels.GuestAccount", "GuestAccount", b1 =>
+                    b.OwnsOne("AccountModule.DataBaseModels.ValueObject.GuestAccount", "GuestAccount", b1 =>
                         {
                             b1.Property<int>("AccountId")
                                 .HasColumnType("int");
@@ -51,13 +55,13 @@ namespace AccountModule.Migrations
 
                             b1.HasKey("AccountId");
 
-                            b1.ToTable("Accounts");
+                            b1.ToTable("Accounts", "AccountModule");
 
                             b1.WithOwner()
                                 .HasForeignKey("AccountId");
                         });
 
-                    b.OwnsOne("AccountModule.DataBaseModels.RegisteredAccount", "RegisteredAccount", b1 =>
+                    b.OwnsOne("AccountModule.DataBaseModels.ValueObject.RegisteredAccount", "RegisteredAccount", b1 =>
                         {
                             b1.Property<int>("AccountId")
                                 .HasColumnType("int");
@@ -72,7 +76,7 @@ namespace AccountModule.Migrations
 
                             b1.HasKey("AccountId");
 
-                            b1.ToTable("Accounts");
+                            b1.ToTable("Accounts", "AccountModule");
 
                             b1.WithOwner()
                                 .HasForeignKey("AccountId");

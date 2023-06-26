@@ -5,13 +5,17 @@
 namespace AccountModule.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitAccountModule : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "AccountModule");
+
             migrationBuilder.CreateTable(
                 name: "Accounts",
+                schema: "AccountModule",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -31,7 +35,8 @@ namespace AccountModule.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Accounts");
+                name: "Accounts",
+                schema: "AccountModule");
         }
     }
 }
