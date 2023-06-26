@@ -12,9 +12,9 @@ namespace AccountModule.Configuration
     /// others commends:
     ///     dotnet ef --startup-project ..\ProjectNomad\Server\ database update
     /// </summary>
-    public static class AccountModuleDatabaseContextConfiguration
+    public static class AccountModuleDbContextConfiguration
     {
-        public static void ConfigureSqlServerDataContext(IServiceCollection services, string connectionStrings)
+        public static void DbContextConfiguration(IServiceCollection services, string connectionStrings)
         {
             services.AddDbContextFactory<AccountContext>(options => 
                 options.UseSqlServer(connectionStrings, 

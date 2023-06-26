@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace AccountModule.DataBaseModels
+namespace AccountModule.DataBaseModels.ValueObject
 {
     [Owned]
     internal class RegisteredAccount

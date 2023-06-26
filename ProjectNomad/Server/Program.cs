@@ -1,4 +1,5 @@
 using AccountModule.Configuration;
+using GameModule.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,9 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-AccountModuleDatabaseContextConfiguration.ConfigureSqlServerDataContext(
+AccountModuleDbContextConfiguration.DbContextConfiguration(
     builder.Services, 
-    builder.Configuration.GetConnectionString("DefaultConnection"));
+    builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No connection string in Configuration"));
+
+GameModuleDbContextConfiguration.DbContextConfiguration(builder.Services,
+    builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No connection string in Configuration"));
 
 //regular way
 //builder.Services.AddDbContextFactory<AccountContext>(options =>

@@ -1,4 +1,6 @@
-﻿namespace AccountModule.DataBaseModels
+﻿using AccountModule.DataBaseModels.ValueObject;
+
+namespace AccountModule.DataBaseModels
 {
     internal class Account
     {

@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GameModule\GameModule.csproj" />
     <ProjectReference Include="..\..\PlayerAccount\AccountModule.csproj" />
     <ProjectReference Include="..\Client\ProjectNomad.Client.csproj" />
     <ProjectReference Include="..\Shared\ProjectNomad.Shared.csproj" />
