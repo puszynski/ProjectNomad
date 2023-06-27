@@ -1,4 +1,4 @@
-namespace ProjectNomad.Shared
+namespace ProjectNomad.Shared.Models
 {
     public class WeatherForecast
     {

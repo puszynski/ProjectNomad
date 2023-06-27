@@ -1,4 +1,5 @@
 ﻿using AccountModule.Configuration;
+using AccountModule.Logic.AccountLogIn;
 using AccountModule.Logic.AccountRegistration;
 
 namespace AccountModule
@@ -13,18 +14,30 @@ namespace AccountModule
             string? password,
             bool isGuest = false)
         {
-            var registerFactory = AccountRegisterFactory.GetAccountRegistration(isGuest,
+            var AccountRegistration = AccountRegisterFactory.GetAccountRegistration(isGuest,
                 accountName,
                 password,
                 _dbContext);
-            return await registerFactory.Register();
+
+            return await AccountRegistration.Register();
         }
 
-        public async Task<Guid> LogIn(string? accountName,
+        public async Task<Guid?> LogIn(string? accountName,
             string? password,
             string? guestToken)
         {
-            throw new NotImplementedException();
+            var accountLogInHandler = AccountLogInFactory.GetAccountLogInHandler(IsGuest(),
+                accountName,
+                password,
+                guestToken,
+                _dbContext);
+
+            return await accountLogInHandler.LogIn();
+
+            bool IsGuest()
+                => !string.IsNullOrEmpty(guestToken);
         }
+
+        
     }
 }

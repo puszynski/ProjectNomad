@@ -6,7 +6,7 @@
             string? password, 
             bool isGuest = false);
 
-        Task<Guid> LogIn(string? accountName,
+        Task<Guid?> LogIn(string? accountName,
             string? password,
             string? guestToken);
     }

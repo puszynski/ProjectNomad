@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using ProjectNomad.Shared;
+using ProjectNomad.Shared.Models;
 
 namespace ProjectNomad.Server.Controllers
 {
