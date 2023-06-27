@@ -9,10 +9,8 @@ namespace AccountModule.Configuration
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.HasDefaultSchema("AccountModule");
-        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder) 
+            => modelBuilder.HasDefaultSchema("AccountModule");
 
         public DbSet<Account> Accounts { get; set; }
     }

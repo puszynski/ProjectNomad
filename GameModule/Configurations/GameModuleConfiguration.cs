@@ -14,10 +14,6 @@ namespace GameModule.Configurations
         /// 
         /// others commends:
         ///     dotnet ef --startup-project ..\ProjectNomad\Server\ database update -c GameModuleDbContext
-        ///     
-        /// 
-        /// 
-        /// todo ?? => add-migration NAME_OF_MIGRATION -ConfigurationTypeName FULLY_QUALIFIED_NAME_OF_CONFIGURATION_CLASS
         /// </summary>
         public static void DbContextConfiguration(IServiceCollection services, string connectionStrings)
         {
@@ -25,14 +21,5 @@ namespace GameModule.Configurations
                 options.UseSqlServer(connectionStrings,
                 x => x.MigrationsAssembly("GameModule")));
         }
-
-        //internal sealed class GameModuleDbContextConfigurationConfiguration : DbMigrationsConfiguration<GameModuleDbContext>
-        //{
-        //    public ConfigurationA()
-        //    {
-        //        AutomaticMigrationsEnabled = false;
-        //        MigrationsDirectory = @"Migrations\ModelA";
-        //    }
-        //}
     }
 }
