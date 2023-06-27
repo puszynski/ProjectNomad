@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GameModule.Configurations
 {
-    public static class GameModuleDbContextConfiguration
+    public static class GameModuleConfiguration
     {
         /// <summary>
         /// to run migration

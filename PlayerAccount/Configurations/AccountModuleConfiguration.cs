@@ -12,13 +12,18 @@ namespace AccountModule.Configuration
     /// others commends:
     ///     dotnet ef --startup-project ..\ProjectNomad\Server\ database update -c AccountModuleDbContext
     /// </summary>
-    public static class AccountModuleDbContextConfiguration
+    public static class AccountModuleConfiguration
     {
         public static void DbContextConfiguration(IServiceCollection services, string connectionStrings)
         {
             services.AddDbContextFactory<AccountModuleDbContext>(options => 
                 options.UseSqlServer(connectionStrings, 
                 x => x.MigrationsAssembly("AccountModule")));
+        }
+
+        public static void RegisterIoC(IServiceCollection services)
+        {
+            services.AddScoped<IAccountModule, AccountModule>();
         }
     }
 }

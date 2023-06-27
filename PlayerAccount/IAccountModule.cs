@@ -1,12 +1,12 @@
 ﻿namespace AccountModule
 {
-    public interface IPlayerAccountModule
+    public interface IAccountModule
     {
-        int Register(string? accountName, 
+        Task<Guid> Register(string? accountName, 
             string? password, 
             bool isGuest = false);
 
-        int LogIn(string? accountName,
+        Task<Guid> LogIn(string? accountName,
             string? password,
             string? guestToken);
     }

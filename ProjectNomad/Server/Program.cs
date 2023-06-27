@@ -7,16 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-AccountModuleDbContextConfiguration.DbContextConfiguration(
+AccountModuleConfiguration.DbContextConfiguration(
     builder.Services, 
-    builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No connection string in Configuration"));
+    builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No connection string provided :/"));
 
-GameModuleDbContextConfiguration.DbContextConfiguration(builder.Services,
-    builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No connection string in Configuration"));
+GameModuleConfiguration.DbContextConfiguration(builder.Services,
+    builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No connection string provided :/"));
 
-//regular way
-//builder.Services.AddDbContextFactory<AccountContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+AccountModuleConfiguration.RegisterIoC(builder.Services);
 
 var app = builder.Build();
 
