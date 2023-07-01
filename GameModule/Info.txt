@@ -1,0 +1,6 @@
+﻿Mapa założenia:
+- 1 pole == 10x10 km - symbolizuje: 
+	- maksymalny obszar dla zbieractwa / lokalnych polowań etc
+	- dystans granicy iterakcji plemion (gdy na jednym polu - walczymy etc, gdy różnica 1 pola - trzeba ciagle dogonić)
+	- plemie zwiadowczo widzi sąsiednie 8 pól
+- stanowić będzie symbol pojemności surowców

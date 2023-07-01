@@ -1,7 +1,9 @@
 ﻿@page "/createAccount"
-@using ProjectNomad.Client.ViewModels.CreateAccount;
-@inject HttpClient _http;
-@inject NavigationManager _navigationManager;
+@using Blazored.LocalStorage
+@using ProjectNomad.Client.ViewModels.CreateAccount
+@inject HttpClient _http
+@inject NavigationManager _navigationManager
+@inject ILocalStorageService _localStorageService 
 
 <EditForm Model="accountCreateViewModel" OnValidSubmit="accountCreateViewModel.Register">
     <div>
@@ -26,6 +28,6 @@
 
     protected override void OnInitialized()
     {
-        accountCreateViewModel = new(_http, _navigationManager);
+        accountCreateViewModel = new(_http, _navigationManager, _localStorageService);
     }
 }

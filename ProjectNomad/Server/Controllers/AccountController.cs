@@ -1,6 +1,7 @@
 ﻿using AccountModule;
+using GameModule;
 using Microsoft.AspNetCore.Mvc;
-using ProjectNomad.Shared.Models;
+using ProjectNomad.Server.DtoModels;
 
 namespace ProjectNomad.Server.Controllers
 {
@@ -9,16 +10,19 @@ namespace ProjectNomad.Server.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountModule _accountModule;
-        public AccountController(IAccountModule accountModule)
+        private readonly IGameModule _gameModule;
+        public AccountController(IAccountModule accountModule,
+            IGameModule gameModule)
         {
             _accountModule = accountModule;
+            _gameModule = gameModule; //todo fix
         }
 
         //todo guests
         [HttpPost("login")]
-        public async Task<ActionResult> LogIn(Account model)
+        public async Task<ActionResult> LogIn(AccountDto model)//todo nie łapie modelu - idzie via interface ale się nie mapuje.. 
         {
-            var accountId = await _accountModule.LogIn(model.AccountName, model.Password, null);
+            var accountId = await _accountModule.LogIn(model.Name, model.Password, null);
 
             if (accountId == null)
                 return NotFound();
@@ -28,12 +32,14 @@ namespace ProjectNomad.Server.Controllers
 
         //todo guests
         [HttpPost("register")]
-        public async Task<ActionResult> Register(Account model) 
+        public async Task<ActionResult> Register(AccountDto model) 
         {
-            var accountId = await _accountModule.Register(model.AccountName, model.Password);
+            var accountId = await _accountModule.Register(model.Name, model.Password);
 
             if (accountId == null)
                 return Problem();
+
+            await _gameModule.InitPlayerGameObject(accountId);
 
             return Ok(accountId);
         }

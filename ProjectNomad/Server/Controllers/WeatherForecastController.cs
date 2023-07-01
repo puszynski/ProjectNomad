@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using ProjectNomad.Shared.Models;
 
 namespace ProjectNomad.Server.Controllers
 {
@@ -9,8 +8,8 @@ namespace ProjectNomad.Server.Controllers
     {
         private static readonly string[] Summaries = new[]
         {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
 
         private readonly ILogger<WeatherForecastController> _logger;
 
@@ -20,9 +19,9 @@ namespace ProjectNomad.Server.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<WeatherForecastB> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            return Enumerable.Range(1, 5).Select(index => new WeatherForecastB
             {
                 Date = DateTime.Now.AddDays(index),
                 TemperatureC = Random.Shared.Next(-20, 55),
@@ -30,5 +29,24 @@ namespace ProjectNomad.Server.Controllers
             })
             .ToArray();
         }
+
+        [HttpPost("DoNothing")]
+        public void DoNothing(WeatherForecastB b) 
+        {
+            var test = b;
+            var t2 = 123;
+        }
+
+    }
+
+    public class WeatherForecastB
+    {
+        public DateTime Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public string? Summary { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GameModule.Logic;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameModule.Configurations
@@ -20,6 +21,12 @@ namespace GameModule.Configurations
             services.AddDbContextFactory<GameModuleDbContext>(options =>
                 options.UseSqlServer(connectionStrings,
                 x => x.MigrationsAssembly("GameModule")));
+        }
+
+        public static void RegisterIoC(IServiceCollection services)
+        {
+            services.AddScoped<NewTribeLocalizationInitializer>();
+            services.AddScoped<IGameModule, GameModule>();
         }
     }
 }

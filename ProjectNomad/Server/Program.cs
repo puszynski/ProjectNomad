@@ -15,6 +15,7 @@ GameModuleConfiguration.DbContextConfiguration(builder.Services,
     builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No connection string provided :/"));
 
 AccountModuleConfiguration.RegisterIoC(builder.Services);
+GameModuleConfiguration.RegisterIoC(builder.Services);//todo problems..
 
 var app = builder.Build();
 
@@ -34,7 +35,6 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 
 app.MapRazorPages();
 app.MapControllers();

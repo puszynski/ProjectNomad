@@ -1,0 +1,23 @@
+﻿@page "/game"
+@using Blazored.LocalStorage;
+@using ProjectNomad.Client.ViewModels.Game
+@inject HttpClient _http
+@inject ILocalStorageService _localStorage
+
+
+<h3>Game is running!</h3>
+
+<p>tribe name <b>@gameObjectsViewModel.Tribe.Name</b></p>
+<p>members count <b>@gameObjectsViewModel.HumanUnits.Count()</b></p>
+
+
+
+@code {
+    private TribeGameObjectsViewModel gameObjectsViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var accountId = _localStorage.GetItemAsStringAsync("id");
+        gameObjectsViewModel = await _http.GetFromJsonAsync<TribeGameObjectsViewModel>($"api/game/getGameObjects/{accountId}");
+    }
+}

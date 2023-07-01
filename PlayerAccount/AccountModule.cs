@@ -37,7 +37,5 @@ namespace AccountModule
             bool IsGuest()
                 => !string.IsNullOrEmpty(guestToken);
         }
-
-        
     }
 }

@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
-using ProjectNomad.Shared.Models;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
+using ProjectNomad.Shared.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Json;
 
 namespace ProjectNomad.Client.ViewModels.CreateAccount
 {
-    public class AccountCreateViewModel
+    public class AccountCreateViewModel : IAccount
     {
         [Required]
         [MinLength(4)]
@@ -21,10 +22,14 @@ namespace ProjectNomad.Client.ViewModels.CreateAccount
 
         readonly HttpClient _httpClient;
         readonly NavigationManager _navigationManager;
-        public AccountCreateViewModel(HttpClient httpClient, NavigationManager navigationManager)
+        readonly ILocalStorageService _localStorage;
+        public AccountCreateViewModel(HttpClient httpClient,
+            NavigationManager navigationManager,
+            ILocalStorageService localStorage)
         {
             _httpClient = httpClient;
             _navigationManager = navigationManager;
+            _localStorage = localStorage;
         }
 
         public async Task Register()
@@ -32,26 +37,22 @@ namespace ProjectNomad.Client.ViewModels.CreateAccount
             if (!Password.Equals(PasswordConfirmation))
                 throw new Exception();//todo
 
-            Account sharedModel = this;
+            IAccount sharedModel = this;
 
             var result = await _httpClient.PostAsJsonAsync("api/account/register", sharedModel);
 
             if (result.StatusCode != System.Net.HttpStatusCode.OK)
                 //todo
                 //_clientStateService.AddNotification("Dane logowania są błędne.", ENotificationType.Notification);
-                throw new Exception(); //todo remove
+                throw new Exception();
             else
             {
                 //_clientStateService.AddNotification("Zgłoszenie zostało wysłane", ENotificationType.Success);
-                _navigationManager.NavigateTo("counter"); //todo
+
+                var accountId = await result.Content.ReadAsStringAsync();
+                await _localStorage.SetItemAsStringAsync("id", accountId);
+                _navigationManager.NavigateTo("game");
             }
         }
-
-        public static implicit operator Account(AccountCreateViewModel model)
-            => new Account
-            {
-                AccountName = model.Name,
-                Password = model.Password
-            };
     }
 }
