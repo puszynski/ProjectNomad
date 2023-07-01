@@ -20,7 +20,7 @@ namespace ProjectNomad.Server.Controllers
 
         //todo guests
         [HttpPost("login")]
-        public async Task<ActionResult> LogIn(AccountDto model)//todo nie łapie modelu - idzie via interface ale się nie mapuje.. 
+        public async Task<ActionResult> LogIn(AccountDto model)
         {
             var accountId = await _accountModule.LogIn(model.Name, model.Password, null);
 
