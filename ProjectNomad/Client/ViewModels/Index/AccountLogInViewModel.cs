@@ -30,7 +30,7 @@ namespace ProjectNomad.Client.ViewModels.Index
 
         public async Task LogIn()
         {
-            var result = await _httpClient.PostAsJsonAsync("api/account/login", this);//nie mapuje IAccount, why?
+            var result = await _httpClient.PostAsJsonAsync("api/account/login", this);
 
             if (result.StatusCode != System.Net.HttpStatusCode.OK)
                 //todo
