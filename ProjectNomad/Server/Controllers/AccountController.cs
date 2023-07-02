@@ -15,7 +15,7 @@ namespace ProjectNomad.Server.Controllers
             IGameModule gameModule)
         {
             _accountModule = accountModule;
-            _gameModule = gameModule; //todo fix
+            _gameModule = gameModule;
         }
 
         //todo guests

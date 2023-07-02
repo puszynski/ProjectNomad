@@ -9,29 +9,39 @@ namespace GameModule.Logic
     {
         private readonly GameModuleDbContext _dbContext;
 
-        internal NewTribeLocalizationInitializer(GameModuleDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
+        public NewTribeLocalizationInitializer(GameModuleDbContext dbContext) 
+            => _dbContext = dbContext;
 
         internal async Task<Localization> Initialize()
         {
-            var localization = new Localization() { X = 0, Y = 0 };            
+            var localization = new Localization() { X = 0, Y = 0 };
 
-            while (_dbContext.Tribes.Any(x => x.Localization.Equals(localization)))
+            if (await _dbContext.Tribes.AnyAsync())
             {
-                //note - simple fast solution to be updated in the future
-                var maxX_Task = _dbContext.Tribes.Select(x => x.Localization).MaxAsync(x => x.X);
-                var maxY_Task = _dbContext.Tribes.Select(x => x.Localization).MaxAsync(x => x.X);
+                try
+                {
+                    //'No backing field could be found for property 'Tribe.Localization#Localization.TribeId' and the property does not have a getter
+                    while (_dbContext.Tribes.Any(x => x.Localization.X == localization.X && x.Localization.Y == localization.Y))//not working..
+                    {
+                        //note - simple fast solution to be updated in the future
+                        var maxX_Task = _dbContext.Tribes.Select(x => x.Localization).MaxAsync(x => x.X);
+                        var maxY_Task = _dbContext.Tribes.Select(x => x.Localization).MaxAsync(x => x.X);
 
-                var maxX = await maxX_Task;
-                var maxY = await maxY_Task;
+                        var maxX = await maxX_Task;
+                        var maxY = await maxY_Task;
 
-                localization = new Localization 
-                { 
-                    X = maxX + RandomCalculator.GetRandomInt(1, 3), 
-                    Y = maxY + RandomCalculator.GetRandomInt(1, 3) 
-                };
+                        localization = new Localization
+                        {
+                            X = maxX + RandomCalculator.GetRandomInt(1, 3),
+                            Y = maxY + RandomCalculator.GetRandomInt(1, 3)
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }                
             }
 
             return localization;

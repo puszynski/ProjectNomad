@@ -25,7 +25,7 @@ namespace GameModule.Configurations
 
         public static void RegisterIoC(IServiceCollection services)
         {
-            services.AddScoped<NewTribeLocalizationInitializer>();
+            services.AddScoped<NewTribeLocalizationInitializer>(); //todo fix
             services.AddScoped<IGameModule, GameModule>();
         }
     }

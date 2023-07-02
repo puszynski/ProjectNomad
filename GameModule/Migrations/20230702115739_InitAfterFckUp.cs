@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace GameModule.Migrations
 {
     /// <inheritdoc />
-    public partial class InitForGameModule : Migration
+    public partial class InitAfterFckUp : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,8 +21,9 @@ namespace GameModule.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AccountId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<int>(type: "int", nullable: false),
+                    AccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Localization_X = table.Column<int>(type: "int", nullable: false),
                     Localization_Y = table.Column<int>(type: "int", nullable: false)
                 },
@@ -38,6 +40,7 @@ namespace GameModule.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TribeId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Localization_X = table.Column<int>(type: "int", nullable: false),
                     Localization_Y = table.Column<int>(type: "int", nullable: false),
                     FoodLevelPercentage = table.Column<int>(type: "int", nullable: false)

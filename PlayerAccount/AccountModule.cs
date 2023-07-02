@@ -14,6 +14,7 @@ namespace AccountModule
             string? password,
             bool isGuest = false)
         {
+            //todo validation - accountName must be unique
             var AccountRegistration = AccountRegisterFactory.GetAccountRegistration(isGuest,
                 accountName,
                 password,
