@@ -1,5 +1,4 @@
-﻿using Azure.Identity;
-using GameModule.Configurations;
+﻿using GameModule.Configurations;
 using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Entities.ValueObjects;
