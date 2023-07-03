@@ -4,7 +4,6 @@ using ProjectNomad.Shared.Interfaces;
 
 namespace ProjectNomad.Server.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
     public class GameController : ControllerBase
@@ -15,10 +14,11 @@ namespace ProjectNomad.Server.Controllers
             _gameModule = gameModule;
         }
 
-        [HttpGet("getGameObjects")]
-        public async Task<ITribeGameObjects> GetGameObjects(Guid accountId) 
+        [HttpGet("getGameObjects/{accountId}")]
+        public async Task<ActionResult<ITribeGameObjects>> GetGameObjects(Guid accountId) 
         {
-            return await _gameModule.GetPlayerGameObject(accountId);
+            var model = await _gameModule.GetPlayerGameObject(accountId);
+            return Ok(model);
         }
     }
 }

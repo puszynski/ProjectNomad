@@ -22,21 +22,29 @@ namespace GameModule
 
         public async Task<ITribeGameObjects> GetPlayerGameObject(Guid accountId)
         {
-            var tribe = await _dbContext
+            try
+            {
+                var tribe = await _dbContext
                 .Tribes
                 .Where(x => x.AccountId == accountId)
                 .Select(x => new { x.Name, x.Id, x.Localization.X, x.Localization.Y })
-                .SingleOrDefaultAsync() 
+                .SingleOrDefaultAsync()
                     ?? throw new ArgumentException("No tribe founded in database with given accountId :/", nameof(accountId));
 
-            var humanUnitsTask = _dbContext
-                .HumanUnits
-                .Where(x => x.TribeId == tribe.Id)
-                .Select(x => new HumanUnitDto(x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
-                .ToListAsync();
+                var humanUnitsTask = _dbContext
+                    .HumanUnits
+                    .Where(x => x.TribeId == tribe.Id)
+                    .Select(x => new HumanUnitDto(x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
+                    .ToListAsync();
 
-            return new TribeGameObjectDto(new TribeDto(tribe.Name, tribe.X, tribe.Y),
+                return new TribeGameObjectDto(new TribeDto(tribe.Name, tribe.X, tribe.Y),
                 await humanUnitsTask);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
 

@@ -49,8 +49,8 @@ namespace ProjectNomad.Client.ViewModels.CreateAccount
             {
                 //_clientStateService.AddNotification("Zgłoszenie zostało wysłane", ENotificationType.Success);
 
-                var accountId = await result.Content.ReadAsStringAsync();
-                await _localStorage.SetItemAsStringAsync("id", accountId);
+                var accountId = await result.Content.ReadFromJsonAsync<Guid>();
+                await _localStorage.SetItemAsync("id", accountId);
                 _navigationManager.NavigateTo("game");
             }
         }

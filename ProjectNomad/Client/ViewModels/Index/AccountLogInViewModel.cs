@@ -39,9 +39,10 @@ namespace ProjectNomad.Client.ViewModels.Index
             else
             {
                 //_clientStateService.AddNotification("Zgłoszenie zostało wysłane", ENotificationType.Success);
-                var accountId = await result.Content.ReadAsStringAsync();
-                _localStorageService.SetItemAsStringAsync("id", accountId);
-                _navigationManager.NavigateTo("counter"); //todo
+                var accountId = await result.Content.ReadFromJsonAsync<Guid>();
+                _localStorageService.SetItemAsync("id", accountId);
+
+                _navigationManager.NavigateTo("game"); //todo
             }
         }
     }
