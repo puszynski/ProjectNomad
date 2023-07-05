@@ -9,16 +9,21 @@ namespace ProjectNomad.Server.Controllers
     public class GameController : ControllerBase
     {
         private readonly IGameModule _gameModule;
-        public GameController(IGameModule gameModule)
-        {
-            _gameModule = gameModule;
-        }
+        public GameController(IGameModule gameModule) 
+            => _gameModule = gameModule;
 
         [HttpGet("getGameObjects/{accountId}")]
         public async Task<ActionResult<ITribeGameObjects>> GetGameObjects(Guid accountId) 
         {
-            var model = await _gameModule.GetPlayerGameObject(accountId);
-            return Ok(model);
+            var result = await _gameModule.GetPlayerGameObject(accountId);
+            return Ok(result);
+        }
+
+        [HttpPost("triggerPlayerGameObjectRecalculation")]
+        public async Task<ActionResult> TriggerPlayerGameObjectRecalculation([FromBody]int tribeId)
+        {
+            await _gameModule.TriggerPlayerGameObjectRecalculation(tribeId); //cos sypie przy trigerowaniu.. 
+            return Ok();
         }
     }
 }

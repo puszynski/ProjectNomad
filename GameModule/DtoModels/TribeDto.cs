@@ -2,7 +2,8 @@
 
 namespace GameModule.DtoModels
 {
-    internal record TribeDto(string Name, 
+    internal record TribeDto(int Id,
+        string Name, 
         int X, 
         int Y) : ITribe;
 }

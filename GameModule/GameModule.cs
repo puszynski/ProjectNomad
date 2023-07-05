@@ -12,11 +12,14 @@ namespace GameModule
     {
         private readonly GameModuleDbContext _dbContext;
         private readonly NewTribeLocalizationInitializer _newTribeLocalizationInitializer;
+        private readonly GameLooper _gameLooper;
         public GameModule(GameModuleDbContext dbContext,
-            NewTribeLocalizationInitializer newTribeLocalizationInitializer)
+            NewTribeLocalizationInitializer newTribeLocalizationInitializer,
+            GameLooper gameLooper)
         {
             _dbContext = dbContext;
             _newTribeLocalizationInitializer = newTribeLocalizationInitializer;
+            _gameLooper = gameLooper;
         }
 
 
@@ -37,21 +40,18 @@ namespace GameModule
                     .Select(x => new HumanUnitDto(x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
                     .ToListAsync();
 
-                return new TribeGameObjectDto(new TribeDto(tribe.Name, tribe.X, tribe.Y),
+                return new TribeGameObjectDto(new TribeDto(tribe.Id, tribe.Name, tribe.X, tribe.Y),
                 await humanUnitsTask);
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
         }
 
 
-        public async Task TrigerPlayerGameObjectRecalculation(Guid accountId)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task TriggerPlayerGameObjectRecalculation(int tribeId) 
+            => _gameLooper.LoopTribe(tribeId);
 
 
         public async Task InitPlayerGameObject(Guid accountId)

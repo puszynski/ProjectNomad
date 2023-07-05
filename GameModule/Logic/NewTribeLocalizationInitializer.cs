@@ -8,7 +8,6 @@ namespace GameModule.Logic
     internal class NewTribeLocalizationInitializer
     {
         private readonly GameModuleDbContext _dbContext;
-
         public NewTribeLocalizationInitializer(GameModuleDbContext dbContext) 
             => _dbContext = dbContext;
 

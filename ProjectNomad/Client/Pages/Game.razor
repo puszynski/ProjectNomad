@@ -9,8 +9,12 @@
 
 @if (gameObjectsViewModel != null)
 {
-    <p>tribe name <b>@gameObjectsViewModel.Tribe.Name</b></p>
+    <p>tribe name <b>@gameObjectsViewModel.Tribe.Name (@gameObjectsViewModel.Tribe.X, @gameObjectsViewModel.Tribe.Y)</b></p>
     <p>members count <b>@gameObjectsViewModel.HumanUnits.Count()</b></p>
+
+    <p> @(string.Join(" - ", gameObjectsViewModel.HumanUnits.Select(x => x.FoodLevelPercentage)))</p>
+
+    <button class="btn btn-primary" @onclick="gameObjectsViewModel.TrigerRecalculation">Check what tribes do</button>
 }
 else
 {
@@ -31,6 +35,12 @@ else
             throw new ArgumentNullException("Guid from _localStorageService should not be null in game window");
         }
 
-        gameObjectsViewModel = await _http.GetFromJsonAsync<TribeGameObjectsViewModel>($"api/game/getGameObjects/{accountId}");
+        var result = await _http.GetFromJsonAsync<TribeGameObjectsViewModel>($"api/game/getGameObjects/{accountId}");
+
+        gameObjectsViewModel = new TribeGameObjectsViewModel(_http)
+            {
+                Tribe = result.Tribe,
+                HumanUnits = result.HumanUnits
+            };
     }
 }

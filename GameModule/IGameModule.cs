@@ -9,7 +9,7 @@ namespace GameModule
 
         // CONCEPT
         // server is not running tasks in background,
-        // instead its triggered by main player - or - other players that are coming to interaction with one
-        public Task TrigerPlayerGameObjectRecalculation(Guid accountId);
+        // instead its triggered by client of main player - or - other players that are coming into interaction
+        public Task TriggerPlayerGameObjectRecalculation(int tribeId);
     }
 }

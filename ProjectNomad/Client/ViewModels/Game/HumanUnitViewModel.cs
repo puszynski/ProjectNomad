@@ -4,12 +4,12 @@ namespace ProjectNomad.Client.ViewModels.Game
 {
     public class HumanUnitViewModel : IHumanUnit
     {
-        public string Name { get; }
+        public string Name { get; set; }
 
-        public int X { get; }
+        public int X { get; set; }
 
-        public int Y { get; }
+        public int Y { get; set; }
 
-        public int FoodLevelPercentage { get; }
+        public int FoodLevelPercentage { get; set; }
     }
 }
