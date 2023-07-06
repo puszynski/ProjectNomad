@@ -31,9 +31,6 @@ namespace GameModule.Logic
         {
             try
             {
-                //todo GAME OVER - WHAT TO DO WHEN ALL HUMANS ARE DEAD? DISPLAY INFO AND ALLOW TO START AGAIN? 
-
-
                 var tribe = _dbContext
                     .Tribes
                     .SingleOrDefault(x => x.Id == tribeId);
