@@ -5,6 +5,7 @@ using GameModule.Entities.ValueObjects;
 using GameModule.Logic;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared.Interfaces;
+using System.Diagnostics;
 
 namespace GameModule
 {
@@ -54,7 +55,7 @@ namespace GameModule
             => _gameLooper.LoopTribe(tribeId);
 
 
-        public async Task InitPlayerGameObject(Guid accountId)
+        public async Task InitPlayerGameObjects(Guid accountId)
         {
             var localization =  await _newTribeLocalizationInitializer.Initialize();
 
@@ -66,22 +67,18 @@ namespace GameModule
                 Updated = DateTime.UtcNow
             };
 
-            var humanUnits = new List<HumanUnit>()
-            {
-                new HumanUnit() { Name = "Aka", Localization = new Localization { X = 1, Y = 1 }, Tribe = tribe, FoodLevelPercentage = 100 },
-                new HumanUnit() { Name = "Kha", Localization = new Localization { X = 1, Y = 1 }, Tribe = tribe, FoodLevelPercentage = 80 },
-                new HumanUnit() { Name = "Buk", Localization = new Localization { X = 1, Y = 1 }, Tribe = tribe, FoodLevelPercentage = 70 },
-                new HumanUnit() { Name = "Brio", Localization = new Localization { X = 1, Y = 1 }, Tribe = tribe, FoodLevelPercentage = 50 }
-            };
+            var humanUnits = new List<HumanUnit>();
+
+            for (int i = 0; i < 4; i++)
+                humanUnits.Add(HumanUnitGenerator.Generate(tribe));
 
             try
             {
                 var taskTribe = _dbContext.Tribes.AddAsync(tribe);
-                await taskTribe;
-                await _dbContext.SaveChangesAsync();
+                await taskTribe;//if save below is not neede, move await down
+                //await _dbContext.SaveChangesAsync();//needed?
 
-                var taskHumanUnits = _dbContext.HumanUnits.AddRangeAsync(humanUnits);//why localization is getting null?
-                //SqlException: Cannot insert the value NULL into column 'Localization_X', table 'ProjectNomad.GameModule.HumanUnits'; column does not allow nulls. UPDATE fails.
+                var taskHumanUnits = _dbContext.HumanUnits.AddRangeAsync(humanUnits);
                 await taskHumanUnits;
                 await _dbContext.SaveChangesAsync();
 
@@ -91,6 +88,27 @@ namespace GameModule
 
                 throw ex;
             }
+        }
+
+        public async Task InitPlayerGameObjectsForExistingTribe(int tribeId)
+        {
+            var tribe = await _dbContext
+                .Tribes
+                .SingleOrDefaultAsync(x => x.Id == tribeId);
+
+            if (tribe == null)
+                throw new ArgumentException(nameof(tribe), $"No tribe for given id ({tribeId}) existing :/");
+
+            if (await _dbContext.HumanUnits.AnyAsync(x => x.TribeId == tribe.Id))
+                throw new ArgumentException($"To init new human units, there should be no in database (tribeId:{tribe.Id}) :/");
+
+            var humanUnits = new List<HumanUnit>();
+
+            for (int i = 0; i < 4; i++)
+                humanUnits.Add(HumanUnitGenerator.Generate(tribe));
+
+            await _dbContext.HumanUnits.AddRangeAsync(humanUnits);
+            await _dbContext.SaveChangesAsync();
         }
 
     }

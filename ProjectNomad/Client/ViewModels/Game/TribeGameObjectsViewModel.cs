@@ -23,5 +23,10 @@ namespace ProjectNomad.Client.ViewModels.Game
 
             //await _httpClient.GetAsync($"api/game/triggerPlayerGameObjectRecalculation/{Tribe.Id}");
         }
+
+        internal async Task ReBornTribeMembers()
+        {
+            await _httpClient.PostAsJsonAsync("api/account/generateNewTribeMembers", Tribe.Id);
+        }
     }
 }

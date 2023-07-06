@@ -4,7 +4,9 @@ namespace GameModule
 {
     public interface IGameModule
     {
-        public Task InitPlayerGameObject(Guid accountId);
+        public Task InitPlayerGameObjects(Guid accountId);
+        public Task InitPlayerGameObjectsForExistingTribe(int tribeId);
+
         public Task<ITribeGameObjects> GetPlayerGameObject(Guid accountId);
 
         // CONCEPT

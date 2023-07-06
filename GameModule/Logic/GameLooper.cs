@@ -38,9 +38,9 @@ namespace GameModule.Logic
                     .Tribes
                     .SingleOrDefault(x => x.Id == tribeId);
 
-                //var tribe = await _dbContext //problem with async.. 
-                //.Tribes
-                //.SingleOrDefaultAsync(x => x.Id == tribeId);
+                //var tribe = await _dbContext //PROBLEM WITH ASYNC.. TODO IN FUTURE 
+                //  .Tribes
+                //  .SingleOrDefaultAsync(x => x.Id == tribeId);
 
                 var humanUnits = _dbContext
                     .HumanUnits
@@ -51,8 +51,10 @@ namespace GameModule.Logic
                     return;
 
                 var timeToUpdate = tribe.Updated;
+                var loopCounter = 0;
 
-                while (timeToUpdate <= DateTime.UtcNow)
+                //SOLUTON? REMOVE SECONDS FROM UTC NOW? https://stackoverflow.com/questions/1004698/how-to-truncate-milliseconds-off-of-a-net-datetime
+                while (timeToUpdate <= DateTime.UtcNow) //ERROR - dla każdego kliknięcia (co kilka sec) i tak jedzie jeden cykl.. 
                 {
                     MinuteLooper(humanUnits);
                     if (timeToUpdate.Minute == 0)
@@ -61,10 +63,14 @@ namespace GameModule.Logic
                         DayLooper(humanUnits);
 
                     timeToUpdate = timeToUpdate.AddMinutes(1);
+                    loopCounter++;
+
+                    if (loopCounter > 30)
+                        break;
                 }
 
                 tribe.Updated = DateTime.UtcNow;
-                await _dbContext.SaveChangesAsync();
+                _dbContext.SaveChanges();
             }
             catch (Exception ex)
             {

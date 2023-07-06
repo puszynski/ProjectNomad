@@ -9,12 +9,20 @@
 
 @if (gameObjectsViewModel != null)
 {
-    <p>tribe name <b>@gameObjectsViewModel.Tribe.Name (@gameObjectsViewModel.Tribe.X, @gameObjectsViewModel.Tribe.Y)</b></p>
-    <p>members count <b>@gameObjectsViewModel.HumanUnits.Count()</b></p>
+    @if (!gameObjectsViewModel.HumanUnits.Any())
+    {
+        <p>All members of your tribe have died.. </p>
+        <button class="btn btn-primary" @onclick="ReBornTribeMembers">Reborn tribe with new members</button>
+    }
+    else
+    {
+        <p>tribe name <b>@gameObjectsViewModel.Tribe.Name (@gameObjectsViewModel.Tribe.X, @gameObjectsViewModel.Tribe.Y)</b></p>
+        <p>members count <b>@gameObjectsViewModel.HumanUnits.Count()</b></p>
 
-    <p> @(string.Join(" - ", gameObjectsViewModel.HumanUnits.Select(x => x.FoodLevelPercentage)))</p>
+        <p> @(string.Join(" - ", gameObjectsViewModel.HumanUnits.Select(x => x.FoodLevelPercentage)))</p>
 
-    <button class="btn btn-primary" @onclick="gameObjectsViewModel.TrigerRecalculation">Check what tribes do</button>
+        <button class="btn btn-primary" @onclick="TrigerRecalculation">Check what tribes do</button>
+    }
 }
 else
 {
@@ -26,6 +34,11 @@ else
     private TribeGameObjectsViewModel gameObjectsViewModel;
 
     protected override async Task OnInitializedAsync()
+    {
+        await UpdateDataFromServer();
+    }
+
+    async Task UpdateDataFromServer()
     {
         var accountId = await _localStorageService.GetItemAsync<Guid?>("id");
 
@@ -42,5 +55,19 @@ else
                 Tribe = result.Tribe,
                 HumanUnits = result.HumanUnits
             };
+    }
+
+    async Task ReBornTribeMembers()
+    {
+        await gameObjectsViewModel.ReBornTribeMembers();
+        await UpdateDataFromServer();
+        StateHasChanged();
+    }
+
+    async Task TrigerRecalculation()
+    {
+        await gameObjectsViewModel.TrigerRecalculation();
+        await UpdateDataFromServer();
+        StateHasChanged();
     }
 }

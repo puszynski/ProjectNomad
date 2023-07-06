@@ -36,12 +36,22 @@ namespace ProjectNomad.Server.Controllers
         {
             var accountId = await _accountModule.Register(model.Name, model.Password);
 
-            if (accountId == null)
+            if (accountId == Guid.Empty)
                 return Problem();
 
-            await _gameModule.InitPlayerGameObject(accountId);
+            await _gameModule.InitPlayerGameObjects(accountId);
 
             return Ok(accountId);
+        }
+
+        [HttpPost("generateNewTribeMembers")]
+        public async Task<ActionResult> GenerateNewTribeMembers([FromBody]int? tribeId)
+        {
+            if (tribeId == null)
+                return Problem();
+
+            await _gameModule.InitPlayerGameObjectsForExistingTribe(tribeId.Value);
+            return Ok();
         }
     }
 }
