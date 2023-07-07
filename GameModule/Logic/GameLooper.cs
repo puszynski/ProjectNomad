@@ -13,8 +13,8 @@ namespace GameModule.Logic
 
         void MinuteLooper(List<HumanUnit> humanUnits)
         {
-            DeathApplicator.StarvationDeath(_dbContext, humanUnits);
             humanUnits.ForEach(x => x.FoodLevelPercentage--);
+            DeathApplicator.StarvationDeath(_dbContext, humanUnits);
         }
 
         void HourLooper(List<HumanUnit> humanUnits)
@@ -51,7 +51,7 @@ namespace GameModule.Logic
                 var loopCounter = 0;
 
                 //SOLUTON? REMOVE SECONDS FROM UTC NOW? https://stackoverflow.com/questions/1004698/how-to-truncate-milliseconds-off-of-a-net-datetime
-                while (timeToUpdate <= DateTime.UtcNow) //ERROR - dla każdego kliknięcia (co kilka sec) i tak jedzie jeden cykl.. 
+                while (timeToUpdate <= DateTime.UtcNow.AddMinutes(-1)) //ERROR - dla każdego kliknięcia (co kilka sec) i tak jedzie jeden cykl.. 
                 {
                     MinuteLooper(humanUnits);
                     if (timeToUpdate.Minute == 0)
