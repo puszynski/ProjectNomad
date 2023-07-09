@@ -25,7 +25,7 @@ namespace GameModule.Logic
         {
             var names = new List<string>() 
             { 
-                "Aka", "Kha", "Buk", "Buku", "Brio", "Bro", 
+                "Aka", "Kha", "Buk", "Bor", "Buku", "Brio", "Bro", "Ciech", "Dobro", "Dola", "Droga", "Goj", "Gost", "Mygi", "Jar", "Lub", "Mił", "Mir", "Mysł", "Rad", "Rat", "Siem", "Wit", "Włod", "Woj", "Hug", "Mug", "Los", "Żyr"
             };
 
             var random = new Random();

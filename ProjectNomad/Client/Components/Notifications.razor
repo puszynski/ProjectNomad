@@ -1,0 +1,41 @@
+﻿@* <ParameterChild tribeId="@TribeId" /> *@
+@inject HttpClient _httpClient
+
+@if (TribeNotifications == null)
+{
+    <button class="btn btn-primary" @onclick="Get">Ask tribes members for news</button>
+}
+else
+{
+    @if (TribeNotifications.Any())
+    {
+        
+        <button class="btn btn-primary" @onclick="Close">Close</button>
+    }
+    else
+    {
+        <p></p>
+    }
+    
+}
+
+
+@code {
+    IEnumerable<TribeNotificationDto> TribeNotifications;
+
+    [ParameterAttribute]
+    public int TribeId { get; set; }
+
+    private async Task Get() 
+        => TribeNotifications = await _httpClient.GetFromJsonAsync<IEnumerable<TribeNotificationDto>>($"api/notification/get/{TribeId}");
+
+    private async Task Close() 
+        => TribeNotifications = null;
+
+    internal class TribeNotificationDto : ProjectNomad.Shared.Interfaces.ITribeNotification
+    {
+        public int HumanUnitId { get; set; }
+        public DateTime Added { get; set; }
+        public ProjectNomad.Shared.Enums.EHumanNotificationType Type { get; set; }
+    }
+}

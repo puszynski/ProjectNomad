@@ -21,6 +21,7 @@
 
         <p> @(string.Join(" - ", gameObjectsViewModel.HumanUnits.Select(x => x.FoodLevelPercentage)))</p>
 
+        <ProjectNomad.Client.Components.Notifications TribeId="@gameObjectsViewModel.Tribe.Id" />
         <button class="btn btn-primary" @onclick="TrigerRecalculation">Check what tribes do</button>
     }
 }

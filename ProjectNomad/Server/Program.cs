@@ -1,6 +1,7 @@
 using AccountModule.Configuration;
 using GameModule.Configurations;
 using Microsoft.EntityFrameworkCore;
+using NotificationModule.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +15,12 @@ AccountModuleConfiguration.DbContextConfiguration(
 GameModuleConfiguration.DbContextConfiguration(builder.Services,
     builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No connection string provided :/"));
 
+NotificationModuleConfiguration.DbContextConfiguration(builder.Services,
+    builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No connection string provided :/"));
+
 AccountModuleConfiguration.RegisterIoC(builder.Services);
-GameModuleConfiguration.RegisterIoC(builder.Services);//todo problems..
+GameModuleConfiguration.RegisterIoC(builder.Services);
+NotificationModuleConfiguration.RegisterIoC(builder.Services);
 
 var app = builder.Build();
 
