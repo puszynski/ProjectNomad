@@ -1,4 +1,5 @@
 ﻿using ProjectNomad.Shared.Enums;
+using ProjectNomad.Shared.Interfaces;
 
 namespace NotificationModule.Entities
 {
@@ -11,9 +12,9 @@ namespace NotificationModule.Entities
     }
 
     //not - only to convert List<ContentItem> to TribeNotification.Content
-    internal class TribeNotificationContentItem
+    internal class TribeNotificationContentItem : ITribeNotification
     {
-        public int HumanObjectId { get; set; }
+        public int HumanUnitId { get; set; }
         public EHumanNotificationType Type { get; set; }
         public DateTime Added { get; set; }
     }

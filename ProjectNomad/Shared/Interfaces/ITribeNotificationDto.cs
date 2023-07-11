@@ -4,8 +4,8 @@ namespace ProjectNomad.Shared.Interfaces
 {
     public interface ITribeNotification
     {
-        public int HumanUnitId { get; set; }
-        public DateTime Added { get; set; }
-        public EHumanNotificationType Type { get; set; }
+        public int HumanUnitId { get; }
+        public DateTime Added { get; }
+        public EHumanNotificationType Type { get; }
     }
 }

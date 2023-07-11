@@ -1,7 +1,7 @@
 ﻿using GameModule.Configurations;
 using GameModule.Entities.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using ProjectNomad.Shared;
 
 namespace GameModule.Logic
 {

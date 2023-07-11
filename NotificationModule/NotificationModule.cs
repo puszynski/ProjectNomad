@@ -17,10 +17,19 @@ namespace NotificationModule
         public async Task<IEnumerable<ITribeNotification>> GetAndRemoveTribeNotifications(int tribeId)
         {
             var model = await _dbContext.TribeNotifications.SingleOrDefaultAsync(x => x.TribeId == tribeId);
-            var notifications = JsonSerializer.Deserialize<List<TribeNotificationContentItem>>(model.Content);
-            model.Content = null;
 
-            throw new NotImplementedException();
+            if (model is null)
+                return new List<ITribeNotification>();
+
+            var notifications = JsonSerializer.Deserialize<List<TribeNotificationContentItem>>(model.Content);
+
+            if (notifications is null)
+                return new List<ITribeNotification>();
+
+            model.Content = string.Empty;
+            await _dbContext.SaveChangesAsync();
+
+            return notifications;
         }
 
         public async Task InsertTribeNotification(int tribeId, ITribeNotification notificationDTo)
@@ -32,16 +41,18 @@ namespace NotificationModule
 
             var notificationToAdd = new TribeNotificationContentItem 
             { 
-                HumanObjectId = notificationDTo.HumanUnitId, 
+                HumanUnitId = notificationDTo.HumanUnitId, 
                 Type = notificationDTo.Type, 
                 Added = DateTime.UtcNow 
             };
 
-            var notifications = JsonSerializer.Deserialize<List<TribeNotificationContentItem>>(model.Content);
+            List<TribeNotificationContentItem> notifications = null;
 
-            //todo test if needed
-            //if (notifications != null) 
-            //    notifications = new List<ContentItem>();
+            if (!string.IsNullOrEmpty(model.Content))
+                notifications = JsonSerializer.Deserialize<List<TribeNotificationContentItem>>(model.Content);
+
+            if (notifications == null)
+                    notifications = new List<TribeNotificationContentItem>();
 
             notifications.Add(notificationToAdd);
 

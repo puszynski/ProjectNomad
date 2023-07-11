@@ -5,5 +5,7 @@
         FoodStarvation = 100,
         FoodHunger = 101,
         FoodFillFull = 101,
+
+        DeathFromStarvation = 601,
     }
 }

@@ -16,8 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameModule\GameModule.csproj" />
-    <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\ProjectNomad\Shared\ProjectNomad.Shared.csproj" />
   </ItemGroup>
 
 </Project>

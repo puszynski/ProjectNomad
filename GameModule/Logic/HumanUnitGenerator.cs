@@ -1,6 +1,6 @@
 ﻿using GameModule.Entities;
 using GameModule.Entities.ValueObjects;
-using Shared;
+using ProjectNomad.Shared;
 
 namespace GameModule.Logic
 {

@@ -2,19 +2,24 @@
 using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic;
 using Microsoft.EntityFrameworkCore;
+using NotificationModule;
 
 namespace GameModule.Logic
 {
     internal class GameLooper
     {
-        private readonly GameModuleDbContext _dbContext;
-        public GameLooper(GameModuleDbContext dbContext) 
-            => _dbContext = dbContext;
+        readonly GameModuleDbContext _dbContext;
+        readonly INotificationModule _notificationModule;
+        public GameLooper(GameModuleDbContext dbContext, INotificationModule notificationModule)
+        {
+            _dbContext = dbContext;
+            _notificationModule = notificationModule;
+        }
 
         void MinuteLooper(List<HumanUnit> humanUnits)
         {
             humanUnits.ForEach(x => x.FoodLevelPercentage--);
-            DeathApplicator.StarvationDeath(_dbContext, humanUnits);
+            DeathApplicator.StarvationDeath(_dbContext, _notificationModule, humanUnits);
         }
 
         void HourLooper(List<HumanUnit> humanUnits)
