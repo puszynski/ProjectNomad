@@ -1,5 +1,4 @@
-﻿@* <ParameterChild tribeId="@TribeId" /> *@
-@inject HttpClient _httpClient
+﻿@inject HttpClient _httpClient
 
 @if (TribeNotifications == null)
 {
@@ -9,14 +8,17 @@ else
 {
     @if (TribeNotifications.Any())
     {
-        
-        <button class="btn btn-primary" @onclick="Close">Close</button>
+
+        foreach (var item in TribeNotifications)
+        {
+            <p>@item.HumanUnitId => @item.Type.ToString()</p>
+        }
     }
     else
     {
-        <p></p>
+        <p>Brak informacji do wyświetlenia</p>
     }
-    
+    <button class="btn btn-primary" @onclick="Close">Close</button>
 }
 
 
@@ -28,6 +30,7 @@ else
 
     private async Task Get() 
         => TribeNotifications = await _httpClient.GetFromJsonAsync<IEnumerable<TribeNotificationDto>>($"api/notification/get/{TribeId}");
+        //todo odlozyc do local storage zeby mogla byc jakas historia
 
     private async Task Close() 
         => TribeNotifications = null;

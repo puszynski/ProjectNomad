@@ -18,7 +18,7 @@ namespace NotificationModule
         {
             var model = await _dbContext.TribeNotifications.SingleOrDefaultAsync(x => x.TribeId == tribeId);
 
-            if (model is null)
+            if (model is null || string.IsNullOrEmpty(model.Content))
                 return new List<ITribeNotification>();
 
             var notifications = JsonSerializer.Deserialize<List<TribeNotificationContentItem>>(model.Content);
