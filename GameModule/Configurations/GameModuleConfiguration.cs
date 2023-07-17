@@ -28,6 +28,7 @@ namespace GameModule.Configurations
             services.AddScoped<NewTribeLocalizationInitializer>();
             services.AddScoped<IGameModule, GameModule>();
             services.AddScoped<GameLooper>();
+            services.AddScoped<MapService>();
         }
     }
 }

@@ -2,9 +2,9 @@
 {
     public interface IHumanUnit
     {
-        public string Name { get; }
-        public int X { get; }
-        public int Y { get; }
-        public int FoodLevelPercentage { get; }
+        string Name { get; }
+        int X { get; }
+        int Y { get; }
+        int FoodLevelPercentage { get; }
     }
 }

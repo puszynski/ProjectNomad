@@ -45,7 +45,60 @@
                         border-color: Gainsboro;
                         width: 700px;
                         display: table-cell;">
-                Map
+
+
+                <br />
+
+                <div style="position: relative;
+                            border: 2px dashed;
+                            border-color: Gainsboro;
+                            width:562px;
+                            height:562px;
+                            margin: auto;">
+
+                    @* IMG MAP TILES - FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
+                    @for (int y = 0; y < 7; y++)
+                    {
+                        for (int x = 0; x < 7; x++)
+                        {
+                            <img src="/images/game/map/tile_100x100margin_80x80main.png"
+                                 height="100" 
+                                 width="100" 
+                                 style="position: absolute; 
+                                        left: @(x * 80 -10)px; 
+                                        top: @(y * 80 -10)px" />
+                        }
+                    }
+
+                    <br />
+
+                    @* SVG MAP TILES *@
+                    @for (int i = 0; i < 49; i++)
+                    {
+                        @* @if (i == 0)
+                        {
+
+                            <img src="/images/game/map/witleWithMargin_84_84_for_80_80.png" height="84" width="84" style="position: relative; left: 84px; top: 84px" />
+                        } *@
+
+
+                        @* <svg width="@MediumTileSizePixels" height="@MediumTileSizePixels" style="margin:2px;">
+                            <rect width="@MediumTileSizePixels" height="@MediumTileSizePixels" style="fill:Gainsboro;" />
+                            @if(i < 25)
+                            {
+                                <image href="/images/game/map/tileV2_sized.png" height="80" width="80" />
+
+                            }
+                            else
+                            {
+                                <image href="/images/game/map/tileV2_purePixel.png" height="80" width="80" />
+
+                            }
+                        </svg> *@
+                    }
+
+                </div>
+                
             </div>
 
             <div style ="border: 2px dashed;
@@ -73,6 +126,8 @@ else
 
 @code {
     private TribeGameObjectsViewModel gameObjectsViewModel;
+    private int TileSizePixels = 120;
+    private int MediumTileSizePixels = 80;
 
     protected override async Task OnInitializedAsync()
     {

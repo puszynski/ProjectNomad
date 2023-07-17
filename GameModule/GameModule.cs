@@ -12,13 +12,16 @@ namespace GameModule
         private readonly GameModuleDbContext _dbContext;
         private readonly NewTribeLocalizationInitializer _newTribeLocalizationInitializer;
         private readonly GameLooper _gameLooper;
+        private readonly MapService _mapService;
         public GameModule(GameModuleDbContext dbContext,
             NewTribeLocalizationInitializer newTribeLocalizationInitializer,
-            GameLooper gameLooper)
+            GameLooper gameLooper,
+            MapService mapService)
         {
             _dbContext = dbContext;
             _newTribeLocalizationInitializer = newTribeLocalizationInitializer;
             _gameLooper = gameLooper;
+            _mapService = mapService;
         }
 
 
@@ -109,5 +112,10 @@ namespace GameModule
             await _dbContext.SaveChangesAsync();
         }
 
+
+        public Task<IEnumerable<IMapTile>> GetMapData(int x, int y)
+        {
+            return _mapService.GetMapData(x, y); 
+        }
     }
 }

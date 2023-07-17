@@ -9,15 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectNomad.Client", "Proj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectNomad.Shared", "ProjectNomad\Shared\ProjectNomad.Shared.csproj", "{3BE37085-E212-449B-BFEC-36069D4FB7D3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{A5A42E4E-E216-43A8-8F25-D1BD9CEDC747}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountModule", "PlayerAccount\AccountModule.csproj", "{E9BC3754-14F9-465F-8FE2-DEEC657399B4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameModule", "GameModule\GameModule.csproj", "{FBA53669-3BC6-4B63-93ED-C665A1215665}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{D06C8AA5-762B-44AD-BAFA-07488C38373F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationModule", "NotificationModule\NotificationModule.csproj", "{1151616E-D538-45B1-8A8E-6A6196151C52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{EA35C072-2F37-4129-AEDF-92096B2E3626}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,15 +47,13 @@ Global
 		{1151616E-D538-45B1-8A8E-6A6196151C52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1151616E-D538-45B1-8A8E-6A6196151C52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1151616E-D538-45B1-8A8E-6A6196151C52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA35C072-2F37-4129-AEDF-92096B2E3626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA35C072-2F37-4129-AEDF-92096B2E3626}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA35C072-2F37-4129-AEDF-92096B2E3626}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA35C072-2F37-4129-AEDF-92096B2E3626}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{E9BC3754-14F9-465F-8FE2-DEEC657399B4} = {A5A42E4E-E216-43A8-8F25-D1BD9CEDC747}
-		{FBA53669-3BC6-4B63-93ED-C665A1215665} = {A5A42E4E-E216-43A8-8F25-D1BD9CEDC747}
-		{D06C8AA5-762B-44AD-BAFA-07488C38373F} = {A5A42E4E-E216-43A8-8F25-D1BD9CEDC747}
-		{1151616E-D538-45B1-8A8E-6A6196151C52} = {D06C8AA5-762B-44AD-BAFA-07488C38373F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0A235CF1-F378-422C-BAD9-6D2435A1F0CE}
