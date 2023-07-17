@@ -13,7 +13,7 @@ namespace GameModule.Logic
 
         internal async Task<Localization> Initialize()
         {
-            var localization = new Localization() { X = 0, Y = 0 };
+            var localization = new Localization() { X = 3, Y = 3 };
 
             if (await _dbContext.Tribes.AnyAsync())
             {

@@ -12,7 +12,7 @@ namespace GameModule.Entities
         //how to store map?
     }
 
-    public class MapTile
+    internal class MapTile
     {
         public int X { get; set; }
         public int Y { get; set; }
