@@ -7,9 +7,10 @@ namespace ProjectNomad.Shared.Interfaces
     //  | Y (0 | 100)
     public interface IMapTile
     {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public EMapType Type { get; set; }
-        public int FoodPoints { get; set; }
+        public int X { get; }
+        public int Y { get; }
+        public EMapType Type { get; }
+        public int FoodPoints { get; }
+        public int WoodPoints { get; }
     }
 }

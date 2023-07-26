@@ -22,8 +22,15 @@ namespace ProjectNomad.Server.Controllers
         [HttpPost("triggerPlayerGameObjectRecalculation")]
         public async Task<ActionResult> TriggerPlayerGameObjectRecalculation([FromBody]int tribeId)
         {
-            await _gameModule.TriggerPlayerGameObjectRecalculation(tribeId); //cos sypie przy trigerowaniu.. 
+            await _gameModule.TriggerPlayerGameObjectRecalculation(tribeId);
             return Ok();
+        }
+
+        [HttpGet("getMapTiles/{tribeId}")]
+        public async Task<ActionResult<IEnumerable<IMapTile>>> GetMapTiles(int tribeId)
+        {
+            var result = await _gameModule.GetMapTiles(tribeId);
+            return Ok(result);
         }
     }
 }

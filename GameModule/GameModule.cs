@@ -3,6 +3,7 @@ using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Logic;
 using Microsoft.EntityFrameworkCore;
+using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule
@@ -45,7 +46,7 @@ namespace GameModule
                 .ToListAsync();
 
             return new TribeGameObjectDto(new TribeDto(tribe.Id, tribe.Name, tribe.X, tribe.Y),
-            await humanUnitsTask);
+                await humanUnitsTask);
         }
 
         public async Task TriggerPlayerGameObjectRecalculation(int tribeId) 
@@ -78,12 +79,7 @@ namespace GameModule
 
         public async Task InitPlayerGameObjectsForExistingTribe(int tribeId)
         {
-            var tribe = await _dbContext
-                .Tribes
-                .SingleOrDefaultAsync(x => x.Id == tribeId);
-
-            if (tribe == null)
-                throw new ArgumentException(nameof(tribe), $"No tribe for given id ({tribeId}) existing :/");
+            var tribe = await GetTribeOrArgumentException(tribeId);
 
             if (await _dbContext.HumanUnits.AnyAsync(x => x.TribeId == tribe.Id))
                 throw new ArgumentException($"To init new human units, there should be no in database (tribeId:{tribe.Id}) :/");
@@ -98,13 +94,31 @@ namespace GameModule
         }
 
 
-        public Task<IEnumerable<IMapTile>> GetMapTiles(int x, int y)
+        public async Task<IEnumerable<IMapTile>> GetMapTiles(int tribeId)
         {
-            return _mapService.GetMapData(x, y); 
+            var tribe = await GetTribeOrArgumentException(tribeId);
+
+            var x = tribe.Localization.X;
+            var y = tribe.Localization.Y;
+
+            var tiles = await _dbContext.MapTiles
+                .Where(t => t.Localization.X >= x - 3 && t.Localization.X <= x + 3)
+                .Where(t => t.Localization.Y >= y - 3 && t.Localization.Y <= y + 3)
+                .OrderBy(t => t.Localization.X)
+                .ThenBy(t => t.Localization.Y)
+                .Select(t => new MapTileDto(t.Localization.X, t.Localization.Y, t.Type, t.Food.ActualPoints, t.Wood.ActualPoints))
+                .ToListAsync();
+
+            if (tiles.Count() != 7 * 7)
+                throw new NotImplementedException(); //todo assign ocean to missing ones..
+
+             return tiles;
         }
 
         public async Task GenerateMapTiles(int x_start, int y_start)
         {
+            //todo check if not exists, or override?
+
             var tiles = await _mapService.GenerateMapTiles(x_start, 
                 y_start,
                 TILE_MAX_FOOD_POINTS_LIMIT, 
@@ -112,6 +126,18 @@ namespace GameModule
 
             await _dbContext.MapTiles.AddRangeAsync(tiles);
             await _dbContext.SaveChangesAsync();
+        }
+
+        async Task<Tribe> GetTribeOrArgumentException(int tribeId)
+        {
+            var tribe = await _dbContext
+                .Tribes
+                .SingleOrDefaultAsync(x => x.Id == tribeId);
+
+            if (tribe == null)
+                throw new ArgumentException(nameof(tribe), $"No tribe for given id ({tribeId}) existing :/");
+
+            return tribe;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿@page "/game"
 @using Blazored.LocalStorage;
 @using ProjectNomad.Client.ViewModels.Game
+@using ProjectNomad.Shared.Interfaces;
 @inject HttpClient _http
 @inject ILocalStorageService _localStorageService
 
@@ -136,12 +137,21 @@ else
 
 @code {
     private TribeGameObjectsViewModel gameObjectsViewModel;
-    private int TileSizePixels = 120;
-    private int MediumTileSizePixels = 80;
+    private MapViewModel mapViewModel;
 
     protected override async Task OnInitializedAsync()
     {
         await UpdateDataFromServer();
+        await UpdateMapFromServer();
+    }
+
+    async Task UpdateMapFromServer()
+    {
+        @if (gameObjectsViewModel != null && gameObjectsViewModel.Tribe != null)
+        {
+            var mapTiles = await _http.GetFromJsonAsync<IEnumerable<MapTileViewModel>>($"api/game/getMapTiles/{gameObjectsViewModel.Tribe.Id}");
+            mapViewModel.MapTiles = mapTiles;
+        }
     }
 
     async Task UpdateDataFromServer()

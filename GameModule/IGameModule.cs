@@ -15,7 +15,7 @@ namespace GameModule
         public Task TriggerPlayerGameObjectRecalculation(int tribeId);
 
         // returns 7x7, x&y is pointing to the middle of teh square
-        public Task<IEnumerable<IMapTile>> GetMapTiles(int x, int y);
+        public Task<IEnumerable<IMapTile>> GetMapTiles(int tribeId);
 
         // NOTE
         // map tiles can be generated whole sections, eg. from 100|100 to 199|199

@@ -12,8 +12,9 @@ namespace GameModule.Logic
     {
         internal async Task<IEnumerable<IMapTile>> GetMapData(int x, int y)
         {
-            if (x != 0 && y != 0)
+            if (x < 3 && y < 3)
                 throw new NotImplementedException();
+            
 
 
             throw new NotImplementedException();
@@ -50,9 +51,9 @@ namespace GameModule.Logic
             }
         }
 
-        internal async Task<TileRecourse> GetRandomValuesForWoodTileResource(EMapType type, int tileWoodPointsMaxLimit)
+        internal async Task<TileRecourse> GetRandomValuesForWoodTileResource(EMapType type, int tileWoodPointsMaxLimit) //todo nei działa - UT
         {
-            if (type is not EMapType.DenseConiferousForest or EMapType.MediumConiferousForest or EMapType.RareConiferousForest)
+            if (type is not EMapType.DenseConiferousForest and not EMapType.MediumConiferousForest and not EMapType.RareConiferousForest)
                 return new TileRecourse { ActualPoints = 0, MaxLimitPoints = 0 };
 
             var maxWoodPoints = 0;
