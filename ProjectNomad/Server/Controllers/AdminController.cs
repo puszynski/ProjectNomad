@@ -1,34 +1,33 @@
-﻿using GameModule.Entities;
+﻿using GameModule;
 using Microsoft.AspNetCore.Mvc;
-using ProjectNomad.Shared.Interfaces;
 
 namespace ProjectNomad.Server.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/SZ~y?qccOD!cf0a")]
+    [Route("api/[controller]")]
     public class AdminController : ControllerBase
     {
+        readonly IGameModule _gameModule;
+
+        public AdminController(IGameModule gameModule)
+        {
+            _gameModule = gameModule;
+        }
+
 #if DEBUG
 
-        [HttpPost("GenerateNewMapSection")]
-        public async Task<ActionResult> GenerateNewMapSection(int x_start, int y_start)
+        //https://localhost:7277/api/admin/generatenewmapsection?x=0&y=0
+        [HttpGet("GenerateNewMapSection")]
+        public async Task<ActionResult> GenerateNewMapSection(int? x, int? y)
         {
-            //todo valodate if x y rounded to 100
+            if (x is null || y is null)
+                throw new ArgumentNullException();
 
-            var tiles = new List<IMapTile>();
-
-            for (int x = x_start; x < x_start + 100; x++)
-            {
-                for (int y = y_start; y < y_start + 100; y++)
-                {
-                    var tile = new MapTile() { } //todo
-                    tiles.Add()
-                }
-            }
-
+            await _gameModule.GenerateMapTiles(x.Value, y.Value); //nie zapisuje sie, moze await i zrob akcje async?
             return Ok();
         }
 
 #endif
+
     }
 }

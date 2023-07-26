@@ -1,8 +1,9 @@
 ﻿using GameModule.Entities.ValueObjects;
+using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Entities
 {
-    internal class HumanUnit
+    internal class HumanUnit : IId
     {
         public int Id { get; set; }
 
@@ -15,3 +16,11 @@ namespace GameModule.Entities
         public int FoodLevelPercentage { get; set; }
     }
 }
+
+
+
+
+
+
+
+

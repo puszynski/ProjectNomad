@@ -14,7 +14,11 @@ namespace GameModule
         // instead its triggered by client of main player - or - other players that are coming into interaction
         public Task TriggerPlayerGameObjectRecalculation(int tribeId);
 
+        // returns 7x7, x&y is pointing to the middle of teh square
+        public Task<IEnumerable<IMapTile>> GetMapTiles(int x, int y);
 
-        public Task<IEnumerable<IMapTile>> GetMapData(int x, int y);
+        // NOTE
+        // map tiles can be generated whole sections, eg. from 100|100 to 199|199
+        public Task GenerateMapTiles(int x, int y);
     }
 }

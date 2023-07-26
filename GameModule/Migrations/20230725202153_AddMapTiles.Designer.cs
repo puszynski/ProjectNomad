@@ -4,6 +4,7 @@ using GameModule.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameModule.Migrations
 {
     [DbContext(typeof(GameModuleDbContext))]
-    partial class GameModuleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230725202153_AddMapTiles")]
+    partial class AddMapTiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,7 +64,7 @@ namespace GameModule.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MapTiles", "GameModule");
+                    b.ToTable("Maps", "GameModule");
                 });
 
             modelBuilder.Entity("GameModule.Entities.Tribe", b =>
@@ -135,7 +138,7 @@ namespace GameModule.Migrations
 
                             b1.HasKey("MapTileId");
 
-                            b1.ToTable("MapTiles", "GameModule");
+                            b1.ToTable("Maps", "GameModule");
 
                             b1.WithOwner()
                                 .HasForeignKey("MapTileId");
@@ -154,7 +157,7 @@ namespace GameModule.Migrations
 
                             b1.HasKey("MapTileId");
 
-                            b1.ToTable("MapTiles", "GameModule");
+                            b1.ToTable("Maps", "GameModule");
 
                             b1.WithOwner()
                                 .HasForeignKey("MapTileId");
@@ -173,7 +176,7 @@ namespace GameModule.Migrations
 
                             b1.HasKey("MapTileId");
 
-                            b1.ToTable("MapTiles", "GameModule");
+                            b1.ToTable("Maps", "GameModule");
 
                             b1.WithOwner()
                                 .HasForeignKey("MapTileId");

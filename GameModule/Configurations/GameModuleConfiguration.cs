@@ -8,12 +8,13 @@ namespace GameModule.Configurations
     {
         /// <summary>
         /// to run migration
-        ///     cd.\GameModule
-        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add InitForGameModule -c GameModuleDbContext
-        /// note: you are in migration and context library project and are referring to startup project
+        ///     cd. \GameModule
+        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add RenameNameToMapTiles -c GameModuleDbContext
+        ///     
+        ///  note: you are in migration and context library project and are referring to startup project
         ///  plus specify context where multiple are detected by -c Name
         /// 
-        /// others commends:
+        /// others commands:
         ///     dotnet ef --startup-project ..\ProjectNomad\Server\ database update -c GameModuleDbContext
         /// </summary>
         public static void DbContextConfiguration(IServiceCollection services, string connectionStrings)

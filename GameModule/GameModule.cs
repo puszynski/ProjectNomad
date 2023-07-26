@@ -9,10 +9,14 @@ namespace GameModule
 {
     internal class GameModule : IGameModule
     {
-        private readonly GameModuleDbContext _dbContext;
-        private readonly NewTribeLocalizationInitializer _newTribeLocalizationInitializer;
-        private readonly GameLooper _gameLooper;
-        private readonly MapService _mapService;
+        const int TILE_MAX_FOOD_POINTS_LIMIT = 100;
+        const int TILE_MAX_WOOD_POINTS_LIMIT = 100;
+
+        readonly GameModuleDbContext _dbContext;
+        readonly NewTribeLocalizationInitializer _newTribeLocalizationInitializer;
+        readonly GameLooper _gameLooper;
+        readonly MapService _mapService;
+
         public GameModule(GameModuleDbContext dbContext,
             NewTribeLocalizationInitializer newTribeLocalizationInitializer,
             GameLooper gameLooper,
@@ -27,34 +31,25 @@ namespace GameModule
 
         public async Task<ITribeGameObjects> GetPlayerGameObject(Guid accountId)
         {
-            try
-            {
-                var tribe = await _dbContext
-                .Tribes
-                .Where(x => x.AccountId == accountId)
-                .Select(x => new { x.Name, x.Id, x.Localization.X, x.Localization.Y })
-                .SingleOrDefaultAsync()
-                    ?? throw new ArgumentException("No tribe founded in database with given accountId :/", nameof(accountId));
+            var tribe = await _dbContext
+            .Tribes
+            .Where(x => x.AccountId == accountId)
+            .Select(x => new { x.Name, x.Id, x.Localization.X, x.Localization.Y })
+            .SingleOrDefaultAsync()
+                ?? throw new ArgumentException("No tribe founded in database with given accountId :/", nameof(accountId));
 
-                var humanUnitsTask = _dbContext
-                    .HumanUnits
-                    .Where(x => x.TribeId == tribe.Id)
-                    .Select(x => new HumanUnitDto(x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
-                    .ToListAsync();
+            var humanUnitsTask = _dbContext
+                .HumanUnits
+                .Where(x => x.TribeId == tribe.Id)
+                .Select(x => new HumanUnitDto(x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
+                .ToListAsync();
 
-                return new TribeGameObjectDto(new TribeDto(tribe.Id, tribe.Name, tribe.X, tribe.Y),
-                await humanUnitsTask);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return new TribeGameObjectDto(new TribeDto(tribe.Id, tribe.Name, tribe.X, tribe.Y),
+            await humanUnitsTask);
         }
-
 
         public async Task TriggerPlayerGameObjectRecalculation(int tribeId) 
             => _gameLooper.LoopTribe(tribeId);
-
 
         public async Task InitPlayerGameObjects(Guid accountId)
         {
@@ -72,23 +67,13 @@ namespace GameModule
 
             for (int i = 0; i < 4; i++)
                 humanUnits.Add(HumanUnitGenerator.Generate(tribe));
+                        
+            var taskTribe = _dbContext.Tribes.AddAsync(tribe);
+            await taskTribe;
 
-            try
-            {
-                var taskTribe = _dbContext.Tribes.AddAsync(tribe);
-                await taskTribe;//if save below is not neede, move await down
-                //await _dbContext.SaveChangesAsync();//needed?
-
-                var taskHumanUnits = _dbContext.HumanUnits.AddRangeAsync(humanUnits);
-                await taskHumanUnits;
-                await _dbContext.SaveChangesAsync();
-
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
+            var taskHumanUnits = _dbContext.HumanUnits.AddRangeAsync(humanUnits);
+            await taskHumanUnits;
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task InitPlayerGameObjectsForExistingTribe(int tribeId)
@@ -113,9 +98,20 @@ namespace GameModule
         }
 
 
-        public Task<IEnumerable<IMapTile>> GetMapData(int x, int y)
+        public Task<IEnumerable<IMapTile>> GetMapTiles(int x, int y)
         {
             return _mapService.GetMapData(x, y); 
+        }
+
+        public async Task GenerateMapTiles(int x_start, int y_start)
+        {
+            var tiles = await _mapService.GenerateMapTiles(x_start, 
+                y_start,
+                TILE_MAX_FOOD_POINTS_LIMIT, 
+                TILE_MAX_WOOD_POINTS_LIMIT);
+
+            await _dbContext.MapTiles.AddRangeAsync(tiles);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
