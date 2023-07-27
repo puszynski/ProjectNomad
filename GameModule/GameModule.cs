@@ -104,8 +104,8 @@ namespace GameModule
             var tiles = await _dbContext.MapTiles
                 .Where(t => t.Localization.X >= x - 3 && t.Localization.X <= x + 3)
                 .Where(t => t.Localization.Y >= y - 3 && t.Localization.Y <= y + 3)
-                .OrderBy(t => t.Localization.X)
-                .ThenBy(t => t.Localization.Y)
+                .OrderBy(t => t.Localization.Y)
+                .ThenBy(t => t.Localization.X)
                 .Select(t => new MapTileDto(t.Localization.X, t.Localization.Y, t.Type, t.Food.ActualPoints, t.Wood.ActualPoints))
                 .ToListAsync();
 
