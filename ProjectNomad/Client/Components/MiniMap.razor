@@ -1,0 +1,93 @@
+﻿@using ProjectNomad.Client.ViewModels.Game;
+@inject HttpClient _httpClient
+
+<div style="border: 2px dashed;
+                        border-color: Gainsboro;
+                        width: 700px;
+                        display: table-cell;">
+
+
+    <br />
+
+    <div style="position: relative;
+                            border: 2px dashed;
+                            border-color: Gainsboro;
+                            width:562px;
+                            height:562px;
+                            margin: auto;">
+
+        @if (mapViewModel != null)
+        {
+            var row = 0;
+            var column = 0;
+
+            @* IMG MAP TILES - FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
+            @foreach (var mapTile in mapViewModel.MapTiles)
+            {
+                var imgName = string.Empty;
+                switch (mapTile.Type)
+                {
+                    case ProjectNomad.Shared.Enums.EMapType.RareConiferousForest:
+                        imgName = "110_1";
+                        break;
+                    case ProjectNomad.Shared.Enums.EMapType.MediumConiferousForest:
+                        imgName = "111_1";
+                        break;
+                    case ProjectNomad.Shared.Enums.EMapType.DenseConiferousForest:
+                        imgName = "112_1";
+                        break;
+                    default:
+                        imgName = string.Empty;
+                        break;
+                }
+
+                var fullPath = $"/images/game/map/{imgName}.png";
+                <img src="@fullPath"
+                     height="100"
+                     width="100"
+                     style="position: absolute;
+                                            left: @(row * 80 -10)px;
+                                            top: @(column * 80 -10)px" />
+
+
+                if (row == 6)
+                {
+                    row = 0;
+                    ++column;
+                }
+                else
+                {
+                    ++row;
+                }
+
+            }
+        }
+
+        <br />
+
+    </div>
+
+</div>
+
+
+@code {
+    [ParameterAttribute]
+    public int TribeId { get; set; }
+
+    private MapViewModel? mapViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateMapFromServer();
+    }
+
+    async Task UpdateMapFromServer()
+    {
+        var mapTiles = await _httpClient.GetFromJsonAsync<IEnumerable<MapTileViewModel>>($"api/game/getMapTiles/{TribeId}");
+
+        if (mapTiles == null)
+            throw new NullReferenceException("MapTileViewModels null. No data was returned from server.");
+
+        mapViewModel = new MapViewModel { MapTiles = mapTiles };
+    }
+}

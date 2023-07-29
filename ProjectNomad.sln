@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameModule", "GameModule\Ga
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationModule", "NotificationModule\NotificationModule.csproj", "{1151616E-D538-45B1-8A8E-6A6196151C52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{EA35C072-2F37-4129-AEDF-92096B2E3626}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{EA35C072-2F37-4129-AEDF-92096B2E3626}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
