@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using GameModule.Logic;
+using Xunit;
 
 namespace UnitTests.GameModuleTests.Logic
 {

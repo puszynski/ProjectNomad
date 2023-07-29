@@ -13,7 +13,7 @@
         public static int GetRandomInt(int min = 1, int max = 100)
         {
             var random = new Random();
-            return random.Next(min, max);
+            return random.Next(min, max + 1);
         }
     }
 }

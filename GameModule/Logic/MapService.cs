@@ -2,7 +2,6 @@
 using GameModule.Entities.ValueObjects;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
-using ProjectNomad.Shared.Interfaces;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("UnitTests")]
@@ -10,48 +9,19 @@ namespace GameModule.Logic
 {
     internal class MapService
     {
-        internal async Task<IEnumerable<IMapTile>> GetMapData(int x, int y)
-        {
-            if (x < 3 && y < 3)
-                throw new NotImplementedException();
-            
-
-
-            throw new NotImplementedException();
-
-            //todo - get from db after refactor
-            //var fileNames = MapFileHelper.GetMapFilesNames(x, y);
-
-            //var allMapTilesNeeded = new List<IMapTile>();
-
-            //foreach ( var fileName in fileNames)
-            //{
-            //    var filePath = MapDirectoryPathName(fileName);
-            //    FileStream fileStream = new FileStream(filePath, FileMode.Open);
-            //    using (StreamReader reader = new StreamReader(fileStream))
-            //    {
-            //        string line = await reader.ReadToEndAsync();
-            //        var dataFromFiles = JsonSerializer.Deserialize<IEnumerable<IMapTile>>(line);
-            //        allMapTilesNeeded.AddRange(dataFromFiles); 
-            //    }
-            //}
-
-            throw new NotImplementedException(); //todo return 7x7 
-        }
-
         internal async Task<EMapType> GetRandomMapTile()
         {
             var randomNumber = RandomCalculator.GetRandomInt(1, 10);
 
             switch (randomNumber)
             {
-                case 10: return EMapType.DenseConiferousForest;
-                case 6 - 9: return EMapType.MediumConiferousForest;
+                case >= 10: return EMapType.DenseConiferousForest;
+                case >= 6: return EMapType.MediumConiferousForest;
                 default: return EMapType.RareConiferousForest;
             }
         }
 
-        internal async Task<TileRecourse> GetRandomValuesForWoodTileResource(EMapType type, int tileWoodPointsMaxLimit) //todo nei działa - UT
+        internal async Task<TileRecourse> GetRandomValuesForWoodTileResource(EMapType type, int tileWoodPointsMaxLimit)
         {
             if (type is not EMapType.DenseConiferousForest and not EMapType.MediumConiferousForest and not EMapType.RareConiferousForest)
                 return new TileRecourse { ActualPoints = 0, MaxLimitPoints = 0 };

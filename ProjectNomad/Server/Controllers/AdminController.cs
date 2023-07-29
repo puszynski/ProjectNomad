@@ -23,7 +23,7 @@ namespace ProjectNomad.Server.Controllers
             if (x is null || y is null)
                 throw new ArgumentNullException();
 
-            await _gameModule.GenerateMapTiles(x.Value, y.Value); //nie zapisuje sie, moze await i zrob akcje async?
+            await _gameModule.GenerateMapTiles(x.Value, y.Value);
             return Ok();
         }
 
