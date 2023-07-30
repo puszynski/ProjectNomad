@@ -5,11 +5,7 @@
 <p>Tribe plots:</p>
 <br/>
 
-@if (TribeNotifications == null)
-{
-    <p style="text-decoration:underline" @onclick="Get">Ask tribe members for news</p>
-}
-else
+@if (TribeNotifications is not null)
 {
     @if (TribeNotifications.Any())
     {
@@ -22,23 +18,45 @@ else
     {
         <p>Nothing has happend...</p>
     }
+
 }
+
+@* todo when clicked - display info "waitng for news.." - after few sec button is back *@
+<button type="button" class="btn btn-link" @onclick="RefreshNotifications">Ask tribe members for news</button>
+
+
 
 
 @code {
-    IEnumerable<TribeNotificationDto> TribeNotifications;
+    List<TribeNotificationDto> TribeNotifications = new List<TribeNotificationDto>();
 
     [ParameterAttribute]
     public int TribeId { get; set; }
 
-    private async Task Get()
+    protected override async Task OnInitializedAsync()
     {
-        var accountId = await _localStorageService.GetItemAsync<IEnumerable<TribeNotificationDto>>("TribeNotifications");
+        await RefreshNotifications();
+    }
 
+    public async Task RefreshNotifications()
+    {
+        @if (!TribeNotifications.Any())
+        {
+            var tribeNotificationsFromStorage = await _localStorageService.GetItemAsync<IEnumerable<TribeNotificationDto>>("TribeNotifications");
+
+            if (tribeNotificationsFromStorage is not null && tribeNotificationsFromStorage.Any())
+                TribeNotifications.AddRange(tribeNotificationsFromStorage);
+        }
+                
         var result = await _httpClient.GetFromJsonAsync<IEnumerable<TribeNotificationDto>>($"api/notification/get/{TribeId}");
 
-        TribeNotifications = result;
-        //todo odlozyc do local storage zeby mogla byc jakas historia
+        if (result is not null && result.Any())
+        {
+            TribeNotifications.AddRange(result);
+            await _localStorageService.SetItemAsync<IEnumerable<TribeNotificationDto>>("TribeNotifications", TribeNotifications);
+        }            
+        
+        StateHasChanged();
     }
 
     internal class TribeNotificationDto : ProjectNomad.Shared.Interfaces.ITribeNotification

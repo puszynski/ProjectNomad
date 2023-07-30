@@ -1,4 +1,5 @@
 ﻿using GameModule.Configurations;
+using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,17 @@ namespace GameModule.Logic
 
         void MinuteLooper(List<HumanUnit> humanUnits)
         {
-            humanUnits.ForEach(x => x.FoodLevelPercentage--);
-            var humanUnitsRemoved = DeathApplicator.StarvationDeath(_dbContext, _notificationModule, humanUnits);
+            //todo first ++food from eating..
+            //when eating => ++5 to food (to prevent doubling notifications from dropping) 
 
-            if (humanUnitsRemoved != null)
-                foreach (var humanUnitRemoved in humanUnitsRemoved)
-                    humanUnits.Remove(humanUnitRemoved);
+            humanUnits.ForEach(x => x.FoodLevelPercentage--);
+            DeathApplicator.StarvationDeath(_dbContext, _notificationModule, humanUnits);
+
+            humanUnits.Where(x => x.FoodLevelPercentage == 69).ToList()
+                .ForEach(x => _notificationModule.InsertTribeNotification(x.TribeId, new TribeNotificationDto(x.Id, DateTime.UtcNow, ProjectNomad.Shared.Enums.EHumanNotificationType.FoodHunger)));
+
+            humanUnits.Where(x => x.FoodLevelPercentage == 29).ToList()
+                .ForEach(x => _notificationModule.InsertTribeNotification(x.TribeId, new TribeNotificationDto(x.Id, DateTime.UtcNow, ProjectNomad.Shared.Enums.EHumanNotificationType.FoodStarvation)));
         }
 
         void HourLooper(List<HumanUnit> humanUnits)

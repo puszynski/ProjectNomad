@@ -11,7 +11,7 @@ namespace NotificationModule.Entities
         public string Content { get; set; }
     }
 
-    //not - only to convert List<ContentItem> to TribeNotification.Content
+    //only to convert List<ContentItem> to TribeNotification.Content
     internal class TribeNotificationContentItem : ITribeNotification
     {
         public int HumanUnitId { get; set; }

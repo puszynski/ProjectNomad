@@ -50,7 +50,7 @@ namespace GameModule
         }
 
         public async Task TriggerPlayerGameObjectRecalculation(int tribeId) 
-            => _gameLooper.LoopTribe(tribeId);
+            => await _gameLooper.LoopTribe(tribeId);
 
         public async Task InitPlayerGameObjects(Guid accountId)
         {

@@ -8,7 +8,7 @@ namespace GameModule.Logic.GameLooperLogic
 {
     internal static class DeathApplicator
     {
-        internal static ICollection<HumanUnit>? StarvationDeath(GameModuleDbContext _dbContext,
+        internal static void StarvationDeath(GameModuleDbContext _dbContext,
             INotificationModule notificationModule,
             ICollection<HumanUnit> humanUnits)
         {
@@ -21,10 +21,9 @@ namespace GameModule.Logic.GameLooperLogic
                 humansToDieFromStarving.ToList()
                     .ForEach(x => CreateNotification(x, notificationModule));
 
-                return humansToDieFromStarving;
+                foreach (var humanUnitRemoved in humansToDieFromStarving)
+                        humanUnits.Remove(humanUnitRemoved);
             }
-            else
-                return null;
         }
 
         static void CreateNotification(HumanUnit humanUnit, INotificationModule notificationModule)

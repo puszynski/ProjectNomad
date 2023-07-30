@@ -25,7 +25,6 @@
     }
     else
     {
-
         <div style="border: 2px dashed;
                     border-color: Gainsboro;
                     margin: auto;
@@ -69,15 +68,12 @@
             <div id="notifications" style ="border: 2px dashed;
                          border-color: Gainsboro;
                          display: table-cell;">
-                <ProjectNomad.Client.Components.Notifications TribeId="@gameObjectsViewModel.Tribe.Id" />
+                <ProjectNomad.Client.Components.Notifications TribeId="@gameObjectsViewModel.Tribe.Id" @ref="NotificationComponent" />
             </div>
             
         </div>
 
         <p> @(string.Join(" - ", gameObjectsViewModel.HumanUnits.Select(x => x.FoodLevelPercentage)))</p>
-
-        
-        <button class="btn btn-primary" @onclick="TrigerRecalculation">Check what tribes do</button>
     }
 }
 else
@@ -93,6 +89,13 @@ else
     {
         await UpdateDataFromServer();
         await TrigerRecalculation();//todo do it before fetching data from server to prevent doubled data downloading.. 
+
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(61));
+
+        while (await timer.WaitForNextTickAsync())
+        {
+            await TrigerRecalculation(); //todo use game looper stright from blazorWASM
+        }
     }
 
     async Task UpdateDataFromServer()
@@ -123,8 +126,17 @@ else
 
     async Task TrigerRecalculation()
     {
+        var tribeCountBeforeRecalculation = gameObjectsViewModel.HumanUnits.Count();
+
         await gameObjectsViewModel.TrigerRecalculation();
         await UpdateDataFromServer();
+
+        if (tribeCountBeforeRecalculation != gameObjectsViewModel.HumanUnits.Count())
+            await RefreshNotifications();
+
         StateHasChanged();
     }
+
+    protected ProjectNomad.Client.Components.Notifications NotificationComponent;
+    async Task RefreshNotifications() => await NotificationComponent.RefreshNotifications();
 }

@@ -20,8 +20,6 @@ namespace ProjectNomad.Client.ViewModels.Game
         internal async Task TrigerRecalculation()
         {
             await _httpClient.PostAsJsonAsync("api/game/triggerPlayerGameObjectRecalculation", Tribe.Id);
-
-            //await _httpClient.GetAsync($"api/game/triggerPlayerGameObjectRecalculation/{Tribe.Id}");
         }
 
         internal async Task ReBornTribeMembers()
