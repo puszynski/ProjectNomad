@@ -1,14 +1,18 @@
-﻿@inject HttpClient _httpClient
+﻿@using Blazored.LocalStorage;
+@inject HttpClient _httpClient
+@inject ILocalStorageService _localStorageService
+
+<p>Tribe plots:</p>
+<br/>
 
 @if (TribeNotifications == null)
 {
-    <button class="btn btn-primary" @onclick="Get">Ask tribes members for news</button>
+    <p style="text-decoration:underline" @onclick="Get">Ask tribe members for news</p>
 }
 else
 {
     @if (TribeNotifications.Any())
     {
-
         foreach (var item in TribeNotifications)
         {
             <p>@item.HumanUnitId => @item.Type.ToString()</p>
@@ -16,9 +20,8 @@ else
     }
     else
     {
-        <p>Brak informacji do wyświetlenia</p>
+        <p>Nothing has happend...</p>
     }
-    <button class="btn btn-primary" @onclick="Close">Close</button>
 }
 
 
@@ -28,12 +31,15 @@ else
     [ParameterAttribute]
     public int TribeId { get; set; }
 
-    private async Task Get() 
-        => TribeNotifications = await _httpClient.GetFromJsonAsync<IEnumerable<TribeNotificationDto>>($"api/notification/get/{TribeId}");
-        //todo odlozyc do local storage zeby mogla byc jakas historia
+    private async Task Get()
+    {
+        var accountId = await _localStorageService.GetItemAsync<IEnumerable<TribeNotificationDto>>("TribeNotifications");
 
-    private async Task Close() 
-        => TribeNotifications = null;
+        var result = await _httpClient.GetFromJsonAsync<IEnumerable<TribeNotificationDto>>($"api/notification/get/{TribeId}");
+
+        TribeNotifications = result;
+        //todo odlozyc do local storage zeby mogla byc jakas historia
+    }
 
     internal class TribeNotificationDto : ProjectNomad.Shared.Interfaces.ITribeNotification
     {

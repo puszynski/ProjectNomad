@@ -8,11 +8,11 @@ namespace GameModule.Logic.GameLooperLogic
 {
     internal static class DeathApplicator
     {
-        internal static void StarvationDeath(GameModuleDbContext _dbContext,
+        internal static ICollection<HumanUnit>? StarvationDeath(GameModuleDbContext _dbContext,
             INotificationModule notificationModule,
             ICollection<HumanUnit> humanUnits)
         {
-            var humansToDieFromStarving = humanUnits.Where(x => x.FoodLevelPercentage <= 0);
+            var humansToDieFromStarving = humanUnits.Where(x => x.FoodLevelPercentage <= 0).ToList();
 
             if (humansToDieFromStarving.Any())
             {
@@ -20,7 +20,11 @@ namespace GameModule.Logic.GameLooperLogic
 
                 humansToDieFromStarving.ToList()
                     .ForEach(x => CreateNotification(x, notificationModule));
+
+                return humansToDieFromStarving;
             }
+            else
+                return null;
         }
 
         static void CreateNotification(HumanUnit humanUnit, INotificationModule notificationModule)

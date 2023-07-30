@@ -19,7 +19,11 @@ namespace GameModule.Logic
         void MinuteLooper(List<HumanUnit> humanUnits)
         {
             humanUnits.ForEach(x => x.FoodLevelPercentage--);
-            DeathApplicator.StarvationDeath(_dbContext, _notificationModule, humanUnits);
+            var humanUnitsRemoved = DeathApplicator.StarvationDeath(_dbContext, _notificationModule, humanUnits);
+
+            if (humanUnitsRemoved != null)
+                foreach (var humanUnitRemoved in humanUnitsRemoved)
+                    humanUnits.Remove(humanUnitRemoved);
         }
 
         void HourLooper(List<HumanUnit> humanUnits)
@@ -55,8 +59,7 @@ namespace GameModule.Logic
                 var timeToUpdate = tribe.Updated;
                 var loopCounter = 0;
 
-                //SOLUTON? REMOVE SECONDS FROM UTC NOW? https://stackoverflow.com/questions/1004698/how-to-truncate-milliseconds-off-of-a-net-datetime
-                while (timeToUpdate <= DateTime.UtcNow.AddMinutes(-1)) //ERROR - dla każdego kliknięcia (co kilka sec) i tak jedzie jeden cykl.. 
+                while (timeToUpdate <= DateTime.UtcNow.AddMinutes(-1)) //BUG if you refresh frequently - no change after 1 min.. 
                 {
                     MinuteLooper(humanUnits);
                     if (timeToUpdate.Minute == 0)
@@ -67,12 +70,13 @@ namespace GameModule.Logic
                     timeToUpdate = timeToUpdate.AddMinutes(1);
                     loopCounter++;
 
-                    if (loopCounter > 30)
-                        break;
                 }
 
-                tribe.Updated = DateTime.UtcNow;
-                _dbContext.SaveChanges();
+                if (loopCounter != 0)
+                {
+                    tribe.Updated = DateTime.UtcNow;
+                    _dbContext.SaveChanges();
+                }
             }
             catch (Exception ex)
             {

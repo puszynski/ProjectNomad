@@ -46,29 +46,37 @@
                     table-layout: fixed; /*Optional*/
                     border-spacing: 10px; /*Optional*/">
             
-            <div style="border: 2px dashed;
+            <div id="tasks" style="border: 2px dashed;
                         border-color: Gainsboro;
                         display: table-cell;">
-                Tasks:
+
+                <p>Tasks in progress:</p>
+
+                @if (@gameObjectsViewModel.HumanUnits.Count() > 7)
+                {
+                    <p>Planned tasks:</p>
+                }
             </div>
 
-            <ProjectNomad.Client.Components.MiniMap TribeId="@gameObjectsViewModel.Tribe.Id" />
-
+            <div style="border: 2px dashed;
+                        border-color: Gainsboro;
+                        width: 700px;
+                        display: table-cell;">
+                <br />
+                <ProjectNomad.Client.Components.MiniMap TribeId="@gameObjectsViewModel.Tribe.Id" />
+            </div>
             
-            <div style ="border: 2px dashed;
+            <div id="notifications" style ="border: 2px dashed;
                          border-color: Gainsboro;
                          display: table-cell;">
-                Tribe plots:
+                <ProjectNomad.Client.Components.Notifications TribeId="@gameObjectsViewModel.Tribe.Id" />
             </div>
             
         </div>
 
-        <p>tribe name <b>@gameObjectsViewModel.Tribe.Name (@gameObjectsViewModel.Tribe.X, @gameObjectsViewModel.Tribe.Y)</b></p>
-        <p>members count <b>@gameObjectsViewModel.HumanUnits.Count()</b></p>
-
         <p> @(string.Join(" - ", gameObjectsViewModel.HumanUnits.Select(x => x.FoodLevelPercentage)))</p>
 
-        <ProjectNomad.Client.Components.Notifications TribeId="@gameObjectsViewModel.Tribe.Id" />
+        
         <button class="btn btn-primary" @onclick="TrigerRecalculation">Check what tribes do</button>
     }
 }
@@ -84,6 +92,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         await UpdateDataFromServer();
+        await TrigerRecalculation();//todo do it before fetching data from server to prevent doubled data downloading.. 
     }
 
     async Task UpdateDataFromServer()

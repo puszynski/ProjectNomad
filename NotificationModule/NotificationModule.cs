@@ -59,8 +59,19 @@ namespace NotificationModule
             model.Content = JsonSerializer.Serialize(notifications);
             model.Updated = DateTime.UtcNow;
 
-            await _dbContext.AddAsync(model);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                if (model.Id == 0)
+                    await _dbContext.AddAsync(model);
+
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                //after few loops.. 
+                //SqlException: Cannot insert explicit value for identity column in table 'TribeNotifications' when IDENTITY_INSERT is set to OFF.
+                throw ex;
+            }
         }
     }
 

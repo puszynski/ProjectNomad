@@ -15,7 +15,7 @@ namespace ProjectNomad.Server.Controllers
         [HttpGet("get/{tribeId}")]
         public async Task<ActionResult<IEnumerable<ITribeNotification>>> Get(int tribeId)
         {
-            var result = await _notificationModule.GetAndRemoveTribeNotifications(tribeId); //todo check flow
+            var result = await _notificationModule.GetAndRemoveTribeNotifications(tribeId);
             return Ok(result);
         }
     }

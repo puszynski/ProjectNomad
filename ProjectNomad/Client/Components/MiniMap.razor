@@ -1,13 +1,8 @@
 ﻿@using ProjectNomad.Client.ViewModels.Game;
+@using ProjectNomad.Shared;
 @inject HttpClient _httpClient
 
-<div style="border: 2px dashed;
-                        border-color: Gainsboro;
-                        width: 700px;
-                        display: table-cell;">
 
-
-    <br />
 
     <div style="position: relative;
                             border: 2px dashed;
@@ -21,28 +16,10 @@
             var row = 0;
             var column = 0;
 
-            @* IMG MAP TILES - FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
+            @*SIZE FOR ONE TILE 80x80 - BUT - IMG MAP TILES => FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
             @foreach (var mapTile in mapViewModel.MapTiles)
             {
-                var imgName = string.Empty;
-                switch (mapTile.Type)
-                {
-                    case ProjectNomad.Shared.Enums.EMapType.RareConiferousForest:
-                        imgName = "110_1";
-                        break;
-                    case ProjectNomad.Shared.Enums.EMapType.MediumConiferousForest:
-                        imgName = "111_1";
-                        break;
-                    case ProjectNomad.Shared.Enums.EMapType.DenseConiferousForest:
-                        imgName = "112_1";
-                        break;
-                    default:
-                        imgName = string.Empty;
-                        break;
-                }
-
-                var fullPath = $"/images/game/map/{imgName}.png";
-                <img src="@fullPath"
+                <img src="@mapTile.GetTileImgPath()"
                      height="100"
                      width="100"
                      style="position: absolute;
@@ -63,11 +40,9 @@
             }
         }
 
-        <br />
-
     </div>
 
-</div>
+
 
 
 @code {
