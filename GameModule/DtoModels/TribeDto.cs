@@ -5,5 +5,10 @@ namespace GameModule.DtoModels
     internal record TribeDto(int Id,
         string Name, 
         int X, 
-        int Y) : ITribe;
+        int Y,
+        int Wood,
+        int FreshFood) : ITribe
+    {
+        public int FreshFood { get; set; }
+    }
 }

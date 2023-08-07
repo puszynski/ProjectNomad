@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using ProjectNomad.Shared.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 
 namespace GameModule.Entities
 {
@@ -15,11 +17,18 @@ namespace GameModule.Entities
         public Guid AccountId { get; set; }
         public DateTime Updated { get; set; }
         public string Name { get; set; }
-
-        //todo LastRecalculationDate / UpdatedDate - to get time to recalculate data
-
         public Localization Localization { get; set; }
-
         ICollection<HumanUnit> HumanUnits { get; set; }
+        public Resources Resources { get; set; }
+    }
+
+    [Owned]
+    internal class Resources : IValueObject
+    {
+        [DefaultValue(0)]
+        public int FreshFood { get; set; }
+
+        [DefaultValue(0)]
+        public int Wood { get; set; }
     }
 }

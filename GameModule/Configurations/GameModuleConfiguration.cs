@@ -1,4 +1,5 @@
 ﻿using GameModule.Logic;
+using GameModule.Logic.GameLooperLogic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,8 +9,8 @@ namespace GameModule.Configurations
     {
         /// <summary>
         /// to run migration
-        ///     cd. \GameModule
-        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add RenameNameToMapTiles -c GameModuleDbContext
+        ///     cd .\GameModule
+        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add AddMapTileIdToHumanUnitTask -c GameModuleDbContext
         ///     
         ///  note: you are in migration and context library project and are referring to startup project
         ///  plus specify context where multiple are detected by -c Name
@@ -30,6 +31,7 @@ namespace GameModule.Configurations
             services.AddScoped<IGameModule, GameModule>();
             services.AddScoped<GameLooper>();
             services.AddScoped<MapService>();
+            services.AddScoped<HumanUnitTaskConsumer>();
         }
     }
 }

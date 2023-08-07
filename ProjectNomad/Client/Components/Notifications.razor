@@ -47,16 +47,17 @@
             if (tribeNotificationsFromStorage is not null && tribeNotificationsFromStorage.Any())
                 TribeNotifications.AddRange(tribeNotificationsFromStorage);
         }
-                
-        var result = await _httpClient.GetFromJsonAsync<IEnumerable<TribeNotificationDto>>($"api/notification/get/{TribeId}");
+
+        var result = await _httpClient.GetFromJsonAsync<IEnumerable<TribeNotificationDto>>($"api/notification/get-notifications/{TribeId}");
 
         if (result is not null && result.Any())
         {
             TribeNotifications.AddRange(result);
             await _localStorageService.SetItemAsync<IEnumerable<TribeNotificationDto>>("TribeNotifications", TribeNotifications);
-        }            
-        
+        }
+
         StateHasChanged();
+
     }
 
     internal class TribeNotificationDto : ProjectNomad.Shared.Interfaces.ITribeNotification

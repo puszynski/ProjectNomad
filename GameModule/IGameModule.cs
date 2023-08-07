@@ -14,6 +14,8 @@ namespace GameModule
         // instead its triggered by client of main player - or - other players that are coming into interaction
         public Task TriggerPlayerGameObjectRecalculation(int tribeId);
 
+        public Task AddTask(IHumanUnitTaskDto task);
+
         // returns 7x7, x&y is pointing to the middle of teh square
         public Task<IEnumerable<IMapTile>> GetMapTiles(int tribeId);
 

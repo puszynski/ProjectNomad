@@ -4,6 +4,7 @@ using GameModule.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameModule.Migrations
 {
     [DbContext(typeof(GameModuleDbContext))]
-    partial class GameModuleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230731160305_AddHumanUnitTasksUpdateTribeToWoodAndFoodResource")]
+    partial class AddHumanUnitTasksUpdateTribeToWoodAndFoodResource
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,9 +63,6 @@ namespace GameModule.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("HumanUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MapTileId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("To")

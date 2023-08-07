@@ -3,7 +3,7 @@ using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Logic;
 using Microsoft.EntityFrameworkCore;
-using ProjectNomad.Shared.Enums;
+using ProjectNomad.Shared;
 using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule
@@ -32,21 +32,31 @@ namespace GameModule
 
         public async Task<ITribeGameObjects> GetPlayerGameObject(Guid accountId)
         {
-            var tribe = await _dbContext
-            .Tribes
-            .Where(x => x.AccountId == accountId)
-            .Select(x => new { x.Name, x.Id, x.Localization.X, x.Localization.Y })
-            .SingleOrDefaultAsync()
-                ?? throw new ArgumentException("No tribe founded in database with given accountId :/", nameof(accountId));
+            try
+            {
+                var tribe = await _dbContext
+                    .Tribes
+                    .Where(x => x.AccountId == accountId)
+                    .Select(x => new { x.Name, x.Id, x.Localization.X, x.Localization.Y, x.Resources.FreshFood, x.Resources.Wood })
+                    .SingleOrDefaultAsync()
+                        ?? throw new ArgumentException("No tribe founded in database with given accountId :/", nameof(accountId));
 
-            var humanUnitsTask = _dbContext
-                .HumanUnits
-                .Where(x => x.TribeId == tribe.Id)
-                .Select(x => new HumanUnitDto(x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
-                .ToListAsync();
+                var tribeDto = new TribeDto(tribe.Id, tribe.Name, tribe.X, tribe.Y, tribe.Wood, tribe.FreshFood);
 
-            return new TribeGameObjectDto(new TribeDto(tribe.Id, tribe.Name, tribe.X, tribe.Y),
-                await humanUnitsTask);
+                var humanUnitsTask = _dbContext
+                    .HumanUnits
+                    .Where(x => x.TribeId == tribe.Id)
+                    .Select(x => new HumanUnitDto(x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
+                    .ToListAsync();
+
+                return new TribeGameObjectDto(tribeDto, await humanUnitsTask);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            
         }
 
         public async Task TriggerPlayerGameObjectRecalculation(int tribeId) 
@@ -138,6 +148,32 @@ namespace GameModule
                 throw new ArgumentException(nameof(tribe), $"No tribe for given id ({tribeId}) existing :/");
 
             return tribe;
+        }
+
+        public async Task AddTask(IHumanUnitTaskDto task)
+        {
+            //todo test
+            const int TIME_TO_COLECT_FOOD = 10;
+
+            var distance = MapTileDistanceCalculator.Execute(task.LocalizationStart_X, 
+                task.LocalizationStart_Y, 
+                task.LocalizationEnd_X, 
+                task.LocalizationEnd_Y);
+
+            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, task.HumanUnit_FoodLevelPercentage) + TimeSpan.FromMinutes(TIME_TO_COLECT_FOOD);
+
+            var entity = new HumanUnitTask 
+            {
+                From = task.From,
+                HumanUnitId = task.HumanUnitId,
+                TribeId = task.TribeId,
+                Type = task.Type,
+                To = task.From.Add(timeToEndTask),
+                MapTileId = task.MapTileId
+            };
+
+            await _dbContext.AddAsync(entity);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

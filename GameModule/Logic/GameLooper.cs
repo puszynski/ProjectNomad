@@ -4,6 +4,7 @@ using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic;
 using Microsoft.EntityFrameworkCore;
 using NotificationModule;
+using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic
 {
@@ -11,14 +12,23 @@ namespace GameModule.Logic
     {
         readonly GameModuleDbContext _dbContext;
         readonly INotificationModule _notificationModule;
-        public GameLooper(GameModuleDbContext dbContext, INotificationModule notificationModule)
+        readonly HumanUnitTaskConsumer _humanUnitTaskConsumer;
+        public GameLooper(GameModuleDbContext dbContext, 
+            INotificationModule notificationModule, 
+            HumanUnitTaskConsumer humanUnitTaskConsumer)
         {
             _dbContext = dbContext;
             _notificationModule = notificationModule;
+            _humanUnitTaskConsumer = humanUnitTaskConsumer;
         }
 
-        void MinuteLooper(List<HumanUnit> humanUnits)
+        async Task MinuteLooper(List<HumanUnit> humanUnits, Tribe tribe)
         {
+            await _humanUnitTaskConsumer.Execute(humanUnits, tribe);
+            // todo TaskConsuption tasks.Where==HumanUnits.Where.TaskTo>Now..
+            // consume
+            // Remove(task)
+
             //todo first ++food from eating..
             //when eating => ++5 to food (to prevent doubling notifications from dropping) 
 
@@ -67,7 +77,7 @@ namespace GameModule.Logic
 
                 while (timeToUpdate <= DateTime.UtcNow.AddMinutes(-1)) //BUG if you refresh frequently - no change after 1 min.. 
                 {
-                    MinuteLooper(humanUnits);
+                    await MinuteLooper(humanUnits, tribe);
                     if (timeToUpdate.Minute == 0)
                         HourLooper(humanUnits);
                     if (timeToUpdate.Hour == 0)

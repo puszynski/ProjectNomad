@@ -12,8 +12,10 @@ namespace ProjectNomad.Server.Controllers
         public NotificationController(INotificationModule notificationModule) 
             => _notificationModule = notificationModule;
 
-        [HttpGet("get/{tribeId}")]
-        public async Task<ActionResult<IEnumerable<ITribeNotification>>> Get(int tribeId)
+
+        // GET api/notification/get-notifications/{tribeId}
+        [HttpGet("get-notifications/{tribeId}")]
+        public async Task<ActionResult<IEnumerable<ITribeNotification>>> GetNotifications(int tribeId)
         {
             var result = await _notificationModule.GetAndRemoveTribeNotifications(tribeId);
             return Ok(result);

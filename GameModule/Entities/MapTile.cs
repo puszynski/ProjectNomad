@@ -13,7 +13,7 @@ namespace GameModule.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public Localization Localization { get; set; }
-        public EMapType Type { get; set; } //change to enum flags - allow mix e.g. forest + mountains
+        public EMapType Type { get; set; } //idea? change to enum flags - allow mix e.g. forest + mountains
         public TileRecourse Food { get; set; }
         public TileRecourse Wood { get; set; }
     }
