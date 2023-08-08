@@ -4,16 +4,15 @@ using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic;
 using Microsoft.EntityFrameworkCore;
 using NotificationModule;
-using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic
 {
-    internal class GameLooper
+    internal class GameLOOPER
     {
         readonly GameModuleDbContext _dbContext;
         readonly INotificationModule _notificationModule;
         readonly HumanUnitTaskConsumer _humanUnitTaskConsumer;
-        public GameLooper(GameModuleDbContext dbContext, 
+        public GameLOOPER(GameModuleDbContext dbContext, 
             INotificationModule notificationModule, 
             HumanUnitTaskConsumer humanUnitTaskConsumer)
         {

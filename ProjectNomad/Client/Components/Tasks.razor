@@ -1,0 +1,29 @@
+﻿
+<p>[gather wood(2)]</p>
+<small>[▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬-------] 76% 4m22s</small>
+<br />
+<small>[▬▬▬▬▬▬▬▬▬----------------] 43% 24m22s</small>
+<br />
+<small>[▬▬▬----------------------] 12% 1h54m22s</small>
+<br />
+<br />
+
+<p>[gather food(2)]</p>
+<small>[▬▬▬▬▬▬▬▬▬----------------] 43% 54m22s</small>
+<br />
+
+<button type="button" class="btn btn-link" @onclick="GatherFood">[gather wood]</button>
+
+
+@* todo in future
+@if (@gameObjectsViewModel.HumanUnits.Count() > 7)
+{
+    <p>Scheduled tasks:</p>
+} *@
+
+@code {
+    async Task GatherFood()
+    {
+        //task 3 stages - time to travel, time to work on task, time to travel back
+    }
+}

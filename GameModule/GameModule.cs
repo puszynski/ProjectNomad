@@ -15,12 +15,12 @@ namespace GameModule
 
         readonly GameModuleDbContext _dbContext;
         readonly NewTribeLocalizationInitializer _newTribeLocalizationInitializer;
-        readonly GameLooper _gameLooper;
+        readonly GameLOOPER _gameLooper;
         readonly MapService _mapService;
 
         public GameModule(GameModuleDbContext dbContext,
             NewTribeLocalizationInitializer newTribeLocalizationInitializer,
-            GameLooper gameLooper,
+            GameLOOPER gameLooper,
             MapService mapService)
         {
             _dbContext = dbContext;
@@ -153,14 +153,14 @@ namespace GameModule
         public async Task AddTask(IHumanUnitTaskDto task)
         {
             //todo test
-            const int TIME_TO_COLECT_FOOD = 10;
+            const int TIME_MINUTES_TO_COLECT_FOOD = 10;
 
             var distance = MapTileDistanceCalculator.Execute(task.LocalizationStart_X, 
                 task.LocalizationStart_Y, 
                 task.LocalizationEnd_X, 
                 task.LocalizationEnd_Y);
 
-            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, task.HumanUnit_FoodLevelPercentage) + TimeSpan.FromMinutes(TIME_TO_COLECT_FOOD);
+            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, task.HumanUnit_FoodLevelPercentage) + TimeSpan.FromMinutes(TIME_MINUTES_TO_COLECT_FOOD);
 
             var entity = new HumanUnitTask 
             {

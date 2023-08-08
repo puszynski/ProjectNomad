@@ -48,13 +48,7 @@
             <div id="tasks" style="border: 2px dashed;
                         border-color: Gainsboro;
                         display: table-cell;">
-
-                <p>Tasks in progress:</p>
-
-                @if (@gameObjectsViewModel.HumanUnits.Count() > 7)
-                {
-                    <p>Planned tasks:</p>
-                }
+                <ProjectNomad.Client.Components.Tasks />
             </div>
 
             <div style="border: 2px dashed;

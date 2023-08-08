@@ -18,7 +18,7 @@ namespace ProjectNomad.Server.Controllers
         [HttpPost("add-task")]
         public async Task<IActionResult> AddTask(IHumanUnitTaskDto humanUnitTask)
         {
-            //_gameModule.AddHumanUnitTask
+            await _gameModule.AddTask(humanUnitTask);
             return Ok();
         }
 
