@@ -4,7 +4,7 @@ namespace ProjectNomad.Client.ViewModels.Game
 {
     public class HumanUnitViewModel : IHumanUnit
     {
-        public int Id { get; }
+        public int Id { get; set; }
         public string Name { get; set; }
 
         public int X { get; set; }

@@ -4,27 +4,31 @@
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
 @inject HttpClient _httpClient
 
-<br />
+@if (HumanUnitIds != null)
+{
+    <br />
 
-<button class="button" @onclick="GatherFood"><span>gather wood(2)</span></button>
-<br />
-<small>[▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬------------] 4m22s</small>
-<br />
-<small>[▬▬▬▬▬▬▬▬▬---------------------] 24m22s</small>
-<br />
-<small>[▬▬▬---------------------------] 1h54m22s</small>
-<br />
-<br />
+    <button class="button" @onclick="GatherFood"><span>gather wood(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button>
+    <br />
+    <small>[▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬------------] 4m22s</small>
+    <br />
+    <small>[▬▬▬▬▬▬▬▬▬---------------------] 24m22s</small>
+    <br />
+    <small>[▬▬▬---------------------------] 1h54m22s</small>
+    <br />
+    <br />
 
-<button class="button"><span>gather food(2)</span></button>
-<br />
-<small>[▬▬▬▬▬▬▬▬▬---------------------] 54m22s</small>
-<br />
-<br />
+    <button class="button"><span>gather food(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button>
+    <br />
+    <small>[▬▬▬▬▬▬▬▬▬---------------------] 54m22s</small>
+    <br />
+    <br />
 
-<button class="button"><span>Try unknown red colour berries</span></button>
-<button class="button"><span>Gather animal skull - 3d12m12s</span></button>
-<button class="button"><span>Catch fire after storm  - 15m36s</span></button>
+    <button class="button"><span>Try unknown red colour berries</span></button>
+    <button class="button"><span>Gather animal skull - 3d12m12s</span></button>
+    <button class="button"><span>Catch fire after storm  - 15m36s</span></button>
+}
+
 
 @code {
     [ParameterAttribute]
