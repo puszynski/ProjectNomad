@@ -1,6 +1,6 @@
 ﻿using ProjectNomad.Shared.Interfaces;
 
-namespace ProjectNomad.Server.DtoModels
+namespace AccountModule.DtoModels
 {
     public class AccountDto : IAccount
     {
@@ -8,6 +8,4 @@ namespace ProjectNomad.Server.DtoModels
 
         public string Password { get; set; }
     }
-
-    public record AccountRecord(string? Name, string? Password) : IAccount;
 }

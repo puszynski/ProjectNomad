@@ -2,7 +2,8 @@
 
 namespace GameModule.DtoModels
 {
-    internal record HumanUnitDto(string Name, 
+    internal record HumanUnitDto(int Id,
+        string Name, 
         int X, 
         int Y, 
         int FoodLevelPercentage) : IHumanUnit;

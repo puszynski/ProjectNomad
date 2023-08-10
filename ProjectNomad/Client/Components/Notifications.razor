@@ -42,6 +42,7 @@
     {
         @if (!TribeNotifications.Any())
         {
+            //TODO CREATE AND MOVE TO TribeNotificationLocalStorageManager
             var tribeNotificationsFromStorage = await _localStorageService.GetItemAsync<IEnumerable<TribeNotificationDto>>("TribeNotifications");
 
             if (tribeNotificationsFromStorage is not null && tribeNotificationsFromStorage.Any())
@@ -52,6 +53,7 @@
 
         if (result is not null && result.Any())
         {
+            //TODO CREATE AND MOVE TO TribeNotificationLocalStorageManager
             TribeNotifications.AddRange(result);
             await _localStorageService.SetItemAsync<IEnumerable<TribeNotificationDto>>("TribeNotifications", TribeNotifications);
         }

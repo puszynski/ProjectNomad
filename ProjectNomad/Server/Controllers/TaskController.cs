@@ -14,9 +14,17 @@ namespace ProjectNomad.Server.Controllers
             _gameModule = gameModule;
         }
 
+        // GET api/task/get-actual-tasks/{tribeId}
+        [HttpGet("get-actual-tasks/{tribeId}")]
+        public async Task<ActionResult<IEnumerable<IHumanUnitTaskDto>>> GetActualTasks(int tribeId)
+        {
+            var model = await _gameModule.GetActualTribeTasks(tribeId);
+            return Ok(model);
+        }
+
         // POST api/task/add-task
         [HttpPost("add-task")]
-        public async Task<IActionResult> AddTask(IHumanUnitTaskDto humanUnitTask)
+        public async Task<IActionResult> AddTask(IAddHumanUnitTaskDto humanUnitTask)
         {
             await _gameModule.AddTask(humanUnitTask);
             return Ok();

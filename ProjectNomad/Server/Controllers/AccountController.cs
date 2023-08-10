@@ -1,7 +1,7 @@
 ﻿using AccountModule;
+using AccountModule.DtoModels;
 using GameModule;
 using Microsoft.AspNetCore.Mvc;
-using ProjectNomad.Server.DtoModels;
 
 namespace ProjectNomad.Server.Controllers
 {

@@ -46,7 +46,7 @@ namespace GameModule
                 var humanUnitsTask = _dbContext
                     .HumanUnits
                     .Where(x => x.TribeId == tribe.Id)
-                    .Select(x => new HumanUnitDto(x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
+                    .Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
                     .ToListAsync();
 
                 return new TribeGameObjectDto(tribeDto, await humanUnitsTask);
@@ -150,7 +150,7 @@ namespace GameModule
             return tribe;
         }
 
-        public async Task AddTask(IHumanUnitTaskDto task)
+        public async Task AddTask(IAddHumanUnitTaskDto task)
         {
             //todo test
             const int TIME_MINUTES_TO_COLECT_FOOD = 10;
@@ -160,20 +160,36 @@ namespace GameModule
                 task.LocalizationEnd_X, 
                 task.LocalizationEnd_Y);
 
-            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, task.HumanUnit_FoodLevelPercentage) + TimeSpan.FromMinutes(TIME_MINUTES_TO_COLECT_FOOD);
+            var humanUnit = await _dbContext.HumanUnits.SingleAsync(x => x.Id == task.HumanUnitId);
+            var mapTile = await _dbContext.MapTiles.SingleAsync(x => x.Localization.X == task.LocalizationStart_X && x.Localization.Y == task.LocalizationStart_Y);
+
+            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, humanUnit.FoodLevelPercentage) + TimeSpan.FromMinutes(TIME_MINUTES_TO_COLECT_FOOD);
 
             var entity = new HumanUnitTask 
             {
-                From = task.From,
+                From = DateTime.UtcNow,
                 HumanUnitId = task.HumanUnitId,
                 TribeId = task.TribeId,
                 Type = task.Type,
-                To = task.From.Add(timeToEndTask),
-                MapTileId = task.MapTileId
+                To = DateTime.UtcNow.Add(timeToEndTask),
+                MapTileId = mapTile.Id
             };
 
             await _dbContext.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<IHumanUnitTaskDto>> GetActualTribeTasks(int tribeId)
+        {
+            var tribeTasks = await _dbContext
+                .HumanUnitTasks
+                .Where(x => x.TribeId == tribeId)
+                .Select(x => new HumanUnitTaskDto(x.TribeId, x.HumanUnitId, x.Type, x.From, x.To))
+                .ToListAsync();
+
+            tribeTasks ??= new List<HumanUnitTaskDto>();
+
+            return tribeTasks;
         }
     }
 }

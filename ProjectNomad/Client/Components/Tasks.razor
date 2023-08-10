@@ -1,29 +1,59 @@
-﻿
-<p>[gather wood(2)]</p>
-<small>[▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬-------] 76% 4m22s</small>
+﻿@using ProjectNomad.Client.Logic;
+@using ProjectNomad.Client.ViewModels.Tasks;
+@using ProjectNomad.Shared.Interfaces;
+@inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
+@inject HttpClient _httpClient
+
 <br />
-<small>[▬▬▬▬▬▬▬▬▬----------------] 43% 24m22s</small>
+
+<button class="button" @onclick="GatherFood"><span>gather wood(2)</span></button>
 <br />
-<small>[▬▬▬----------------------] 12% 1h54m22s</small>
+<small>[▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬------------] 4m22s</small>
+<br />
+<small>[▬▬▬▬▬▬▬▬▬---------------------] 24m22s</small>
+<br />
+<small>[▬▬▬---------------------------] 1h54m22s</small>
 <br />
 <br />
 
-<p>[gather food(2)]</p>
-<small>[▬▬▬▬▬▬▬▬▬----------------] 43% 54m22s</small>
+<button class="button"><span>gather food(2)</span></button>
+<br />
+<small>[▬▬▬▬▬▬▬▬▬---------------------] 54m22s</small>
+<br />
 <br />
 
-<button type="button" class="btn btn-link" @onclick="GatherFood">[gather wood]</button>
-
-
-@* todo in future
-@if (@gameObjectsViewModel.HumanUnits.Count() > 7)
-{
-    <p>Scheduled tasks:</p>
-} *@
+<button class="button"><span>Try unknown red colour berries</span></button>
+<button class="button"><span>Gather animal skull - 3d12m12s</span></button>
+<button class="button"><span>Catch fire after storm  - 15m36s</span></button>
 
 @code {
+    [ParameterAttribute]
+    public int TribeId { get; set; }
+
+    [ParameterAttribute]
+    public List<int> HumanUnitIds { get; set; }
+
+    IEnumerable<IHumanUnitTaskDto> HumanUnitTasks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var test = HumanUnitIds.TakeLast(2).ToList();
+        HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllAndCleanOutdated();
+    }
+
     async Task GatherFood()
     {
-        //task 3 stages - time to travel, time to work on task, time to travel back
+        var humanUnitIdsWithTasksInProgress = HumanUnitTasks.Select(y => y.HumanUnitId);
+        var humanUnitWithNoTaskId = HumanUnitIds.Where(x => !humanUnitIdsWithTasksInProgress.Contains(x)).FirstOrDefault();
+
+        if (humanUnitWithNoTaskId != 0)
+            throw new ArgumentOutOfRangeException("Ożesz WASM! GatherFood metod was used but there is no humanUnit with no task signed :/");
+
+        var dto = new AddHumanUnitTaskViewModel(TribeId, 
+            humanUnitWithNoTaskId,
+            ProjectNomad.Shared.Enums.EHumanUnitTaskType.GatheringFood, 
+            3, 3, 3, 3); //positions hardcoded
+
+        await _humanUnitTasksLocalStorageManager.Add(dto);
     }
 }
