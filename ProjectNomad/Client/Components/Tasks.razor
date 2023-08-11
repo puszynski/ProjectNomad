@@ -24,10 +24,8 @@
     <br />
     @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.GatheringFood))
     {
-        @*todo time..*@
-        <small>[▬▬▬▬▬▬▬▬▬---------------------] 54m22s</small>
-        <br />
-    }      
+        <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" />
+    } 
     <br />
 
     <button class="button"><span>Try unknown red colour berries</span></button>

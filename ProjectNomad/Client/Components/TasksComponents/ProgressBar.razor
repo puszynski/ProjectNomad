@@ -1,0 +1,50 @@
+﻿<small>[@ProgressBarDisplay] @RemainingTimeToDisplay</small>
+<br />
+
+@code {
+    [Parameter]
+    public ProjectNomad.Shared.Interfaces.IHumanUnitTaskDto HumanUnitTask { get; set; }
+
+    const char DONE = '▬';
+    const char TODO = '-';
+
+    string ProgressBarDisplay = string.Empty;
+    string RemainingTimeToDisplay = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        UpdateProgressBarDisplay();
+        UpdateRemainingTimeToDisplay();
+
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        while (await timer.WaitForNextTickAsync())
+        {
+            UpdateProgressBarDisplay();
+            UpdateRemainingTimeToDisplay();
+        }
+    }
+
+    void UpdateProgressBarDisplay()
+    {
+        // yy=7.33      x      x=yy*30/max
+        // 10min       max=30
+
+        var actuall = DateTime.UtcNow - HumanUnitTask.From;
+        var max = HumanUnitTask.To - HumanUnitTask.From;
+        string barToUpdate = string.Empty;
+
+        for (int i = 0; i < 30; i++)
+        {
+            barToUpdate += (actuall.TotalSeconds * 30 / max.TotalSeconds) >= i ? DONE : TODO;
+        }
+
+        ProgressBarDisplay = barToUpdate;
+    }
+
+    void UpdateRemainingTimeToDisplay()
+    {   
+        var timeLeft = HumanUnitTask.To - DateTime.UtcNow;
+        RemainingTimeToDisplay = $"{timeLeft.Hours}h{timeLeft.Minutes}m{timeLeft.Seconds}s";
+        StateHasChanged();
+    }
+}
