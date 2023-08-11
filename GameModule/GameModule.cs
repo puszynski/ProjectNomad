@@ -188,7 +188,6 @@ namespace GameModule
                 .ToListAsync();
 
             tribeTasks ??= new List<HumanUnitTaskDto>();
-
             return tribeTasks;
         }
     }

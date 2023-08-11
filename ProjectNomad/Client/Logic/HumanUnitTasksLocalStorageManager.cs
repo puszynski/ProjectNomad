@@ -20,16 +20,16 @@ namespace ProjectNomad.Client.Logic
             _httpClient = httpClient;
         }
 
-        internal async Task<IEnumerable<IHumanUnitTaskDto>> GetAllAndCleanOutdated()
+        internal async Task<IEnumerable<IHumanUnitTaskDto>> GetAllFromLocalStorageAndCleanOutdated()
         {
             await RemoveOutdated();
-            var tasks = await _localStorageService.GetItemAsync<IEnumerable<IHumanUnitTaskDto>>(LOCAL_STORAGE_NAME) ?? new List<IHumanUnitTaskDto>();
+            var tasks = await _localStorageService.GetItemAsync<IEnumerable<HumanUnitTaskViewModel>>(LOCAL_STORAGE_NAME) ?? new List<HumanUnitTaskViewModel>();
             return tasks;
 
 
             async Task RemoveOutdated()
             {
-                var tasks = await _localStorageService.GetItemAsync<IEnumerable<IHumanUnitTaskDto>>(LOCAL_STORAGE_NAME);
+                var tasks = await _localStorageService.GetItemAsync<IEnumerable<HumanUnitTaskViewModel>>(LOCAL_STORAGE_NAME);
 
                 if (tasks == null)
                     return;
@@ -43,9 +43,8 @@ namespace ProjectNomad.Client.Logic
 
         internal async Task SyncTasksWithServer(int tribeId)
         {
-            var actualTasksFromServer 
-                = await _httpClient
-                .GetFromJsonAsync<IEnumerable<IHumanUnitTaskDto>>($"api/task/get-actual-tasks/{tribeId}");
+            var actualTasksFromServer = await _httpClient
+                .GetFromJsonAsync<IEnumerable<HumanUnitTaskViewModel>>($"api/task/get-actual-tasks/{tribeId}");//PROBLEM.. TODO
 
             if (actualTasksFromServer?.Any() == true)
                 await _localStorageService.SetItemAsync(LOCAL_STORAGE_NAME, actualTasksFromServer);
@@ -53,7 +52,13 @@ namespace ProjectNomad.Client.Logic
 
         internal async Task Add(IAddHumanUnitTaskDto dto)
         {
-            await _httpClient.PostAsJsonAsync($"api/task/add-task", dto);
+            var result = await _httpClient.PostAsJsonAsync("api/task/add-task", dto);
+
+            if (result.IsSuccessStatusCode)
+            {
+                //todo notification
+            }
+
             await SyncTasksWithServer(dto.TribeId);
         }
     }

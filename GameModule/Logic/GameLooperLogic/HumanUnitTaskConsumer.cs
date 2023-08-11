@@ -22,7 +22,7 @@ namespace GameModule.Logic.GameLooperLogic
 
             var tasksToConsume = await _dbContext.HumanUnitTasks
                 .Where(x => humanUnitIds.Contains(x.HumanUnitId))
-                .Where(x => x.To >= DateTime.UtcNow)
+                .Where(x => x.To <= DateTime.UtcNow)
                 .ToListAsync();
 
 

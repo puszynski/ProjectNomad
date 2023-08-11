@@ -22,8 +22,12 @@
 
     <button class="button" @onclick="GatherFood"><span>gather food(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button>
     <br />
-    <small>[▬▬▬▬▬▬▬▬▬---------------------] 54m22s</small>
-    <br />
+    @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.GatheringFood))
+    {
+        @*todo time..*@
+        <small>[▬▬▬▬▬▬▬▬▬---------------------] 54m22s</small>
+        <br />
+    }      
     <br />
 
     <button class="button"><span>Try unknown red colour berries</span></button>
@@ -47,7 +51,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllAndCleanOutdated();
+        HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();
     }
 
     async Task GatherFood()
@@ -55,8 +59,8 @@ else
         var humanUnitIdsWithTasksInProgress = HumanUnitTasks.Select(y => y.HumanUnitId);
         var humanUnitWithNoTaskId = HumanUnitIds.Where(x => !humanUnitIdsWithTasksInProgress.Contains(x)).FirstOrDefault();
 
-        if (humanUnitWithNoTaskId != 0)
-            throw new ArgumentOutOfRangeException("Ożesz WASM! GatherFood metod was used but there is no humanUnit with no task signed :/");
+        if (humanUnitWithNoTaskId == 0)
+            throw new ArgumentOutOfRangeException("Ożesz WASM! GatherFood method was used but there is no humanUnit to assign. :/");
 
         var dto = new AddHumanUnitTaskViewModel(TribeId, 
             humanUnitWithNoTaskId,
@@ -64,6 +68,7 @@ else
             3, 3, 3, 3); //positions hardcoded
 
         await _humanUnitTasksLocalStorageManager.Add(dto);
+        HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();
         //StatusHasChanged?..
     }
 }

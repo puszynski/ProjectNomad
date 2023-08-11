@@ -7,8 +7,5 @@ namespace GameModule.DtoModels
         int X, 
         int Y,
         int Wood,
-        int FreshFood) : ITribe
-    {
-        public int FreshFood { get; set; }
-    }
+        int FreshFood) : ITribe;
 }

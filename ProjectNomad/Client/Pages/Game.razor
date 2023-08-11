@@ -106,7 +106,12 @@ else
         }
 
         var result = await _http.GetFromJsonAsync<TribeGameObjectsViewModel>($"api/game/getGameObjects/{accountId}");
-        GameObjectsViewModel = new TribeGameObjectsViewModel(_http){ Tribe = result.Tribe, HumanUnits = result.HumanUnits };
+
+        GameObjectsViewModel = new TribeGameObjectsViewModel(_http)
+        { 
+            Tribe = result.Tribe, 
+            HumanUnits = result.HumanUnits 
+        };
     }
 
     async Task ReBornTribeMembers()

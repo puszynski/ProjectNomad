@@ -1,4 +1,5 @@
 ﻿using GameModule;
+using GameModule.DtoModels;
 using Microsoft.AspNetCore.Mvc;
 using ProjectNomad.Shared.Interfaces;
 
@@ -6,7 +7,7 @@ namespace ProjectNomad.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TaskController : Controller
+    public class TaskController : ControllerBase
     {
         readonly IGameModule _gameModule;
         public TaskController(IGameModule gameModule)
@@ -24,12 +25,10 @@ namespace ProjectNomad.Server.Controllers
 
         // POST api/task/add-task
         [HttpPost("add-task")]
-        public async Task<IActionResult> AddTask(IAddHumanUnitTaskDto humanUnitTask)
+        public async Task<ActionResult> AddTask(AddHumanUnitTaskDto humanUnitTask)
         {
             await _gameModule.AddTask(humanUnitTask);
             return Ok();
         }
-
-
     }
 }
