@@ -4,11 +4,13 @@
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
 @inject HttpClient _httpClient
 
+<h5>tasks</h5>
+
 @if (HumanUnitIds != null && HumanUnitTasks != null)
 {
     <br />
 
-    <button class="button" @onclick="GatherFood"><span>gather wood(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button>
+    <button class="button"><span>gather wood(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button>
     <br />
     <small>[▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬------------] 4m22s</small>
     <br />
@@ -18,7 +20,7 @@
     <br />
     <br />
 
-    <button class="button"><span>gather food(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button>
+    <button class="button" @onclick="GatherFood"><span>gather food(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button>
     <br />
     <small>[▬▬▬▬▬▬▬▬▬---------------------] 54m22s</small>
     <br />
@@ -62,5 +64,6 @@ else
             3, 3, 3, 3); //positions hardcoded
 
         await _humanUnitTasksLocalStorageManager.Add(dto);
+        //StatusHasChanged?..
     }
 }
