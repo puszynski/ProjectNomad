@@ -8,6 +8,6 @@ namespace ProjectNomad.Shared.Interfaces
         public int HumanUnitId { get; }
         public EHumanUnitTaskType Type { get; }
         public DateTime From { get; }
-        public DateTime? To { get; }
+        public DateTime To { get; }
     }
 }

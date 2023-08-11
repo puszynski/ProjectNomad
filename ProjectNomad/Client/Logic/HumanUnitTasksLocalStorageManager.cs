@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using ProjectNomad.Client.ViewModels.Tasks;
 using ProjectNomad.Shared.Interfaces;
 using System.Net.Http.Json;
 
@@ -22,7 +23,7 @@ namespace ProjectNomad.Client.Logic
         internal async Task<IEnumerable<IHumanUnitTaskDto>> GetAllAndCleanOutdated()
         {
             await RemoveOutdated();
-            var tasks = await _localStorageService.GetItemAsync<IEnumerable<IHumanUnitTaskDto>>(LOCAL_STORAGE_NAME); //todo jakiś DTO??
+            var tasks = await _localStorageService.GetItemAsync<IEnumerable<IHumanUnitTaskDto>>(LOCAL_STORAGE_NAME) ?? new List<IHumanUnitTaskDto>();
             return tasks;
 
 

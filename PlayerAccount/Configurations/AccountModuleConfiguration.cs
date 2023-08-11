@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace AccountModule.Configuration
 {
     /// <summary>
-    ///     cd.\PlayerAccount
+    ///     cd.\PlayerAccount    (use => cd..    to move folder up)
     ///     
     ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add NameOfMigration -c AccountModuleDbContext
     /// note: you are in migration and context library project and are referring to startup project

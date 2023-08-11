@@ -17,6 +17,10 @@ namespace GameModule.Configurations
         /// 
         /// others commands:
         ///     dotnet ef --startup-project ..\ProjectNomad\Server\ database update -c GameModuleDbContext
+        ///     
+        /// FOR THE FIRST TIME DB SHOULD BE CREATED:
+        /// => install globally via powerShell => dotnet tool install --global dotnet-ef
+        /// => then run database update.. 
         /// </summary>
         public static void DbContextConfiguration(IServiceCollection services, string connectionStrings)
         {

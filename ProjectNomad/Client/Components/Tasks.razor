@@ -4,7 +4,7 @@
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
 @inject HttpClient _httpClient
 
-@if (HumanUnitIds != null)
+@if (HumanUnitIds != null && HumanUnitTasks != null)
 {
     <br />
 
@@ -28,6 +28,10 @@
     <button class="button"><span>Gather animal skull - 3d12m12s</span></button>
     <button class="button"><span>Catch fire after storm  - 15m36s</span></button>
 }
+else
+{
+    <p>Loading..</p>
+}
 
 
 @code {
@@ -41,7 +45,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var test = HumanUnitIds.TakeLast(2).ToList();
         HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllAndCleanOutdated();
     }
 

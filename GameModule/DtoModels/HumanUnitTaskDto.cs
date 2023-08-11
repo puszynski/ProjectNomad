@@ -7,6 +7,6 @@ namespace GameModule.DtoModels
         int HumanUnitId,
         EHumanUnitTaskType Type,
         DateTime From,
-        DateTime? To) : IHumanUnitTaskDto;
+        DateTime To) : IHumanUnitTaskDto;
 
 }
