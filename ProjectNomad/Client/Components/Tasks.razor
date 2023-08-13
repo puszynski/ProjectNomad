@@ -1,8 +1,10 @@
 ﻿@using ProjectNomad.Client.Logic;
 @using ProjectNomad.Client.ViewModels.Tasks;
 @using ProjectNomad.Shared.Interfaces;
+@using static ProjectNomad.Client.Components.Notifications;
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
 @inject HttpClient _httpClient
+@inject TribeNotificationsLoclStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager;
 
 <h5>tasks</h5>
 
@@ -67,6 +69,14 @@ else
 
         await _humanUnitTasksLocalStorageManager.Add(dto);
         HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();
-        //StatusHasChanged?..
+
+        var notificationDto = new TribeNotificationDto() 
+        { 
+            Added = DateTime.UtcNow, 
+            HumanUnitId = humanUnitWithNoTaskId, 
+            Type = ProjectNomad.Shared.Enums.EHumanNotificationType.FoodGatheringStarted 
+        };
+        await _tribeNotificationsLoclStorageAndServerManager.Add(notificationDto, addToServer: false);
+        StateHasChanged();//NEEDED? TODO TEST
     }
 }

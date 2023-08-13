@@ -1,6 +1,8 @@
 ﻿@using Blazored.LocalStorage;
+@using ProjectNomad.Client.Logic;
 @inject HttpClient _httpClient
 @inject ILocalStorageService _localStorageService
+@inject TribeNotificationsLoclStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager;
 
 <h5>plots</h5>
 
@@ -32,33 +34,14 @@
     [ParameterAttribute]
     public int TribeId { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await RefreshNotifications();
-    }
+    protected override async Task OnInitializedAsync() 
+        => await RefreshNotifications();
 
     public async Task RefreshNotifications()
     {
-        @if (!TribeNotifications.Any())
-        {
-            //TODO CREATE AND MOVE TO TribeNotificationLocalStorageManager
-            var tribeNotificationsFromStorage = await _localStorageService.GetItemAsync<IEnumerable<TribeNotificationDto>>("TribeNotifications");
-
-            if (tribeNotificationsFromStorage is not null && tribeNotificationsFromStorage.Any())
-                TribeNotifications.AddRange(tribeNotificationsFromStorage);
-        }
-
-        var result = await _httpClient.GetFromJsonAsync<IEnumerable<TribeNotificationDto>>($"api/notification/get-notifications/{TribeId}");
-
-        if (result is not null && result.Any())
-        {
-            //TODO CREATE AND MOVE TO TribeNotificationLocalStorageManager
-            TribeNotifications.AddRange(result);
-            await _localStorageService.SetItemAsync<IEnumerable<TribeNotificationDto>>("TribeNotifications", TribeNotifications);
-        }
-
+        await _tribeNotificationsLoclStorageAndServerManager.GetAllAndRemoveOutdated(TribeId);
+        TribeNotifications = _tribeNotificationsLoclStorageAndServerManager.TribeNotifications;        
         StateHasChanged();
-
     }
 
     internal class TribeNotificationDto : ProjectNomad.Shared.Interfaces.ITribeNotification

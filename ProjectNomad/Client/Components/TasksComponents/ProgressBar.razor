@@ -1,8 +1,11 @@
 ﻿@using ProjectNomad.Client.Logic;
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
 
-<small>[@ProgressBarDisplay] @RemainingTimeToDisplay</small>
-<br />
+@if (ProgressBarDisplay != null)
+{
+    <small>[@ProgressBarDisplay] @RemainingTimeToDisplay</small>
+    <br />    
+}
 
 @code {
     [ParameterAttribute]
@@ -25,6 +28,9 @@
         var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         while (await timer.WaitForNextTickAsync())
         {
+            if (ProgressBarDisplay == null)
+                break;
+
             UpdateProgressBarDisplay();
             await UpdateRemainingTimeToDisplay();
         }
@@ -50,7 +56,10 @@
         var timeLeft = HumanUnitTask.To - DateTime.UtcNow;
 
         if (timeLeft.Seconds < 0)
-            await _humanUnitTasksLocalStorageManager.SyncTasksWithServer(TribeId);
+        {
+            ProgressBarDisplay = null;
+            return;
+        }
 
         RemainingTimeToDisplay = $"{timeLeft.Hours}h{timeLeft.Minutes}m{timeLeft.Seconds}s";
         StateHasChanged();
