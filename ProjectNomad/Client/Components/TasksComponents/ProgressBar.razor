@@ -1,9 +1,15 @@
-﻿<small>[@ProgressBarDisplay] @RemainingTimeToDisplay</small>
+﻿@using ProjectNomad.Client.Logic;
+@inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
+
+<small>[@ProgressBarDisplay] @RemainingTimeToDisplay</small>
 <br />
 
 @code {
-    [Parameter]
+    [ParameterAttribute]
     public ProjectNomad.Shared.Interfaces.IHumanUnitTaskDto HumanUnitTask { get; set; }
+
+    [ParameterAttribute]
+    public int TribeId { get; set; }
 
     const char DONE = '▬';
     const char TODO = '-';
@@ -14,13 +20,13 @@
     protected override async Task OnInitializedAsync()
     {
         UpdateProgressBarDisplay();
-        UpdateRemainingTimeToDisplay();
+        await UpdateRemainingTimeToDisplay();
 
         var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         while (await timer.WaitForNextTickAsync())
         {
             UpdateProgressBarDisplay();
-            UpdateRemainingTimeToDisplay();
+            await UpdateRemainingTimeToDisplay();
         }
     }
 
@@ -33,17 +39,19 @@
         var max = HumanUnitTask.To - HumanUnitTask.From;
         string barToUpdate = string.Empty;
 
-        for (int i = 0; i < 30; i++)
-        {
+        for (int i = 1; i <= 30; i++)
             barToUpdate += (actuall.TotalSeconds * 30 / max.TotalSeconds) >= i ? DONE : TODO;
-        }
 
         ProgressBarDisplay = barToUpdate;
     }
 
-    void UpdateRemainingTimeToDisplay()
+    async Task UpdateRemainingTimeToDisplay()
     {   
         var timeLeft = HumanUnitTask.To - DateTime.UtcNow;
+
+        if (timeLeft.Seconds < 0)
+            await _humanUnitTasksLocalStorageManager.SyncTasksWithServer(TribeId);
+
         RemainingTimeToDisplay = $"{timeLeft.Hours}h{timeLeft.Minutes}m{timeLeft.Seconds}s";
         StateHasChanged();
     }

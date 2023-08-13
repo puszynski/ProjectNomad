@@ -24,7 +24,7 @@
     <br />
     @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.GatheringFood))
     {
-        <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" />
+        <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@TribeId" />
     } 
     <br />
 
