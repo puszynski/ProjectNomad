@@ -51,7 +51,8 @@
             <div id="tasks" style="border: 2px dashed;
                         border-color: Gainsboro;
                         display: table-cell;">
-                <ProjectNomad.Client.Components.Tasks TribeId="@GameObjectsViewModel.Tribe.Id" HumanUnitIds="@GameObjectsViewModel.HumanUnits.Select(x => x.Id).ToList()" />
+                <ProjectNomad.Client.Components.TaskAssigner TribeId="GameObjectsViewModel.Tribe.Id" HumanUnits="GameObjectsViewModel.HumanUnits" TilePositionX="@GameObjectsViewModel.Tribe.X" TilePositionY="GameObjectsViewModel.Tribe.Y" />
+                <ProjectNomad.Client.Components.Tasks TribeId="GameObjectsViewModel.Tribe.Id" HumanUnitIds="GameObjectsViewModel.HumanUnits.Select(x => x.Id).ToList()" />
             </div>
 
             <div style="border: 2px dashed;
@@ -133,7 +134,7 @@ else
 
         StateHasChanged();
     }
-
+    
     protected ProjectNomad.Client.Components.Notifications NotificationComponentReference;
     async Task RefreshNotifications() => await NotificationComponentReference.RefreshNotifications();
 }

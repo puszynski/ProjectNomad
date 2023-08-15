@@ -5,7 +5,7 @@
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
 @inject HttpClient _httpClient
 @inject TribeNotificationsLoclStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager;
-
+@inject NavigationManager _navigationManager;
 <h5>tasks</h5>
 
 @if (HumanUnitIds != null && HumanUnitTasks != null)
@@ -45,7 +45,7 @@ else
     public int TribeId { get; set; }
 
     [ParameterAttribute]
-    public List<int> HumanUnitIds { get; set; }
+    public IEnumerable<int> HumanUnitIds { get; set; }
 
     IEnumerable<IHumanUnitTaskDto> HumanUnitTasks;
 
@@ -77,6 +77,6 @@ else
             Type = ProjectNomad.Shared.Enums.EHumanNotificationType.FoodGatheringStarted 
         };
         await _tribeNotificationsLoclStorageAndServerManager.Add(notificationDto, addToServer: false);
-        StateHasChanged();//NEEDED? TODO TEST
+        _navigationManager.NavigateTo(_navigationManager.Uri, forceLoad: true);//TEMP - TODO - COMPONENT_RELOAD_MANAGER
     }
 }

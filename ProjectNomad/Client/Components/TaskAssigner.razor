@@ -1,0 +1,39 @@
+﻿@using ProjectNomad.Client.ViewModels.Game;
+@using ProjectNomad.Shared.Interfaces;
+<h5>Gather food task</h5>
+<p>
+    <small>tribe member:</small>
+    @foreach (var item in HumanUnits)
+    {
+        <button class="button"><span>@item.Name</span></button>
+    }
+    <br />
+    <small>desinty:</small> 3|3 <button class="button"><span>&#8634;</span></button>
+</p>
+<p>
+    @*story and accept button after choosing all needed options from form..*@
+    <small>
+        tribe member will be traveling about 2 hours, then he will gather food for 3 hours and go back to home with heavy load. He should reach village about 7 hours from start. He should be back befor a dawn.
+    </small>
+</p>
+<button class="button" disabled><span>Accept</span></button> @*TODO MAKE DISABLED CSS*@
+<button class="button"><span>Cancel</span></button>
+<hr />
+
+@code {
+    [ParameterAttribute]
+    public int TribeId { get; set; }
+
+    [ParameterAttribute]
+    public IEnumerable<HumanUnitViewModel> HumanUnits { get; set; }
+
+    [ParameterAttribute]
+    public int TilePositionX { get; set; }
+
+    [ParameterAttribute]
+    public int TilePositionY { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+}
