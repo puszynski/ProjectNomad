@@ -6,12 +6,9 @@
 @inject HttpClient _httpClient
 @inject TribeNotificationsLoclStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager;
 @inject NavigationManager _navigationManager;
-<h5>tasks</h5>
 
 @if (HumanUnitIds != null && HumanUnitTasks != null)
 {
-    <br />
-
     <button class="button"><span>gather wood(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button>
     <br />
     <small>[▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬------------] 4m22s</small>
