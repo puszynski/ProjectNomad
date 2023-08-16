@@ -19,6 +19,7 @@
     {
         None = 0,
 
-        NotificationAdded = 1,
+        NotificationAdded,
+        TaskEnded
     }
 }

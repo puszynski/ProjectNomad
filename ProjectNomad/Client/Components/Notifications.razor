@@ -2,7 +2,7 @@
 @using ProjectNomad.Client.Logic;
 @inject HttpClient _httpClient
 @inject ILocalStorageService _localStorageService
-@inject TribeNotificationsLoclStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager;
+@inject TribeNotificationsLocalStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager;
 @inject EventBroadcastService _eventBroadcastService;
 
 @if (TribeNotifications is not null)
@@ -31,7 +31,7 @@
 
 
 @code {
-    List<TribeNotificationDto> TribeNotifications = new List<TribeNotificationDto>();
+    List<TribeNotificationDto> TribeNotifications;
 
     [ParameterAttribute]
     public int TribeId { get; set; }
@@ -39,6 +39,7 @@
     protected override async Task OnInitializedAsync()
     {
         _eventBroadcastService.OnAction += EventHandler;
+        TribeNotifications = new List<TribeNotificationDto>();
         await RefreshNotifications();        
     }
 
@@ -51,10 +52,10 @@
         _eventBroadcastService.ClearEvent();
     }
 
-    public async Task RefreshNotifications()
+    internal async Task RefreshNotifications()
     {
         await _tribeNotificationsLoclStorageAndServerManager.GetAllAndRemoveOutdated(TribeId);
-        TribeNotifications = _tribeNotificationsLoclStorageAndServerManager.TribeNotifications;        
+        TribeNotifications = _tribeNotificationsLoclStorageAndServerManager.TribeNotifications;
         StateHasChanged();
     }
 

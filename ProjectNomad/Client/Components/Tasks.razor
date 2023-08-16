@@ -2,11 +2,12 @@
 @using ProjectNomad.Client.ViewModels.Tasks;
 @using ProjectNomad.Shared.Interfaces;
 @using static ProjectNomad.Client.Components.Notifications;
+
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
 @inject HttpClient _httpClient
-@inject TribeNotificationsLoclStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager;
-@inject NavigationManager _navigationManager;
-@inject EventBroadcastService _eventBroadcastService;
+@inject TribeNotificationsLocalStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager
+@inject NavigationManager _navigationManager
+@inject EventBroadcastService _eventBroadcastService
 
 @if (HumanUnitIds != null && HumanUnitTasks != null)
 {
@@ -49,6 +50,21 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        _eventBroadcastService.OnAction += EventHandler;
+        await Reload();
+    }
+
+    private void EventHandler(EActionWASM actionWASM)
+    {
+        if (actionWASM != EActionWASM.TaskEnded)
+            return;
+
+        Reload();
+        _eventBroadcastService.ClearEvent();
+    }
+
+    private async Task Reload()
+    {
         HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();
     }
 
@@ -74,7 +90,9 @@ else
             HumanUnitId = humanUnitWithNoTaskId, 
             Type = ProjectNomad.Shared.Enums.EHumanNotificationType.FoodGatheringStarted 
         };
-        await _tribeNotificationsLoclStorageAndServerManager.Add(notificationDto, addToServer: false);
+        await _tribeNotificationsLoclStorageAndServerManager.Add(notificationDto);
         _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
+
+        StateHasChanged();
     }
 }
