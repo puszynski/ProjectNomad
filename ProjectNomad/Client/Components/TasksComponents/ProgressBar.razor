@@ -1,5 +1,6 @@
 ﻿@using ProjectNomad.Client.Logic;
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
+@inject EventBroadcastService _eventBroadcastService;
 
 @if (ProgressBarDisplay != null)
 {
@@ -58,6 +59,7 @@
         if (timeLeft.Seconds < 0)
         {
             ProgressBarDisplay = null;
+            _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
             return;
         }
 

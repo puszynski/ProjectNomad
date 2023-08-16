@@ -12,6 +12,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 builder.Services.AddScoped<HumanUnitTasksLocalStorageManager>();
 builder.Services.AddScoped<TribeNotificationsLoclStorageAndServerManager>();
+builder.Services.AddSingleton<EventBroadcastService>();
 
 //3rd library - allow to store data in browser memory
 builder.Services.AddBlazoredLocalStorage();

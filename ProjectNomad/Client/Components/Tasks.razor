@@ -6,6 +6,7 @@
 @inject HttpClient _httpClient
 @inject TribeNotificationsLoclStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager;
 @inject NavigationManager _navigationManager;
+@inject EventBroadcastService _eventBroadcastService;
 
 @if (HumanUnitIds != null && HumanUnitTasks != null)
 {
@@ -19,7 +20,7 @@
     <br />
     <br />
 
-    <button class="button" @onclick="GatherFood"><span>gather food(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button>
+    <button class="button" @onclick="GatherFood"><span>gather food(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button> @* TODO DISABLE WHEN NO FREE HUMAN UNITS.. *@
     <br />
     @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.GatheringFood))
     {
@@ -74,6 +75,6 @@ else
             Type = ProjectNomad.Shared.Enums.EHumanNotificationType.FoodGatheringStarted 
         };
         await _tribeNotificationsLoclStorageAndServerManager.Add(notificationDto, addToServer: false);
-        _navigationManager.NavigateTo(_navigationManager.Uri, forceLoad: true);//TEMP - TODO - COMPONENT_RELOAD_MANAGER
+        _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
     }
 }

@@ -71,7 +71,7 @@
             <div id="notifications" style ="border: 2px dashed;
                          border-color: Gainsboro;
                          display: table-cell;">
-                <ProjectNomad.Client.Components.Notifications TribeId="@GameObjectsViewModel.Tribe.Id" @ref="NotificationComponentReference" />
+                <ProjectNomad.Client.Components.Notifications TribeId="@GameObjectsViewModel.Tribe.Id" />
             </div>
             
         </div>
@@ -135,12 +135,10 @@ else
         await GameObjectsViewModel.TrigerRecalculation();
         await GetDataFromServer();
 
-        if (tribeCountBeforeRecalculation != null && tribeCountBeforeRecalculation != GameObjectsViewModel.HumanUnits.Count())
-            await RefreshNotifications();
+        //if (tribeCountBeforeRecalculation != null && tribeCountBeforeRecalculation != GameObjectsViewModel.HumanUnits.Count())
+            //await RefreshNotifications(); //do you realy whant to relaod (ask server) each sec?
 
         StateHasChanged();
     }
     
-    protected ProjectNomad.Client.Components.Notifications NotificationComponentReference;
-    async Task RefreshNotifications() => await NotificationComponentReference.RefreshNotifications();
 }

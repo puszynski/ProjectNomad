@@ -19,6 +19,7 @@ namespace ProjectNomad.Client.Logic
 
         internal async Task GetAllAndRemoveOutdated(int tribeId)
         {
+            //TODO NIE ODŚWIEŻASZ Z LOCAL STORAGE SERVICE - A MUSISZ BO MOZESZ DODAWAĆ W WASM..
             if (!TribeNotifications.Any())
             {
                 var tribeNotificationsFromStorage = await _localStorageService.GetItemAsync<IEnumerable<TribeNotificationDto>>("TribeNotifications");

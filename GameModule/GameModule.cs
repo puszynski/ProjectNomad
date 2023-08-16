@@ -153,7 +153,7 @@ namespace GameModule
         public async Task AddTask(IAddHumanUnitTaskDto task)
         {
             //todo test
-            const int TIME_MINUTES_TO_COLECT_FOOD = 10;
+            const int TIME_MINUTES_TO_COLECT_FOOD = 1;
 
             var distance = MapTileDistanceCalculator.Execute(task.LocalizationStart_X, 
                 task.LocalizationStart_Y, 

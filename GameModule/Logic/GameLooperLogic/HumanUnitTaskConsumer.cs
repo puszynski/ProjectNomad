@@ -1,6 +1,8 @@
 ﻿using GameModule.Configurations;
+using GameModule.DtoModels;
 using GameModule.Entities;
 using Microsoft.EntityFrameworkCore;
+using NotificationModule;
 using ProjectNomad.Shared.Enums;
 
 namespace GameModule.Logic.GameLooperLogic
@@ -8,9 +10,11 @@ namespace GameModule.Logic.GameLooperLogic
     internal class HumanUnitTaskConsumer
     {
         readonly GameModuleDbContext _dbContext;
-        public HumanUnitTaskConsumer(GameModuleDbContext dbContext)
+        readonly INotificationModule _notificationModule;
+        public HumanUnitTaskConsumer(GameModuleDbContext dbContext, INotificationModule notificationModule)
         {
             _dbContext = dbContext;
+            _notificationModule = notificationModule;
         }
 
         internal async Task Execute(IEnumerable<HumanUnit> humanUnits, 
@@ -60,6 +64,7 @@ namespace GameModule.Logic.GameLooperLogic
                         : mapTileFoodPoints;
 
                     tribe.Resources.FreshFood += (int)gatheredFoodPoints; //todo tests
+                    _notificationModule.InsertTribeNotification(tribe.Id, new TribeNotificationDto(humanUnit.Id, DateTime.UtcNow, EHumanNotificationType.FoodGatheringEnded));
                     break;
             }
         }

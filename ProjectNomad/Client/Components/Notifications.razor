@@ -3,14 +3,18 @@
 @inject HttpClient _httpClient
 @inject ILocalStorageService _localStorageService
 @inject TribeNotificationsLoclStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager;
+@inject EventBroadcastService _eventBroadcastService;
 
 @if (TribeNotifications is not null)
 {
+    <button class="button" @onclick="RefreshNotifications"><span>&#8634;</span></button>
+
+
     @if (TribeNotifications.Any())
     {
         foreach (var item in TribeNotifications)
         {
-            <p>@item.HumanUnitId => @item.Type.ToString()</p>
+            <p>@item.HumanUnitId (@item.Added) => @item.Type.ToString()</p>
         }
     }
     else
@@ -32,8 +36,20 @@
     [ParameterAttribute]
     public int TribeId { get; set; }
 
-    protected override async Task OnInitializedAsync() 
-        => await RefreshNotifications();
+    protected override async Task OnInitializedAsync()
+    {
+        _eventBroadcastService.OnAction += EventHandler;
+        await RefreshNotifications();        
+    }
+
+    private void EventHandler(EActionWASM actionWASM)
+    {
+        if (actionWASM != EActionWASM.NotificationAdded)
+            return;
+
+        RefreshNotifications();
+        _eventBroadcastService.ClearEvent();
+    }
 
     public async Task RefreshNotifications()
     {

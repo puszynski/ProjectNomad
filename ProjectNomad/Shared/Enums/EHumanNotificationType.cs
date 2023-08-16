@@ -5,6 +5,8 @@
         FoodStarvation = 100,
         FoodHunger = 101,
         FoodFillFull = 102,
+        FoodGatheringEnded = 103, 
+
 
         DeathFromStarvation = 601,
 
