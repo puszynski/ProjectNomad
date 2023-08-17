@@ -55,7 +55,7 @@
 
         if (timeLeft.Seconds < 0)
         {
-            _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);//DUPA BO GAME LOOPER DZIAŁA W MINUTACH I MIJA SPORO CZASU ZANIM ZAKTUALIZUJE TASK...
+            _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded); // JEST CO SEKUNDE A MIMO TO TASK NIE USUWA SIĘ PO ZAKOŃCZENIU.. TODO
             _eventBroadcastService.AddMessage(EActionWASM.TaskEnded);
             return;
         }

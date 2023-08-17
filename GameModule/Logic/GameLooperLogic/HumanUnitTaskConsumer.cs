@@ -18,16 +18,17 @@ namespace GameModule.Logic.GameLooperLogic
         }
 
         internal async Task Execute(IEnumerable<HumanUnit> humanUnits, 
-            Tribe tribe)
+            Tribe tribe,
+            IEnumerable<HumanUnitTask> allTasksToConsume)//TODO MAKE DTO AND MATERIALIZE ALL DATA NEEDED EG MAP-TILE
         {
             var humanUnitIds = humanUnits
                 .Select(x => x.Id)
                 .ToList();
 
-            var tasksToConsume = await _dbContext.HumanUnitTasks
+            var tasksToConsume = allTasksToConsume
                 .Where(x => humanUnitIds.Contains(x.HumanUnitId))
-                .Where(x => x.To <= DateTime.UtcNow)
-                .ToListAsync();
+                .Where(x => x.To <= DateTime.UtcNow.AddSeconds(-1)) //hack to calculate changes before WASM call to update data from server
+                .ToList();
 
 
             foreach (var task in tasksToConsume) 
@@ -64,7 +65,7 @@ namespace GameModule.Logic.GameLooperLogic
                         : mapTileFoodPoints;
 
                     tribe.Resources.FreshFood += (int)gatheredFoodPoints; //todo tests
-                    _notificationModule.InsertTribeNotification(tribe.Id, new TribeNotificationDto(humanUnit.Id, DateTime.UtcNow, EHumanNotificationType.FoodGatheringEnded));
+                    await _notificationModule.InsertTribeNotification(tribe.Id, new TribeNotificationDto(humanUnit.Id, DateTime.UtcNow, EHumanNotificationType.FoodGatheringEnded));
                     break;
             }
         }

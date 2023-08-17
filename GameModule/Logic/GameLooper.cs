@@ -20,17 +20,15 @@ namespace GameModule.Logic
             _notificationModule = notificationModule;
             _humanUnitTaskConsumer = humanUnitTaskConsumer;
         }
+        async Task SecondLooper(List<HumanUnit> humanUnits, 
+            Tribe tribe, 
+            IEnumerable<HumanUnitTask> tasksToConsume)//IT TAKES A LOT TIME... TODO - DTO WITH ALL DATA NEEDED TO CONSUME TASK EG MAP-TILE
+        {
+            await _humanUnitTaskConsumer.Execute(humanUnits, tribe, tasksToConsume);
+        }
 
         async Task MinuteLooper(List<HumanUnit> humanUnits, Tribe tribe)
         {
-            await _humanUnitTaskConsumer.Execute(humanUnits, tribe);
-            // todo TaskConsuption tasks.Where==HumanUnits.Where.TaskTo>Now..
-            // consume
-            // Remove(task)
-
-            //todo first ++food from eating..
-            //when eating => ++5 to food (to prevent doubling notifications from dropping) 
-
             humanUnits.ForEach(x => x.FoodLevelPercentage--);
             DeathApplicator.StarvationDeath(_dbContext, _notificationModule, humanUnits);
 
@@ -41,63 +39,64 @@ namespace GameModule.Logic
                 .ForEach(x => _notificationModule.InsertTribeNotification(x.TribeId, new TribeNotificationDto(x.Id, DateTime.UtcNow, ProjectNomad.Shared.Enums.EHumanNotificationType.FoodStarvation)));
         }
 
-        void HourLooper(List<HumanUnit> humanUnits)
+        async Task HourLooper(List<HumanUnit> humanUnits)
         {
-
+            await Console.Out.WriteLineAsync("HourLooper is running");
         }
 
-        void DayLooper(List<HumanUnit> humanUnits) 
-        { 
-        
+        async Task DayLooper(List<HumanUnit> humanUnits) 
+        {
+            await Console.Out.WriteLineAsync("DayLooper is running");
         }
 
         public async Task LoopTribe(int tribeId)
         {
-            try
+            //todo try async query materializations.. - there were problems..
+
+            var tribe = _dbContext
+                .Tribes
+                .SingleOrDefault(x => x.Id == tribeId);
+
+            var humanUnits = _dbContext
+                .HumanUnits
+                .Where(x => x.TribeId == tribeId)
+                .ToList();
+
+            var tasksToConsume = _dbContext.HumanUnitTasks
+                .Where(x => x.TribeId == tribeId)
+                .ToList();
+
+            if (tribe == null || !humanUnits.Any())
+                return;
+
+            var timeToUpdate = tribe.Updated;
+            var loopCounter = 0;
+
+            while (timeToUpdate <= DateTime.UtcNow)
             {
-                var tribe = _dbContext
-                    .Tribes
-                    .SingleOrDefault(x => x.Id == tribeId);
+                await SecondLooper(humanUnits, tribe, tasksToConsume);
 
-                //var tribe = await _dbContext //PROBLEM WITH ASYNC.. TODO IN FUTURE 
-                //  .Tribes
-                //  .SingleOrDefaultAsync(x => x.Id == tribeId);
-
-                var humanUnits = _dbContext
-                    .HumanUnits
-                    .Where(x => x.TribeId == tribeId)
-                    .ToList();
-
-                if (tribe == null || !humanUnits.Any())
-                    return;
-
-                var timeToUpdate = tribe.Updated;
-                var loopCounter = 0;
-
-                while (timeToUpdate <= DateTime.UtcNow.AddMinutes(-1)) //BUG if you refresh frequently - no change after 1 min.. 
-                {
+                if (timeToUpdate.Second == 0)
                     await MinuteLooper(humanUnits, tribe);
-                    if (timeToUpdate.Minute == 0)
-                        HourLooper(humanUnits);
-                    if (timeToUpdate.Hour == 0)
-                        DayLooper(humanUnits);
+                if (timeToUpdate.Minute == 0)
+                    await HourLooper(humanUnits);
+                if (timeToUpdate.Hour == 0)
+                    await DayLooper(humanUnits);
 
-                    timeToUpdate = timeToUpdate.AddMinutes(1);
-                    loopCounter++;
+                timeToUpdate = timeToUpdate.AddSeconds(1);
+                loopCounter++;
 
-                }
-
-                if (loopCounter != 0)
-                {
-                    tribe.Updated = DateTime.UtcNow;
-                    _dbContext.SaveChanges();
-                }
             }
-            catch (Exception ex)
+
+            if (loopCounter != 0)
             {
-                throw;
+                tribe.Updated = DateTime.UtcNow;
+                _dbContext.SaveChanges();
             }
         }
+
+
+
 
         //idea - do in night task? - or in restart server time once per night?
         public async Task LoopAll()
