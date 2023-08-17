@@ -7,7 +7,8 @@
 
 @if (TribeNotifications is not null)
 {
-    <button class="button" @onclick="RefreshNotifications"><span>&#8634;</span></button>
+    <button class="button" @onclick="RefreshNotifications"><span>Ask tribe member for news &#8634;</span></button>
+    @* todo when clicked - display info "waitng for news.." - after few sec button is back *@
 
 
     @if (TribeNotifications.Any())
@@ -21,11 +22,7 @@
     {
         <p>Nothing has happend...</p>
     }
-
 }
-
-@* todo when clicked - display info "waitng for news.." - after few sec button is back *@
-<button type="button" class="btn btn-link" @onclick="RefreshNotifications">Ask tribe members for news</button>
 
 
 

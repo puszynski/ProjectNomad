@@ -41,12 +41,10 @@ namespace GameModule.Logic
 
         async Task HourLooper(List<HumanUnit> humanUnits)
         {
-            await Console.Out.WriteLineAsync("HourLooper is running");
         }
 
         async Task DayLooper(List<HumanUnit> humanUnits) 
         {
-            await Console.Out.WriteLineAsync("DayLooper is running");
         }
 
         public async Task LoopTribe(int tribeId)

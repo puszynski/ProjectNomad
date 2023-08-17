@@ -1,0 +1,17 @@
+﻿<smaller>@time</smaller>
+
+@code {
+    string time = DateTime.UtcNow.ToString();
+
+    protected override async Task OnInitializedAsync()
+    {
+        time = DateTime.UtcNow.ToString();
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+
+        while (await timer.WaitForNextTickAsync())
+        {
+            time = DateTime.UtcNow.ToString();
+            StateHasChanged();
+        }
+    }
+}

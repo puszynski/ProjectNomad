@@ -66,6 +66,7 @@ else
     private async Task Reload()
     {
         HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();
+        StateHasChanged();
     }
 
     async Task GatherFood()
@@ -81,8 +82,9 @@ else
             ProjectNomad.Shared.Enums.EHumanUnitTaskType.GatheringFood, 
             3, 3, 3, 3); //positions hardcoded
 
-        await _humanUnitTasksLocalStorageManager.Add(dto);
+        await _humanUnitTasksLocalStorageManager.AddToServer(dto);
         HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();
+        //HumanUnitTasks.Add(dto);//TODO SPÓBUJ PRZYSPIESZYĆ BO JEST DO D
 
         var notificationDto = new TribeNotificationDto() 
         { 
@@ -92,7 +94,6 @@ else
         };
         await _tribeNotificationsLoclStorageAndServerManager.Add(notificationDto);
         _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
-
         StateHasChanged();
     }
 }

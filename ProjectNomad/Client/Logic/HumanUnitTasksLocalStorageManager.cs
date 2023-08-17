@@ -22,23 +22,17 @@ namespace ProjectNomad.Client.Logic
 
         internal async Task<IEnumerable<IHumanUnitTaskDto>> GetAllFromLocalStorageAndCleanOutdated()
         {
-            await RemoveOutdated();
-            var tasks = await _localStorageService.GetItemAsync<IEnumerable<HumanUnitTaskViewModel>>(LOCAL_STORAGE_NAME) ?? new List<HumanUnitTaskViewModel>();
-            return tasks;
+            var tasks = await _localStorageService.GetItemAsync<IEnumerable<HumanUnitTaskViewModel>>(LOCAL_STORAGE_NAME);
 
+            if (tasks == null)
+                return new List<HumanUnitTaskViewModel>();
 
-            async Task RemoveOutdated()
-            {
-                var tasks = await _localStorageService.GetItemAsync<IEnumerable<HumanUnitTaskViewModel>>(LOCAL_STORAGE_NAME);
+            var actualTasks = tasks
+                .Where(task => task.To > DateTime.UtcNow)
+                .ToList();
 
-                if (tasks == null)
-                    return;
-
-                var tasksList = tasks.ToList();
-
-                var actualTasks = tasksList.Where(task => task.To > DateTime.UtcNow).ToList();
-                await _localStorageService.SetItemAsync(LOCAL_STORAGE_NAME, actualTasks);
-            }
+            await _localStorageService.SetItemAsync(LOCAL_STORAGE_NAME, actualTasks);
+            return actualTasks;
         }
 
         internal async Task SyncTasksWithServer(int tribeId)
@@ -50,15 +44,9 @@ namespace ProjectNomad.Client.Logic
                 await _localStorageService.SetItemAsync(LOCAL_STORAGE_NAME, actualTasksFromServer);
         }
 
-        internal async Task Add(IAddHumanUnitTaskDto dto)
+        internal async Task AddToServer(IAddHumanUnitTaskDto dto)
         {
-            var result = await _httpClient.PostAsJsonAsync("api/task/add-task", dto);
-
-            if (result.IsSuccessStatusCode)
-            {
-                //todo notification
-            }
-
+            await _httpClient.PostAsJsonAsync("api/task/add-task", dto);
             await SyncTasksWithServer(dto.TribeId);
         }
     }
