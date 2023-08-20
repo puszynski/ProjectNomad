@@ -1,0 +1,25 @@
+﻿@using ProjectNomad.Client.Logic;
+@using ProjectNomad.Client.ViewModels.Game;
+@inject EventBroadcastService _eventBroadcastService;
+
+@if (GameObjectsViewModel != null)
+{
+    <smaller>population </smaller>  <b> @GameObjectsViewModel.HumanUnits.Count()</b>
+    <smaller>position </smaller>    <b> @GameObjectsViewModel.Tribe.X|@GameObjectsViewModel.Tribe.Y</b>
+    <smaller>fresh food</smaller>   <b> @GameObjectsViewModel.Tribe.FreshFood</b><smaller>(-6)</smaller>
+    <smaller>wood </smaller>        <b> @GameObjectsViewModel.Tribe.Wood</b>
+}
+else
+{
+    <p>loading...</p>
+}
+
+
+@code {
+    [Parameter]
+    public TribeGameObjectsViewModel GameObjectsViewModel { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+}

@@ -5,14 +5,14 @@ namespace GameModule
     public interface IGameModule
     {
         public Task InitPlayerGameObjects(Guid accountId);
-        public Task InitPlayerGameObjectsForExistingTribe(int tribeId);
+        public Task InitPlayerGameObjectsForExistingTribe(Guid accountId);
 
         public Task<ITribeGameObjects> GetPlayerGameObject(Guid accountId);
 
         // CONCEPT
         // server is not running tasks in background,
         // instead its triggered by client of main player - or - other players that are coming into interaction
-        public Task TriggerPlayerGameObjectRecalculation(int tribeId);
+        public Task TriggerPlayerGameObjectRecalculation(Guid accountId);
 
         public Task AddTask(IAddHumanUnitTaskDto task);
         public Task<IEnumerable<IHumanUnitTaskDto>> GetActualTribeTasks(int tribeId);

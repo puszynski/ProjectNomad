@@ -1,111 +1,112 @@
 ﻿using GameModule.Configurations;
-using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic;
-using Microsoft.EntityFrameworkCore;
-using NotificationModule;
+using ProjectNomad.Shared;
 
 namespace GameModule.Logic
 {
     internal class GameLOOPER
     {
         readonly GameModuleDbContext _dbContext;
-        readonly INotificationModule _notificationModule;
-        readonly HumanUnitTaskConsumer _humanUnitTaskConsumer;
-        public GameLOOPER(GameModuleDbContext dbContext, 
-            INotificationModule notificationModule, 
-            HumanUnitTaskConsumer humanUnitTaskConsumer)
+        readonly IDateTimeProvider _dateTimeProvider;
+        readonly IHumanUnitTaskConsumer _humanUnitTaskConsumer;
+        readonly IHumanUnitAutoTaskScheduler _humanUnitAutoTaskScheduler;
+        public GameLOOPER(GameModuleDbContext dbContext,
+            IDateTimeProvider dateTimeProvider,
+            IHumanUnitTaskConsumer humanUnitTaskConsumer,
+            IHumanUnitAutoTaskScheduler humanUnitAutoTaskScheduler)
         {
             _dbContext = dbContext;
-            _notificationModule = notificationModule;
+            _dateTimeProvider = dateTimeProvider;
             _humanUnitTaskConsumer = humanUnitTaskConsumer;
+            _humanUnitAutoTaskScheduler = humanUnitAutoTaskScheduler;
         }
-        async Task SecondLooper(List<HumanUnit> humanUnits, 
-            Tribe tribe, 
-            IEnumerable<HumanUnitTask> tasksToConsume)//IT TAKES A LOT TIME... TODO - DTO WITH ALL DATA NEEDED TO CONSUME TASK EG MAP-TILE
+        async Task SecondLooper(List<HumanUnit> humanUnits,
+            Tribe tribe,
+            List<HumanUnitTask> tasksToConsume,
+            List<MapTile> mapTilesToConsumeTasks)
         {
-            await _humanUnitTaskConsumer.Execute(humanUnits, tribe, tasksToConsume);
-        }
+            var humanUnitAutoTaskSchedulerTask = _humanUnitAutoTaskScheduler.Execute(humanUnits,
+                tribe,
+                tasksToConsume);
 
-        async Task MinuteLooper(List<HumanUnit> humanUnits, Tribe tribe)
-        {
-            humanUnits.ForEach(x => x.FoodLevelPercentage--);
-            DeathApplicator.StarvationDeath(_dbContext, _notificationModule, humanUnits);
+            _humanUnitTaskConsumer.Execute(humanUnits,
+                tribe,
+                tasksToConsume,
+                mapTilesToConsumeTasks);
 
-            humanUnits.Where(x => x.FoodLevelPercentage == 69).ToList()
-                .ForEach(x => _notificationModule.InsertTribeNotification(x.TribeId, new TribeNotificationDto(x.Id, DateTime.UtcNow, ProjectNomad.Shared.Enums.EHumanNotificationType.FoodHunger)));
-
-            humanUnits.Where(x => x.FoodLevelPercentage == 29).ToList()
-                .ForEach(x => _notificationModule.InsertTribeNotification(x.TribeId, new TribeNotificationDto(x.Id, DateTime.UtcNow, ProjectNomad.Shared.Enums.EHumanNotificationType.FoodStarvation)));
-        }
-
-        async Task HourLooper(List<HumanUnit> humanUnits)
-        {
+            await humanUnitAutoTaskSchedulerTask;
         }
 
-        async Task DayLooper(List<HumanUnit> humanUnits) 
+        void MinuteLooper(List<HumanUnit> humanUnits, 
+            Tribe tribe)
+        {
+            humanUnits.ForEach(x => x.FoodLevelPercentage = x.FoodLevelPercentage - GameSETTINGS.FoodToGetHungryForHumanUnitEachMinute);
+            DeathApplicator.StarvationDeath(_dbContext, humanUnits);
+        }
+
+        void HourLooper(List<HumanUnit> humanUnits)
         {
         }
 
-        public async Task LoopTribe(int tribeId)
+        void DayLooper(List<HumanUnit> humanUnits) 
         {
+        }
+
+        public async Task LoopTribe(Guid accountId)
+        {
+            var t2 = _dbContext.Tribes.ToList();
             //todo try async query materializations.. - there were problems..
+
 
             var tribe = _dbContext
                 .Tribes
-                .SingleOrDefault(x => x.Id == tribeId);
+                .SingleOrDefault(x => x.AccountId == accountId);
 
             var humanUnits = _dbContext
                 .HumanUnits
-                .Where(x => x.TribeId == tribeId)
+                .Where(x => x.TribeId == tribe.Id)
                 .ToList();
 
-            var tasksToConsume = _dbContext.HumanUnitTasks
-                .Where(x => x.TribeId == tribeId)
+            var tasksToConsume = _dbContext
+                .HumanUnitTasks
+                .Where(x => x.TribeId == tribe.Id)
+                .ToList();
+
+            var mapTilesFromTasks = _dbContext
+                .MapTiles
+                .Where(x => tasksToConsume.Select(y => y.MapTileId).Contains(x.Id))
                 .ToList();
 
             if (tribe == null || !humanUnits.Any())
                 return;
 
-            var timeToUpdate = tribe.Updated;
+            var lastUpdated = tribe.Updated;
             var loopCounter = 0;
 
-            while (timeToUpdate <= DateTime.UtcNow)
+            while (lastUpdated <= _dateTimeProvider.UtcNow())
             {
-                await SecondLooper(humanUnits, tribe, tasksToConsume);
+                await SecondLooper(humanUnits, tribe, tasksToConsume, mapTilesFromTasks);
 
-                if (timeToUpdate.Second == 0)
-                    await MinuteLooper(humanUnits, tribe);
-                if (timeToUpdate.Minute == 0)
-                    await HourLooper(humanUnits);
-                if (timeToUpdate.Hour == 0)
-                    await DayLooper(humanUnits);
+                if (lastUpdated.Second == 0)
+                    MinuteLooper(humanUnits, tribe);
 
-                timeToUpdate = timeToUpdate.AddSeconds(1);
+                if (lastUpdated.Minute == 0)
+                    HourLooper(humanUnits);
+
+                if (lastUpdated.Hour == 0)
+                    DayLooper(humanUnits);
+
+                lastUpdated = lastUpdated.AddSeconds(1);
                 loopCounter++;
 
             }
 
             if (loopCounter != 0)
             {
-                tribe.Updated = DateTime.UtcNow;
+                tribe.Updated = lastUpdated;
                 _dbContext.SaveChanges();
             }
-        }
-
-
-
-
-        //idea - do in night task? - or in restart server time once per night?
-        public async Task LoopAll()
-        {
-            //todo check AccountLastLogIn - disable old Tribes
-            var allTribesIds = await _dbContext
-                .Tribes
-                .Select(x => x.Id)
-                .ToListAsync();
-
-            allTribesIds.ForEach(x => LoopTribe(x));
         }
     }
 }

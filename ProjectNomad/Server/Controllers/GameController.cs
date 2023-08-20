@@ -4,7 +4,6 @@ using ProjectNomad.Shared.Interfaces;
 
 namespace ProjectNomad.Server.Controllers
 {
-    //todo REST
     [ApiController]
     [Route("api/[controller]")]
     public class GameController : ControllerBase
@@ -21,9 +20,9 @@ namespace ProjectNomad.Server.Controllers
         }
 
         [HttpPost("triggerPlayerGameObjectRecalculation")]
-        public async Task<ActionResult> TriggerPlayerGameObjectRecalculation([FromBody]int tribeId)
+        public async Task<ActionResult> TriggerPlayerGameObjectRecalculation([FromBody]Guid accountId)
         {
-            await _gameModule.TriggerPlayerGameObjectRecalculation(tribeId);
+            await _gameModule.TriggerPlayerGameObjectRecalculation(accountId);
             return Ok();
         }
 

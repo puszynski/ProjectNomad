@@ -45,12 +45,9 @@ namespace ProjectNomad.Server.Controllers
         }
 
         [HttpPost("generateNewTribeMembers")]
-        public async Task<ActionResult> GenerateNewTribeMembers([FromBody]int? tribeId)
+        public async Task<ActionResult> GenerateNewTribeMembers([FromBody]Guid accountId)
         {
-            if (tribeId == null)
-                return Problem();
-
-            await _gameModule.InitPlayerGameObjectsForExistingTribe(tribeId.Value);
+            await _gameModule.InitPlayerGameObjectsForExistingTribe(accountId);
             return Ok();
         }
     }

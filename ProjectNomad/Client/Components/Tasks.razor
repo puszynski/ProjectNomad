@@ -1,11 +1,13 @@
 ﻿@using ProjectNomad.Client.Logic;
+@using ProjectNomad.Client.Logic.NotificationsManagerLogic;
 @using ProjectNomad.Client.ViewModels.Tasks;
+@using ProjectNomad.Shared.Enums;
 @using ProjectNomad.Shared.Interfaces;
 @using static ProjectNomad.Client.Components.Notifications;
 
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
 @inject HttpClient _httpClient
-@inject TribeNotificationsLocalStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager
+@inject NotificationsManager _notificationsManager
 @inject NavigationManager _navigationManager
 @inject EventBroadcastService _eventBroadcastService
 
@@ -29,9 +31,22 @@
     } 
     <br />
 
+
     <button class="button"><span>Try unknown red colour berries</span></button>
     <button class="button"><span>Gather animal skull - 3d12m12s</span></button>
     <button class="button"><span>Catch fire after storm  - 15m36s</span></button>
+
+    @if (HumanUnitTasks.Any(x => AutoTasks.Contains(x.Type)))
+    {
+        <button class="button">Food consumingª</button>
+        @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.ConsumeFood))
+        {
+            <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@TribeId" />
+        }
+        <br />
+    }
+    
+
 }
 else
 {
@@ -48,10 +63,16 @@ else
 
     IEnumerable<IHumanUnitTaskDto> HumanUnitTasks;
 
+    IReadOnlyList<EHumanUnitTaskType> AutoTasks = new List<EHumanUnitTaskType>() { EHumanUnitTaskType.ConsumeFood };
+
     protected override async Task OnInitializedAsync()
     {
-        _eventBroadcastService.OnAction += EventHandler;
+        //_eventBroadcastService.OnAction += EventHandler; //TEMP - CHECKING EACH SEC
         await Reload();
+
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        while (await timer.WaitForNextTickAsync())
+            await Reload(); //TEMP TODO - ADD LOGIC
     }
 
     private void EventHandler(EActionWASM actionWASM)
@@ -65,7 +86,8 @@ else
 
     private async Task Reload()
     {
-        HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();
+        await _humanUnitTasksLocalStorageManager.SyncTasksWithServer(TribeId);
+        HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();//WSUMIE TO PO CO CI TO TRZYMAĆ W LOCAL STORAGE??.. 
         StateHasChanged();
     }
 
@@ -86,14 +108,9 @@ else
         HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();
         //HumanUnitTasks.Add(dto);//TODO SPÓBUJ PRZYSPIESZYĆ BO JEST DO D
 
-        var notificationDto = new TribeNotificationDto() 
-        { 
-            Added = DateTime.UtcNow, 
-            HumanUnitId = humanUnitWithNoTaskId, 
-            Type = ProjectNomad.Shared.Enums.EHumanNotificationType.FoodGatheringStarted 
-        };
-        await _tribeNotificationsLoclStorageAndServerManager.Add(notificationDto);
+        await _notificationsManager.Add(humanUnitWithNoTaskId, ENotificationType.FoodGatheringStarted);
         _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
-        StateHasChanged();
+
+        //StateHasChanged();
     }
 }

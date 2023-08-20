@@ -11,7 +11,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddScoped<HumanUnitTasksLocalStorageManager>();
-builder.Services.AddScoped<TribeNotificationsLocalStorageAndServerManager>();
+builder.Services.AddScoped<NotificationsManager>();
 builder.Services.AddSingleton<EventBroadcastService>();
 
 //3rd library - allow to store data in browser memory

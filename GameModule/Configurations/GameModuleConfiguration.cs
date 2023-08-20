@@ -2,6 +2,7 @@
 using GameModule.Logic.GameLooperLogic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ProjectNomad.Shared;
 
 namespace GameModule.Configurations
 {
@@ -10,7 +11,7 @@ namespace GameModule.Configurations
         /// <summary>
         /// to run migration
         ///     cd .\GameModule
-        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add AddMapTileIdToHumanUnitTask -c GameModuleDbContext
+        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add HumanUnitTaskMakeMapTileNullable -c GameModuleDbContext
         ///     
         ///  note: you are in migration and context library project and are referring to startup project
         ///  plus specify context where multiple are detected by -c Name
@@ -35,7 +36,9 @@ namespace GameModule.Configurations
             services.AddScoped<IGameModule, GameModule>();
             services.AddScoped<GameLOOPER>();
             services.AddScoped<MapService>();
-            services.AddScoped<HumanUnitTaskConsumer>();
+            services.AddScoped<IHumanUnitTaskConsumer, HumanUnitTaskConsumer>();
+            services.AddScoped<IHumanUnitAutoTaskScheduler, HumanUnitAutoTaskScheduler>();
+            services.AddScoped<IDateTimeProvider, DateTimeProvider>();
         }
     }
 }

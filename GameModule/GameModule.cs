@@ -29,38 +29,29 @@ namespace GameModule
             _mapService = mapService;
         }
 
-
         public async Task<ITribeGameObjects> GetPlayerGameObject(Guid accountId)
         {
-            try
-            {
-                var tribe = await _dbContext
-                    .Tribes
-                    .Where(x => x.AccountId == accountId)
-                    .Select(x => new { x.Name, x.Id, x.Localization.X, x.Localization.Y, x.Resources.FreshFood, x.Resources.Wood })
-                    .SingleOrDefaultAsync()
-                        ?? throw new ArgumentException("No tribe founded in database with given accountId :/", nameof(accountId));
+            var tribe = await _dbContext
+                .Tribes
+                .Where(x => x.AccountId == accountId)
+                .Select(x => new { x.Name, x.Id, x.Localization.X, x.Localization.Y, x.Resources.FreshFood, x.Resources.Wood })
+                .SingleOrDefaultAsync()
+                    ?? throw new ArgumentException("No tribe founded in database with given accountId :/", nameof(accountId));
 
-                var tribeDto = new TribeDto(tribe.Id, tribe.Name, tribe.X, tribe.Y, tribe.Wood, tribe.FreshFood);
+            var tribeDto = new TribeDto(tribe.Id, tribe.Name, tribe.X, tribe.Y, tribe.Wood, tribe.FreshFood);
 
-                var humanUnitsTask = _dbContext
-                    .HumanUnits
-                    .Where(x => x.TribeId == tribe.Id)
-                    .Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
-                    .ToListAsync();
+            var humanUnitsTask = _dbContext
+                .HumanUnits
+                .Where(x => x.TribeId == tribe.Id)
+                .Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
+                .ToListAsync();
 
-                return new TribeGameObjectDto(tribeDto, await humanUnitsTask);
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
+            return new TribeGameObjectDto(tribeDto, await humanUnitsTask);
             
         }
 
-        public async Task TriggerPlayerGameObjectRecalculation(int tribeId) 
-            => await _gameLooper.LoopTribe(tribeId);
+        public async Task TriggerPlayerGameObjectRecalculation(Guid accountId) 
+            => await _gameLooper.LoopTribe(accountId);
 
         public async Task InitPlayerGameObjects(Guid accountId)
         {
@@ -87,9 +78,9 @@ namespace GameModule
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task InitPlayerGameObjectsForExistingTribe(int tribeId)
+        public async Task InitPlayerGameObjectsForExistingTribe(Guid accountId)
         {
-            var tribe = await GetTribeOrArgumentException(tribeId);
+            var tribe = await GetTribeOrArgumentException(accountId);
 
             if (await _dbContext.HumanUnits.AnyAsync(x => x.TribeId == tribe.Id))
                 throw new ArgumentException($"To init new human units, there should be no in database (tribeId:{tribe.Id}) :/");
@@ -150,11 +141,20 @@ namespace GameModule
             return tribe;
         }
 
+        async Task<Tribe> GetTribeOrArgumentException(Guid accountId)
+        {
+            var tribe = await _dbContext
+                .Tribes
+                .SingleOrDefaultAsync(x => x.AccountId == accountId);
+
+            if (tribe == null)
+                throw new ArgumentException(nameof(tribe), $"No tribe for given account id ({accountId}) existing :/");
+
+            return tribe;
+        }
+
         public async Task AddTask(IAddHumanUnitTaskDto task)
         {
-            //todo test
-            const int TIME_MINUTES_TO_COLECT_FOOD = 1;
-
             var distance = MapTileDistanceCalculator.Execute(task.LocalizationStart_X, 
                 task.LocalizationStart_Y, 
                 task.LocalizationEnd_X, 
@@ -163,7 +163,7 @@ namespace GameModule
             var humanUnit = await _dbContext.HumanUnits.SingleAsync(x => x.Id == task.HumanUnitId);
             var mapTile = await _dbContext.MapTiles.SingleAsync(x => x.Localization.X == task.LocalizationStart_X && x.Localization.Y == task.LocalizationStart_Y);
 
-            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, humanUnit.FoodLevelPercentage) + TimeSpan.FromMinutes(TIME_MINUTES_TO_COLECT_FOOD);
+            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, humanUnit.FoodLevelPercentage) + TimeSpan.FromMinutes(GameSETTINGS.MinutesToGatherFood);
 
             var entity = new HumanUnitTask 
             {

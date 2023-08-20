@@ -1,6 +1,9 @@
 ﻿@using ProjectNomad.Client.Logic;
+@using ProjectNomad.Client.Logic.NotificationsManagerLogic;
+
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
 @inject EventBroadcastService _eventBroadcastService;
+@inject NotificationsManager _notificationsManager
 
 @if (ProgressBarDisplay != null)
 {
@@ -30,7 +33,10 @@
         while (await timer.WaitForNextTickAsync())
         {
             UpdateProgressBarDisplay();
-            await UpdateRemainingTimeToDisplay();
+            var isTaskEnded = await UpdateRemainingTimeToDisplay();
+
+            if (isTaskEnded)
+                break;
         }
     }
 
@@ -49,18 +55,23 @@
         ProgressBarDisplay = barToUpdate;
     }
 
-    async Task UpdateRemainingTimeToDisplay()
-    {   
+    async Task<bool> UpdateRemainingTimeToDisplay()
+    {
+        var isTaskEnded = false;
+
         var timeLeft = HumanUnitTask.To - DateTime.UtcNow;
 
         if (timeLeft.Seconds < 0)
         {
-            _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded); // JEST CO SEKUNDE A MIMO TO TASK NIE USUWA SIĘ PO ZAKOŃCZENIU.. TODO
+            //ZAPĘTLA SIE I CIĄGLE WYSYŁA NOTIFICATIONS.. TODO
+            await _notificationsManager.Add(HumanUnitTask.HumanUnitId, ENotificationType.FoodGatheringEnded);
+            _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
             _eventBroadcastService.AddMessage(EActionWASM.TaskEnded);
-            return;
+            return true;
         }
 
         RemainingTimeToDisplay = $"{timeLeft.Hours}h{timeLeft.Minutes}m{timeLeft.Seconds}s";
         StateHasChanged();
+        return false;
     }
 }

@@ -1,25 +1,32 @@
 ﻿using GameModule.Configurations;
-using GameModule.DtoModels;
 using GameModule.Entities;
-using Microsoft.EntityFrameworkCore;
-using NotificationModule;
+using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 
 namespace GameModule.Logic.GameLooperLogic
 {
-    internal class HumanUnitTaskConsumer
+    internal interface IHumanUnitTaskConsumer
+    {
+        void Execute(IEnumerable<HumanUnit> humanUnits,
+            Tribe tribe,
+            List<HumanUnitTask> allTasksToConsume,
+            List<MapTile> mapTilesToConsumeTasks);
+    }
+
+    internal class HumanUnitTaskConsumer : IHumanUnitTaskConsumer
     {
         readonly GameModuleDbContext _dbContext;
-        readonly INotificationModule _notificationModule;
-        public HumanUnitTaskConsumer(GameModuleDbContext dbContext, INotificationModule notificationModule)
+        readonly IDateTimeProvider _dateTimeProvider;
+        public HumanUnitTaskConsumer(GameModuleDbContext dbContext, IDateTimeProvider dateTimeProvider)
         {
             _dbContext = dbContext;
-            _notificationModule = notificationModule;
+            _dateTimeProvider = dateTimeProvider;
         }
 
-        internal async Task Execute(IEnumerable<HumanUnit> humanUnits, 
+        void IHumanUnitTaskConsumer.Execute(IEnumerable<HumanUnit> humanUnits, 
             Tribe tribe,
-            IEnumerable<HumanUnitTask> allTasksToConsume)//TODO MAKE DTO AND MATERIALIZE ALL DATA NEEDED EG MAP-TILE
+            List<HumanUnitTask> allTasksToConsume,
+            List<MapTile> mapTilesToConsumeTasks)
         {
             var humanUnitIds = humanUnits
                 .Select(x => x.Id)
@@ -27,31 +34,30 @@ namespace GameModule.Logic.GameLooperLogic
 
             var tasksToConsume = allTasksToConsume
                 .Where(x => humanUnitIds.Contains(x.HumanUnitId))
-                .Where(x => x.To <= DateTime.UtcNow.AddSeconds(-1)) //hack to calculate changes before WASM call to update data from server
+                .Where(x => x.To <= _dateTimeProvider.UtcNow()) //note - gameLOOPER is triggered from client once per minute.. 
                 .ToList();
-
 
             foreach (var task in tasksToConsume) 
             {
-                var mapTile = await _dbContext.MapTiles.SingleAsync(x => x.Id == task.MapTileId);
+                var mapTile = mapTilesToConsumeTasks.Single(x => x.Id == task.MapTileId);
                 
-                await ConsumeTask(task.Type, 
+                ConsumeTask(task, 
                     humanUnits.Single(x => x.Id == task.HumanUnitId), 
                     tribe,
                     mapTile.Food.ActualPoints);
 
+                allTasksToConsume.Remove(task);//todo test it
                 _dbContext.HumanUnitTasks.Remove(task);
             }
         }
 
-        async Task ConsumeTask(EHumanUnitTaskType eHumanUnitTaskType,
+        void ConsumeTask(HumanUnitTask humanUnitTask,
             HumanUnit humanUnit,
             Tribe tribe,
             int mapTileFoodPoints) //todo UT
         {
-            switch (eHumanUnitTaskType)
+            switch (humanUnitTask.Type)
             {
-                //todo think..
                 case EHumanUnitTaskType.GatheringFood:
                     const int MAX_FOOD_PONTS_GATHERED_BY_ONE_TASK = 5;
 
@@ -64,8 +70,11 @@ namespace GameModule.Logic.GameLooperLogic
                         ? foodPoints 
                         : mapTileFoodPoints;
 
-                    tribe.Resources.FreshFood += (int)gatheredFoodPoints; //todo tests
-                    await _notificationModule.InsertTribeNotification(tribe.Id, new TribeNotificationDto(humanUnit.Id, DateTime.UtcNow, EHumanNotificationType.FoodGatheringEnded));
+                    tribe.Resources.FreshFood += (int)gatheredFoodPoints;
+                    break;
+
+                case EHumanUnitTaskType.ConsumeFood:
+                    humanUnit.FoodLevelPercentage += 20;
                     break;
             }
         }

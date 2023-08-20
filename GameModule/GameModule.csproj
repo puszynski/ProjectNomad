@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NotificationModule\NotificationModule.csproj" />
     <ProjectReference Include="..\ProjectNomad\Shared\ProjectNomad.Shared.csproj" />
   </ItemGroup>
 

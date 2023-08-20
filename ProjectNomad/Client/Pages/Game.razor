@@ -2,7 +2,7 @@
 @using Blazored.LocalStorage;
 @using ProjectNomad.Client.ViewModels.Game
 @using ProjectNomad.Shared.Interfaces;
-@inject HttpClient _http
+@inject HttpClient _httpClient
 @inject ILocalStorageService _localStorageService
 
 
@@ -31,16 +31,11 @@
                     margin: auto;
                     width: 50%;
                     padding: 0px;">
-        @* TODO COMPONENT *@
             <center>                
-                <button class="button"><span>HOME</span></button>
-                <button class="button"><span>TRIBE</span></button>
+                <ProjectNomad.Client.Components.GameMenu />
 
                 <br/>
-                <smaller>population </smaller>  <b> @GameObjectsViewModel.HumanUnits.Count()</b>                        
-                <smaller>position </smaller>    <b> @GameObjectsViewModel.Tribe.X|@GameObjectsViewModel.Tribe.Y</b>     
-                <smaller>fresh food</smaller>   <b> @GameObjectsViewModel.Tribe.FreshFood</b>                         
-                <smaller>wood </smaller>        <b> @GameObjectsViewModel.Tribe.Wood</b>
+                <ProjectNomad.Client.Components.BasicStatsBar GameObjectsViewModel="GameObjectsViewModel" />
 
                 <br />
                 <ProjectNomad.Client.Components.GameTimeDisplayer />
@@ -84,7 +79,7 @@
 }
 else
 {
-    <p>Ładuję dane..</p>
+    <p>loading..</p>
 }
 
 
@@ -93,31 +88,29 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await GetDataFromServer();
         await TrigerRecalculation();
-        await GetDataFromServer(); //IDEA its preventing null when all died after recalculation, think how to prevent doubled server requests..
+        await GetDataFromServer();
 
-        var timer = new PeriodicTimer(TimeSpan.FromSeconds(61));
-
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         while (await timer.WaitForNextTickAsync())
-        {
-            await TrigerRecalculation(); //IDEA use game looper stright from blazorWASM?
-        }
+            await TrigerRecalculation();
+    }
+
+    async Task TrigerRecalculation()
+    {
+        var accountId = await GetAccountIdOr404();
+        await _httpClient.PostAsJsonAsync("api/game/triggerPlayerGameObjectRecalculation", accountId);
+
+        await GetDataFromServer();
+        StateHasChanged();
     }
 
     async Task GetDataFromServer()
     {
-        var accountId = await _localStorageService.GetItemAsync<Guid?>("id");
+        var accountId = await GetAccountIdOr404();
+        var result = await _httpClient.GetFromJsonAsync<TribeGameObjectsViewModel>($"api/game/getGameObjects/{accountId}");
 
-        if (!accountId.HasValue)
-        {
-            //redirect to login page?
-            throw new ArgumentNullException("Guid from _localStorageService should not be null in game window");
-        }
-
-        var result = await _http.GetFromJsonAsync<TribeGameObjectsViewModel>($"api/game/getGameObjects/{accountId}");
-
-        GameObjectsViewModel = new TribeGameObjectsViewModel(_http)
+        GameObjectsViewModel = new TribeGameObjectsViewModel
         { 
             Tribe = result.Tribe, 
             HumanUnits = result.HumanUnits 
@@ -126,22 +119,23 @@ else
 
     async Task ReBornTribeMembers()
     {
-        await GameObjectsViewModel.ReBornTribeMembers();
+        var accountId = await GetAccountIdOr404();
+        await _httpClient.PostAsJsonAsync("api/account/generateNewTribeMembers", accountId);
+        
         await GetDataFromServer();
         StateHasChanged();
     }
 
-    async Task TrigerRecalculation()
-    {
-        var tribeCountBeforeRecalculation = GameObjectsViewModel.HumanUnits?.Count();
-
-        await GameObjectsViewModel.TrigerRecalculation();
-        await GetDataFromServer();
-
-        //if (tribeCountBeforeRecalculation != null && tribeCountBeforeRecalculation != GameObjectsViewModel.HumanUnits.Count())
-            //await RefreshNotifications(); //do you realy whant to relaod (ask server) each sec?
-
-        StateHasChanged();
-    }
     
+
+    async Task<Guid> GetAccountIdOr404()
+    {
+        var accountId = await _localStorageService.GetItemAsync<Guid?>("id");
+
+        if (!accountId.HasValue)
+            throw new ArgumentNullException("Guid from _localStorageService cant be null in game window");
+
+        return accountId.Value;
+    }
+
 }

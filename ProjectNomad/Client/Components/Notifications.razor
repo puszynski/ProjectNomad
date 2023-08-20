@@ -1,19 +1,18 @@
 ﻿@using Blazored.LocalStorage;
 @using ProjectNomad.Client.Logic;
+@using ProjectNomad.Client.Logic.NotificationsManagerLogic;
 @inject HttpClient _httpClient
 @inject ILocalStorageService _localStorageService
-@inject TribeNotificationsLocalStorageAndServerManager _tribeNotificationsLoclStorageAndServerManager;
+@inject NotificationsManager _tribeNotificationsLoclStorageAndServerManager;
 @inject EventBroadcastService _eventBroadcastService;
 
-@if (TribeNotifications is not null)
+@if (NotificationsToDisplay is not null)
 {
-    <button class="button" @onclick="RefreshNotifications"><span>Ask tribe member for news &#8634;</span></button>
-    @* todo when clicked - display info "waitng for news.." - after few sec button is back *@
+    <button class="button" ><span>Clean notifications</span></button>
 
-
-    @if (TribeNotifications.Any())
+    @if (NotificationsToDisplay.Any())
     {
-        foreach (var item in TribeNotifications)
+        foreach (var item in NotificationsToDisplay)
         {
             <p>@item.HumanUnitId (@item.Added) => @item.Type.ToString()</p>
         }
@@ -24,11 +23,8 @@
     }
 }
 
-
-
-
 @code {
-    List<TribeNotificationDto> TribeNotifications;
+    IEnumerable<Notification> NotificationsToDisplay;
 
     [ParameterAttribute]
     public int TribeId { get; set; }
@@ -36,7 +32,6 @@
     protected override async Task OnInitializedAsync()
     {
         _eventBroadcastService.OnAction += EventHandler;
-        TribeNotifications = new List<TribeNotificationDto>();
         await RefreshNotifications();        
     }
 
@@ -51,15 +46,7 @@
 
     internal async Task RefreshNotifications()
     {
-        await _tribeNotificationsLoclStorageAndServerManager.GetAllAndRemoveOutdated(TribeId);
-        TribeNotifications = _tribeNotificationsLoclStorageAndServerManager.TribeNotifications;
+        NotificationsToDisplay = await _tribeNotificationsLoclStorageAndServerManager.Get();
         StateHasChanged();
-    }
-
-    internal class TribeNotificationDto : ProjectNomad.Shared.Interfaces.ITribeNotification
-    {
-        public int HumanUnitId { get; set; }
-        public DateTime Added { get; set; }
-        public ProjectNomad.Shared.Enums.EHumanNotificationType Type { get; set; }
     }
 }

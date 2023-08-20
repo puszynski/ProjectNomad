@@ -11,6 +11,6 @@ namespace GameModule.Entities
         public EHumanUnitTaskType Type { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
-        public int MapTileId { get; set; }
+        public int? MapTileId { get; set; } //not all task need it.. 
     }
 }
