@@ -1,27 +1,37 @@
-﻿using GameModule.Configurations;
-using GameModule.Entities;
+﻿using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic;
+using GameModule.Repositories;
 using ProjectNomad.Shared;
 
 namespace GameModule.Logic
 {
     internal class GameLOOPER
     {
-        readonly GameModuleDbContext _dbContext;
+        readonly ITribeRepository _tribeRepository;
         readonly IDateTimeProvider _dateTimeProvider;
+        readonly IMapTileRepository _mapTileRepository;
+        readonly IHumanUnitRepository _humanUnitRepository;
         readonly IHumanUnitTaskConsumer _humanUnitTaskConsumer;
+        readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
         readonly IHumanUnitAutoTaskScheduler _humanUnitAutoTaskScheduler;
-        public GameLOOPER(GameModuleDbContext dbContext,
+        public GameLOOPER(
+            ITribeRepository tribeRepository,
             IDateTimeProvider dateTimeProvider,
+            IMapTileRepository mapTileRepository,
+            IHumanUnitRepository humanUnitRepository,
             IHumanUnitTaskConsumer humanUnitTaskConsumer,
+            IHumanUnitTaskRepository humanUnitTaskRepository,
             IHumanUnitAutoTaskScheduler humanUnitAutoTaskScheduler)
         {
-            _dbContext = dbContext;
+            _tribeRepository = tribeRepository;
             _dateTimeProvider = dateTimeProvider;
+            _mapTileRepository = mapTileRepository;
+            _humanUnitRepository = humanUnitRepository;
             _humanUnitTaskConsumer = humanUnitTaskConsumer;
+            _humanUnitTaskRepository = humanUnitTaskRepository;
             _humanUnitAutoTaskScheduler = humanUnitAutoTaskScheduler;
         }
-        async Task SecondLooper(List<HumanUnit> humanUnits,
+        async Task ActionsPerSecond(List<HumanUnit> humanUnits,
             Tribe tribe,
             List<HumanUnitTask> tasksToConsume,
             List<MapTile> mapTilesToConsumeTasks)
@@ -38,64 +48,59 @@ namespace GameModule.Logic
             await humanUnitAutoTaskSchedulerTask;
         }
 
-        void MinuteLooper(List<HumanUnit> humanUnits, 
+        void ActionsPerMinute(List<HumanUnit> humanUnits, 
             Tribe tribe)
         {
             humanUnits.ForEach(x => x.FoodLevelPercentage = x.FoodLevelPercentage - GameSETTINGS.FoodToGetHungryForHumanUnitEachMinute);
-            DeathApplicator.StarvationDeath(_dbContext, humanUnits);
+            DeathApplicator.StarvationDeath(_humanUnitRepository, humanUnits);
         }
 
-        void HourLooper(List<HumanUnit> humanUnits)
+        void ActionsPerHour(List<HumanUnit> humanUnits)
         {
         }
 
-        void DayLooper(List<HumanUnit> humanUnits) 
+        void ActionsPerDay(List<HumanUnit> humanUnits) 
         {
         }
 
         public async Task LoopTribe(Guid accountId)
         {
-            var t2 = _dbContext.Tribes.ToList();
-            //todo try async query materializations.. - there were problems..
+            //todo for repos? - use selects + dto to limit data fetch
+            var tribe = await _tribeRepository.GetByAccountId(accountId);
 
-
-            var tribe = _dbContext
-                .Tribes
-                .SingleOrDefault(x => x.AccountId == accountId);
-
-            var humanUnits = _dbContext
-                .HumanUnits
-                .Where(x => x.TribeId == tribe.Id)
-                .ToList();
-
-            var tasksToConsume = _dbContext
-                .HumanUnitTasks
-                .Where(x => x.TribeId == tribe.Id)
-                .ToList();
-
-            var mapTilesFromTasks = _dbContext
-                .MapTiles
-                .Where(x => tasksToConsume.Select(y => y.MapTileId).Contains(x.Id))
-                .ToList();
-
-            if (tribe == null || !humanUnits.Any())
+            if (tribe == null) 
                 return;
+
+            var humanUnits_task = _humanUnitRepository.GetHumanUnitsByTribeId(tribe.Id);
+            var tasksToConsume_task = _humanUnitTaskRepository.GetHumanUnitTasksByTribeId(tribe.Id);
+
+            var humanUnits = await humanUnits_task;
+            var tasksToConsume = await tasksToConsume_task;
+
+            if (!humanUnits.Any())
+                return;
+
+            var mapTilesFromTasks = await _mapTileRepository.GetByIds(tasksToConsume.Select(y => y.MapTileId).ToList());
+
 
             var lastUpdated = tribe.Updated;
             var loopCounter = 0;
 
             while (lastUpdated <= _dateTimeProvider.UtcNow())
             {
-                await SecondLooper(humanUnits, tribe, tasksToConsume, mapTilesFromTasks);
+                await ActionsPerSecond(humanUnits, 
+                    tribe, 
+                    tasksToConsume, 
+                    mapTilesFromTasks);
 
                 if (lastUpdated.Second == 0)
-                    MinuteLooper(humanUnits, tribe);
+                    ActionsPerMinute(humanUnits, tribe);
 
                 if (lastUpdated.Minute == 0)
-                    HourLooper(humanUnits);
+                    ActionsPerHour(humanUnits);
 
-                if (lastUpdated.Hour == 0)
-                    DayLooper(humanUnits);
+                if (lastUpdated.Hour == 12)
+                    ActionsPerDay(humanUnits);
 
                 lastUpdated = lastUpdated.AddSeconds(1);
                 loopCounter++;
@@ -105,7 +110,7 @@ namespace GameModule.Logic
             if (loopCounter != 0)
             {
                 tribe.Updated = lastUpdated;
-                _dbContext.SaveChanges();
+                await _tribeRepository.SaveChangesAsync();
             }
         }
     }

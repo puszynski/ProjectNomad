@@ -1,5 +1,6 @@
 ﻿using GameModule.Logic;
 using GameModule.Logic.GameLooperLogic;
+using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectNomad.Shared;
@@ -21,7 +22,7 @@ namespace GameModule.Configurations
         ///     
         /// FOR THE FIRST TIME DB SHOULD BE CREATED:
         /// => install globally via powerShell => dotnet tool install --global dotnet-ef
-        /// => then run database update.. 
+        /// => run database update.. 
         /// </summary>
         public static void DbContextConfiguration(IServiceCollection services, string connectionStrings)
         {
@@ -32,13 +33,20 @@ namespace GameModule.Configurations
 
         public static void RegisterIoC(IServiceCollection services)
         {
-            services.AddScoped<NewTribeLocalizationInitializer>();
             services.AddScoped<IGameModule, GameModule>();
+            services.AddScoped<NewTribeLocalizationInitializer>();
+            services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+
+            services.AddScoped<ITribeRepository, TribeRepository>();
+            services.AddScoped<IMapTileRepository, MapTileRepository>();
+            services.AddScoped<IHumanUnitRepository, HumanUnitRepository>();
+            services.AddScoped<IHumanUnitTaskRepository,  HumanUnitTaskRepository>();
+
             services.AddScoped<GameLOOPER>();
+
             services.AddScoped<MapService>();
             services.AddScoped<IHumanUnitTaskConsumer, HumanUnitTaskConsumer>();
             services.AddScoped<IHumanUnitAutoTaskScheduler, HumanUnitAutoTaskScheduler>();
-            services.AddScoped<IDateTimeProvider, DateTimeProvider>();
         }
     }
 }
