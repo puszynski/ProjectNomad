@@ -1,5 +1,5 @@
-﻿using GameModule.Configurations;
-using GameModule.Entities;
+﻿using GameModule.Entities;
+using GameModule.Repositories;
 using ProjectNomad.Shared;
 
 namespace GameModule.Logic.GameLooperLogic
@@ -13,8 +13,11 @@ namespace GameModule.Logic.GameLooperLogic
 
     internal class HumanUnitAutoTaskScheduler : IHumanUnitAutoTaskScheduler
     {
-        readonly GameModuleDbContext _dbContext;
-        public HumanUnitAutoTaskScheduler(GameModuleDbContext dbContext) => _dbContext = dbContext;
+        readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
+        public HumanUnitAutoTaskScheduler(IHumanUnitTaskRepository humanUnitTaskRepository)
+        {
+            _humanUnitTaskRepository = humanUnitTaskRepository;
+        }
 
         async Task IHumanUnitAutoTaskScheduler.Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
@@ -54,8 +57,8 @@ namespace GameModule.Logic.GameLooperLogic
             };
 
             tasksToConsume.Add(entity);
-            await _dbContext.AddAsync(entity);
-            await _dbContext.SaveChangesAsync();
+            await _humanUnitTaskRepository.AddAsync(entity);
+            await _humanUnitTaskRepository.SaveChangesAsync();
         }
     }
 }

@@ -7,6 +7,8 @@ namespace GameModule.Repositories
     internal interface IHumanUnitTaskRepository : IRepository
     {
         Task<List<HumanUnitTask>> GetHumanUnitTasksByTribeId(int tribeId);
+        Task AddAsync(HumanUnitTask humanUnitTask);
+        void Remove(HumanUnitTask humanUnitTask);
     }
 
     internal class HumanUnitTaskRepository : BaseRepository, IHumanUnitTaskRepository
@@ -21,6 +23,16 @@ namespace GameModule.Repositories
                 .HumanUnitTasks
                 .Where(x => x.TribeId == tribeId)
                 .ToListAsync();
+        }
+
+        async Task IHumanUnitTaskRepository.AddAsync(HumanUnitTask humanUnitTask)
+        {
+            await _gameModuleDbContext.AddAsync(humanUnitTask);
+        }
+
+        void IHumanUnitTaskRepository.Remove(HumanUnitTask humanUnitTask)
+        {
+            _gameModuleDbContext.Remove(humanUnitTask);
         }
     }
 }

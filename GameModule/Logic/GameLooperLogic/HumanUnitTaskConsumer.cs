@@ -1,5 +1,5 @@
-﻿using GameModule.Configurations;
-using GameModule.Entities;
+﻿using GameModule.Entities;
+using GameModule.Repositories;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 
@@ -15,12 +15,13 @@ namespace GameModule.Logic.GameLooperLogic
 
     internal class HumanUnitTaskConsumer : IHumanUnitTaskConsumer
     {
-        readonly GameModuleDbContext _dbContext;
         readonly IDateTimeProvider _dateTimeProvider;
-        public HumanUnitTaskConsumer(GameModuleDbContext dbContext, IDateTimeProvider dateTimeProvider)
+        readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
+        public HumanUnitTaskConsumer(IDateTimeProvider dateTimeProvider, 
+            IHumanUnitTaskRepository humanUnitTaskRepository)
         {
-            _dbContext = dbContext;
             _dateTimeProvider = dateTimeProvider;
+            _humanUnitTaskRepository = humanUnitTaskRepository;
         }
 
         void IHumanUnitTaskConsumer.Execute(IEnumerable<HumanUnit> humanUnits, 
@@ -47,7 +48,7 @@ namespace GameModule.Logic.GameLooperLogic
                     mapTile.Food.ActualPoints);
 
                 allTasksToConsume.Remove(task);//todo test it
-                _dbContext.HumanUnitTasks.Remove(task);
+                _humanUnitTaskRepository.Remove(task);
             }
         }
 
