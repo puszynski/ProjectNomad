@@ -7,7 +7,7 @@ namespace GameModule.Logic.GameLooperLogic
 {
     internal interface IHumanUnitTaskConsumer
     {
-        void Execute(IEnumerable<HumanUnit> humanUnits,
+        void Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
             List<HumanUnitTask> allTasksToConsume,
             List<MapTile> mapTilesToConsumeTasks);
@@ -24,7 +24,7 @@ namespace GameModule.Logic.GameLooperLogic
             _humanUnitTaskRepository = humanUnitTaskRepository;
         }
 
-        void IHumanUnitTaskConsumer.Execute(IEnumerable<HumanUnit> humanUnits, 
+        void IHumanUnitTaskConsumer.Execute(List<HumanUnit> humanUnits, 
             Tribe tribe,
             List<HumanUnitTask> allTasksToConsume,
             List<MapTile> mapTilesToConsumeTasks)

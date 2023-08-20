@@ -1,19 +1,11 @@
 ﻿using GameModule.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] //needed for UT
-[assembly: InternalsVisibleTo("UnitTests")]
 namespace GameModule.Configurations
 {
     internal class GameModuleDbContext : DbContext
     {
         public GameModuleDbContext(DbContextOptions<GameModuleDbContext> options) : base(options)
-        {
-        }
-
-        //only for UT
-        public GameModuleDbContext()
         {
         }
 

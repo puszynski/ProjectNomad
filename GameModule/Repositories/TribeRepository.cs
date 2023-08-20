@@ -1,7 +1,9 @@
 ﻿using GameModule.Configurations;
 using GameModule.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace GameModule.Repositories
 {
     internal interface ITribeRepository : IRepository
