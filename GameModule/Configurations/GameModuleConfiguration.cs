@@ -43,6 +43,10 @@ namespace GameModule.Configurations
             services.AddScoped<IHumanUnitTaskRepository,  HumanUnitTaskRepository>();
 
             services.AddScoped<GameLOOPER>();
+            services.AddScoped<ISecundExecutor, SecundExecutor>();
+            services.AddScoped<IMinuteExecutor, MinuteExecutor>();
+            services.AddScoped<IHourExecutor, HourExecutor>();
+            services.AddScoped<IDayExecutor, DayExecutor>();
 
             services.AddScoped<MapService>();
             services.AddScoped<IHumanUnitTaskConsumer, HumanUnitTaskConsumer>();

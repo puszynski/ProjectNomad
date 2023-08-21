@@ -14,12 +14,15 @@ namespace GameModule.Logic.GameLooperLogic
     internal class HumanUnitAutoTaskScheduler : IHumanUnitAutoTaskScheduler
     {
         readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
-        public HumanUnitAutoTaskScheduler(IHumanUnitTaskRepository humanUnitTaskRepository)
+        readonly IDateTimeProvider _timeProvider;
+        public HumanUnitAutoTaskScheduler(IHumanUnitTaskRepository humanUnitTaskRepository, 
+            IDateTimeProvider timeProvider)
         {
             _humanUnitTaskRepository = humanUnitTaskRepository;
+            _timeProvider = timeProvider;
         }
 
-        async Task IHumanUnitAutoTaskScheduler.Execute(List<HumanUnit> humanUnits,
+        public async Task Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
             List<HumanUnitTask> tasksToConsume)
         {
@@ -48,11 +51,11 @@ namespace GameModule.Logic.GameLooperLogic
         {
             var entity = new HumanUnitTask
             {
-                From = DateTime.UtcNow,
+                From = _timeProvider.UtcNow(), // DateTime.UtcNow,
                 HumanUnitId = humanUnitId,
                 TribeId = tribeId,
                 Type = ProjectNomad.Shared.Enums.EHumanUnitTaskType.ConsumeFood,
-                To = DateTime.UtcNow.AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood),
+                To = _timeProvider.UtcNow().AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood),
                 MapTileId = null
             };
 

@@ -1,5 +1,4 @@
-﻿using GameModule.Entities;
-using GameModule.Logic.GameLooperLogic;
+﻿using GameModule.Logic.GameLooperLogic;
 using GameModule.Repositories;
 using ProjectNomad.Shared;
 
@@ -7,65 +6,39 @@ namespace GameModule.Logic
 {
     internal class GameLOOPER
     {
+        readonly IDayExecutor _dayExecutor;
+        readonly IHourExecutor _hourExecutor;
+        readonly ISecundExecutor _secundExecutor;
+        readonly IMinuteExecutor _minuteExecutor;
         readonly ITribeRepository _tribeRepository;
         readonly IDateTimeProvider _dateTimeProvider;
         readonly IMapTileRepository _mapTileRepository;
         readonly IHumanUnitRepository _humanUnitRepository;
-        readonly IHumanUnitTaskConsumer _humanUnitTaskConsumer;
         readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
-        readonly IHumanUnitAutoTaskScheduler _humanUnitAutoTaskScheduler;
         public GameLOOPER(
+            IDayExecutor dayExecutor,
+            IHourExecutor hourExecutor,
+            ISecundExecutor secundExecutor,
+            IMinuteExecutor minuteExecutor,
             ITribeRepository tribeRepository,
             IDateTimeProvider dateTimeProvider,
             IMapTileRepository mapTileRepository,
             IHumanUnitRepository humanUnitRepository,
-            IHumanUnitTaskConsumer humanUnitTaskConsumer,
-            IHumanUnitTaskRepository humanUnitTaskRepository,
-            IHumanUnitAutoTaskScheduler humanUnitAutoTaskScheduler)
+            IHumanUnitTaskRepository humanUnitTaskRepository)
         {
+            _dayExecutor = dayExecutor;
+            _hourExecutor = hourExecutor;
+            _secundExecutor = secundExecutor;
+            _minuteExecutor = minuteExecutor;
             _tribeRepository = tribeRepository;
             _dateTimeProvider = dateTimeProvider;
             _mapTileRepository = mapTileRepository;
             _humanUnitRepository = humanUnitRepository;
-            _humanUnitTaskConsumer = humanUnitTaskConsumer;
             _humanUnitTaskRepository = humanUnitTaskRepository;
-            _humanUnitAutoTaskScheduler = humanUnitAutoTaskScheduler;
-        }
-        async Task ActionsPerSecond(List<HumanUnit> humanUnits,
-            Tribe tribe,
-            List<HumanUnitTask> tasksToConsume,
-            List<MapTile> mapTilesToConsumeTasks)
-        {
-            var humanUnitAutoTaskSchedulerTask = _humanUnitAutoTaskScheduler.Execute(humanUnits,
-                tribe,
-                tasksToConsume);
-
-            _humanUnitTaskConsumer.Execute(humanUnits,
-                tribe,
-                tasksToConsume,
-                mapTilesToConsumeTasks);
-
-            await humanUnitAutoTaskSchedulerTask;
-        }
-
-        void ActionsPerMinute(List<HumanUnit> humanUnits, 
-            Tribe tribe)
-        {
-            humanUnits.ForEach(x => x.FoodLevelPercentage = x.FoodLevelPercentage - GameSETTINGS.FoodToGetHungryForHumanUnitEachMinute);
-            DeathApplicator.StarvationDeath(_humanUnitRepository, humanUnits);
-        }
-
-        void ActionsPerHour(List<HumanUnit> humanUnits)
-        {
-        }
-
-        void ActionsPerDay(List<HumanUnit> humanUnits) 
-        {
         }
 
         public async Task LoopTribe(Guid accountId)
         {
-            //todo for repos? - use selects + dto to limit data fetch
             var tribe = await _tribeRepository.GetByAccountId(accountId);
 
             if (tribe == null) 
@@ -82,29 +55,28 @@ namespace GameModule.Logic
 
             var mapTilesFromTasks = await _mapTileRepository.GetByIds(tasksToConsume.Select(y => y.MapTileId).ToList());
 
-
             var lastUpdated = tribe.Updated;
             var loopCounter = 0;
 
-            while (lastUpdated <= _dateTimeProvider.UtcNow())
+            var test = _dateTimeProvider.UtcNow().AddSeconds(-1);
+            while (lastUpdated <= _dateTimeProvider.UtcNow().AddSeconds(-1))
             {
-                await ActionsPerSecond(humanUnits, 
-                    tribe, 
-                    tasksToConsume, 
+                await _secundExecutor.Execute(humanUnits,
+                    tribe,
+                    tasksToConsume,
                     mapTilesFromTasks);
 
                 if (lastUpdated.Second == 0)
-                    ActionsPerMinute(humanUnits, tribe);
+                    _minuteExecutor.Execute(humanUnits, tribe);
 
-                if (lastUpdated.Minute == 0)
-                    ActionsPerHour(humanUnits);
+                if (lastUpdated.Minute == 0 && lastUpdated.Second == 0)
+                    _hourExecutor.Execute();
 
-                if (lastUpdated.Hour == 12)
-                    ActionsPerDay(humanUnits);
+                if (lastUpdated.Hour == 12 && lastUpdated.Minute == 0 && lastUpdated.Second == 0)
+                    _dayExecutor.Execute();
 
                 lastUpdated = lastUpdated.AddSeconds(1);
                 loopCounter++;
-
             }
 
             if (loopCounter != 0)

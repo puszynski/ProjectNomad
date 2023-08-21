@@ -33,11 +33,18 @@ namespace GameModule.Logic.GameLooperLogic
                 .Select(x => x.Id)
                 .ToList();
 
+            
+
             var tasksToConsume = allTasksToConsume
                 .Where(x => humanUnitIds.Contains(x.HumanUnitId))
-                .Where(x => x.To <= _dateTimeProvider.UtcNow()) //note - gameLOOPER is triggered from client once per minute.. 
+                .Where(x => x.To <= _dateTimeProvider.UtcNow().AddMinutes(-1)) //TU NIE MOZE BYĆ NOW - TYLKO AKTUALNY CZAS TASKA! I WSZEDZIE TAK SAMO WEWNĄTRZ!!!!
                 .ToList();
-
+            var t1 = allTasksToConsume.Single().To;
+            var t2 = _dateTimeProvider.UtcNow().AddMinutes(-1);
+            if (allTasksToConsume.Single().To < _dateTimeProvider.UtcNow().AddMinutes(-1))//TODO REMOVE TEMP
+            {
+                var koko = 123;
+            }
             foreach (var task in tasksToConsume) 
             {
                 var mapTile = mapTilesToConsumeTasks.Single(x => x.Id == task.MapTileId);

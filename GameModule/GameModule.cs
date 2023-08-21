@@ -13,20 +13,23 @@ namespace GameModule
         const int TILE_MAX_FOOD_POINTS_LIMIT = 100;
         const int TILE_MAX_WOOD_POINTS_LIMIT = 100;
 
-        readonly GameModuleDbContext _dbContext;
         readonly NewTribeLocalizationInitializer _newTribeLocalizationInitializer;
+        readonly IDateTimeProvider _dateTimeProvider;
+        readonly GameModuleDbContext _dbContext;
         readonly GameLOOPER _gameLooper;
         readonly MapService _mapService;
 
         public GameModule(GameModuleDbContext dbContext,
             NewTribeLocalizationInitializer newTribeLocalizationInitializer,
             GameLOOPER gameLooper,
-            MapService mapService)
+            MapService mapService,
+            IDateTimeProvider dateTimeProvider)
         {
             _dbContext = dbContext;
             _newTribeLocalizationInitializer = newTribeLocalizationInitializer;
             _gameLooper = gameLooper;
             _mapService = mapService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ITribeGameObjects> GetPlayerGameObject(Guid accountId)
@@ -62,7 +65,7 @@ namespace GameModule
                 AccountId = accountId,
                 Name = "Tribe with no name",
                 Localization = localization,
-                Updated = DateTime.UtcNow
+                Updated = _dateTimeProvider.UtcNow()
             };
 
             var humanUnits = new List<HumanUnit>();
@@ -167,11 +170,11 @@ namespace GameModule
 
             var entity = new HumanUnitTask 
             {
-                From = DateTime.UtcNow,
+                From = _dateTimeProvider.UtcNow(),
                 HumanUnitId = task.HumanUnitId,
                 TribeId = task.TribeId,
                 Type = task.Type,
-                To = DateTime.UtcNow.Add(timeToEndTask),
+                To = _dateTimeProvider.UtcNow().Add(timeToEndTask),
                 MapTileId = mapTile.Id
             };
 
