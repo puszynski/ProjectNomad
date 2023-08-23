@@ -108,7 +108,7 @@ else
         HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();
         //HumanUnitTasks.Add(dto);//TODO SPÓBUJ PRZYSPIESZYĆ BO JEST DO D
 
-        await _notificationsManager.Add(humanUnitWithNoTaskId, ENotificationType.FoodGatheringStarted);
+        await _notificationsManager.Add(humanUnitWithNoTaskId, ENotificationType.FoodGatheringStarted, null);
         _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
 
         //StateHasChanged();

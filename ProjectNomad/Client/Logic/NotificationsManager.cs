@@ -1,11 +1,12 @@
 ﻿using Blazored.LocalStorage;
 using ProjectNomad.Client.Logic.NotificationsManagerLogic;
+using ProjectNomad.Shared.Enums;
 
 namespace ProjectNomad.Client.Logic
 {
     internal class NotificationsManager
     {
-        const string LOCAL_STORAGE_KEY = "Notifications";
+        const string LOCAL_STORAGE_KEY = "Notifications";   
         
         readonly ILocalStorageService _localStorageService;
 
@@ -27,16 +28,21 @@ namespace ProjectNomad.Client.Logic
             return actualNotifications;
         }
 
-        internal async Task Add(int humanUnitId, ENotificationType Type)
+        internal async Task Add(int humanUnitId, 
+            ENotificationType Type, 
+            string? customValue)
         {
-            var notification = new Notification(humanUnitId, DateTime.UtcNow, Type);
+            var notification = new Notification(humanUnitId, 
+                DateTime.UtcNow, Type, 
+                customValue);
 
-            var tribeNotificationsFromStorage = await _localStorageService.GetItemAsync<IEnumerable<Notification>>(LOCAL_STORAGE_KEY) ?? new List<Notification>();
+            var tribeNotificationsFromStorage = await _localStorageService.GetItemAsync<IEnumerable<Notification>>(LOCAL_STORAGE_KEY) 
+                ?? new List<Notification>();
 
             var notificationsList = tribeNotificationsFromStorage.ToList();
             notificationsList.Add(notification);
 
-            await _localStorageService.SetItemAsync(LOCAL_STORAGE_KEY, notificationsList);
+            await _localStorageService.SetItemAsync(LOCAL_STORAGE_KEY, notificationsList.OrderByDescending(x => x.Added));
         }
     }
 }

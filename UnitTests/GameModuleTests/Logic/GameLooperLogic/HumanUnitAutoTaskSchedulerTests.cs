@@ -37,8 +37,8 @@ namespace UnitTests.GameModuleTests.Logic.GameLooperLogic
             tribeRepository.GetByAccountId(accountId).Returns(Task.FromResult(tribe));
 
             //Act
-            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(humanUnitTaskRepository, Substitute.For<IDateTimeProvider>());
-            await humanUnitAutoTaskScheduler.Execute(humanUnits, tribe, humanUnitTasks);
+            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(humanUnitTaskRepository);
+            await humanUnitAutoTaskScheduler.Execute(humanUnits, tribe, humanUnitTasks, new DateTime(2020, 01, 01));
 
             //Assert
             await humanUnitTaskRepository.Received(1).AddAsync(Arg.Any<HumanUnitTask>());
@@ -75,8 +75,8 @@ namespace UnitTests.GameModuleTests.Logic.GameLooperLogic
             tribeRepository.GetByAccountId(accountId).Returns(Task.FromResult(tribe));
 
             //Act
-            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(humanUnitTaskRepository, Substitute.For<IDateTimeProvider>());
-            await humanUnitAutoTaskScheduler.Execute(humanUnits, tribe, humanUnitTasks);
+            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(humanUnitTaskRepository);
+            await humanUnitAutoTaskScheduler.Execute(humanUnits, tribe, humanUnitTasks, Arg.Any<DateTime>());
 
             //Assert
             await humanUnitTaskRepository.Received(0).AddAsync(Arg.Any<HumanUnitTask>());
@@ -111,8 +111,8 @@ namespace UnitTests.GameModuleTests.Logic.GameLooperLogic
             tribeRepository.GetByAccountId(accountId).Returns(Task.FromResult(tribe));
 
             //Act
-            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(humanUnitTaskRepository, Substitute.For<IDateTimeProvider>());
-            await humanUnitAutoTaskScheduler.Execute(humanUnits, tribe, humanUnitTasks);
+            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(humanUnitTaskRepository);
+            await humanUnitAutoTaskScheduler.Execute(humanUnits, tribe, humanUnitTasks, Arg.Any<DateTime>());
 
             //Assert
             await humanUnitTaskRepository.Received(0).AddAsync(Arg.Any<HumanUnitTask>());
@@ -148,8 +148,8 @@ namespace UnitTests.GameModuleTests.Logic.GameLooperLogic
             tribeRepository.GetByAccountId(accountId).Returns(Task.FromResult(tribe));
 
             //Act
-            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(humanUnitTaskRepository, Substitute.For<IDateTimeProvider>());
-            await humanUnitAutoTaskScheduler.Execute(humanUnits, tribe, humanUnitTasks);
+            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(humanUnitTaskRepository);
+            await humanUnitAutoTaskScheduler.Execute(humanUnits, tribe, humanUnitTasks, Arg.Any<DateTime>());
 
             //Assert
             await humanUnitTaskRepository.Received(0).AddAsync(Arg.Any<HumanUnitTask>());

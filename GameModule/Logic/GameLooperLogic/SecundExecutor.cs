@@ -7,7 +7,8 @@ namespace GameModule.Logic.GameLooperLogic
         Task Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
             List<HumanUnitTask> tasksToConsume,
-            List<MapTile> mapTilesToConsumeTasks);
+            List<MapTile> mapTilesToConsumeTasks,
+            DateTime currentTimeInLoop);
     }
 
     internal class SecundExecutor : ISecundExecutor
@@ -24,16 +25,19 @@ namespace GameModule.Logic.GameLooperLogic
         async Task ISecundExecutor.Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
             List<HumanUnitTask> tasksToConsume,
-            List<MapTile> mapTilesToConsumeTasks)
+            List<MapTile> mapTilesToConsumeTasks,
+            DateTime currentTimeInLoop)
         {
             var humanUnitAutoTaskSchedulerTask = _humanUnitAutoTaskScheduler.Execute(humanUnits,
                 tribe,
-                tasksToConsume);
+                tasksToConsume,
+                currentTimeInLoop);
 
             _humanUnitTaskConsumer.Execute(humanUnits,
                 tribe,
                 tasksToConsume,
-                mapTilesToConsumeTasks);
+                mapTilesToConsumeTasks,
+                currentTimeInLoop);
 
             await humanUnitAutoTaskSchedulerTask;
         }

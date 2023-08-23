@@ -2,6 +2,7 @@
 using GameModule.Repositories;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
+using System.Threading.Tasks;
 
 namespace GameModule.Logic.GameLooperLogic
 {
@@ -10,51 +11,41 @@ namespace GameModule.Logic.GameLooperLogic
         void Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
             List<HumanUnitTask> allTasksToConsume,
-            List<MapTile> mapTilesToConsumeTasks);
+            List<MapTile> mapTilesToConsumeTasks,
+            DateTime currentTimeInLoop);
     }
 
     internal class HumanUnitTaskConsumer : IHumanUnitTaskConsumer
     {
-        readonly IDateTimeProvider _dateTimeProvider;
         readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
-        public HumanUnitTaskConsumer(IDateTimeProvider dateTimeProvider, 
-            IHumanUnitTaskRepository humanUnitTaskRepository)
+        public HumanUnitTaskConsumer(IHumanUnitTaskRepository humanUnitTaskRepository)
         {
-            _dateTimeProvider = dateTimeProvider;
             _humanUnitTaskRepository = humanUnitTaskRepository;
         }
 
         void IHumanUnitTaskConsumer.Execute(List<HumanUnit> humanUnits, 
             Tribe tribe,
             List<HumanUnitTask> allTasksToConsume,
-            List<MapTile> mapTilesToConsumeTasks)
+            List<MapTile> mapTilesToConsumeTasks,
+            DateTime currentTimeInLoop)
         {
             var humanUnitIds = humanUnits
                 .Select(x => x.Id)
                 .ToList();
 
-            
-
             var tasksToConsume = allTasksToConsume
                 .Where(x => humanUnitIds.Contains(x.HumanUnitId))
-                .Where(x => x.To <= _dateTimeProvider.UtcNow().AddMinutes(-1)) //TU NIE MOZE BYĆ NOW - TYLKO AKTUALNY CZAS TASKA! I WSZEDZIE TAK SAMO WEWNĄTRZ!!!!
+                .Where(x => x.To <= currentTimeInLoop)
                 .ToList();
-            var t1 = allTasksToConsume.Single().To;
-            var t2 = _dateTimeProvider.UtcNow().AddMinutes(-1);
-            if (allTasksToConsume.Single().To < _dateTimeProvider.UtcNow().AddMinutes(-1))//TODO REMOVE TEMP
-            {
-                var koko = 123;
-            }
+
             foreach (var task in tasksToConsume) 
             {
-                var mapTile = mapTilesToConsumeTasks.Single(x => x.Id == task.MapTileId);
-                
                 ConsumeTask(task, 
                     humanUnits.Single(x => x.Id == task.HumanUnitId), 
                     tribe,
-                    mapTile.Food.ActualPoints);
+                    mapTilesToConsumeTasks);
 
-                allTasksToConsume.Remove(task);//todo test it
+                allTasksToConsume.Remove(task);
                 _humanUnitTaskRepository.Remove(task);
             }
         }
@@ -62,12 +53,15 @@ namespace GameModule.Logic.GameLooperLogic
         void ConsumeTask(HumanUnitTask humanUnitTask,
             HumanUnit humanUnit,
             Tribe tribe,
-            int mapTileFoodPoints) //todo UT
+            List<MapTile> mapTilesToConsumeTasks)
         {
             switch (humanUnitTask.Type)
             {
                 case EHumanUnitTaskType.GatheringFood:
                     const int MAX_FOOD_PONTS_GATHERED_BY_ONE_TASK = 5;
+
+                    var mapTile = mapTilesToConsumeTasks.Single(x => x.Id == humanUnitTask.MapTileId);
+                    var mapTileFoodPoints = mapTile.Food.ActualPoints;
 
                     var foodGatheringCoefficient = (double)humanUnit.FoodLevelPercentage / 100 * 2;
                     var foodPoints = foodGatheringCoefficient >= 1 

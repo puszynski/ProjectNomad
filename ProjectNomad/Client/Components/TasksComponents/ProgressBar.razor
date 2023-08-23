@@ -1,5 +1,6 @@
 ﻿@using ProjectNomad.Client.Logic;
 @using ProjectNomad.Client.Logic.NotificationsManagerLogic;
+@using ProjectNomad.Shared.Enums;
 
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
 @inject EventBroadcastService _eventBroadcastService;
@@ -64,7 +65,7 @@
         if (timeLeft.Seconds < 0)
         {
             //ZAPĘTLA SIE I CIĄGLE WYSYŁA NOTIFICATIONS.. TODO
-            await _notificationsManager.Add(HumanUnitTask.HumanUnitId, ENotificationType.FoodGatheringEnded);
+            await _notificationsManager.Add(HumanUnitTask.HumanUnitId, ENotificationType.FoodGatheringEnded, "123 todo");
             _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
             _eventBroadcastService.AddMessage(EActionWASM.TaskEnded);
             return true;

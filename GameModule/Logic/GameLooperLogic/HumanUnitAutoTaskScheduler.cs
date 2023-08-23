@@ -8,23 +8,22 @@ namespace GameModule.Logic.GameLooperLogic
     {
         Task Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
-            List<HumanUnitTask> tasksToConsume);
+            List<HumanUnitTask> tasksToConsume,
+            DateTime currentTimeInLoop);
     }
 
     internal class HumanUnitAutoTaskScheduler : IHumanUnitAutoTaskScheduler
     {
         readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
-        readonly IDateTimeProvider _timeProvider;
-        public HumanUnitAutoTaskScheduler(IHumanUnitTaskRepository humanUnitTaskRepository, 
-            IDateTimeProvider timeProvider)
+        public HumanUnitAutoTaskScheduler(IHumanUnitTaskRepository humanUnitTaskRepository)
         {
             _humanUnitTaskRepository = humanUnitTaskRepository;
-            _timeProvider = timeProvider;
         }
 
         public async Task Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
-            List<HumanUnitTask> tasksToConsume)
+            List<HumanUnitTask> tasksToConsume,
+            DateTime currentTimeInLoop)
         {
             var humanUnitIdsWithTaskInProgress = tasksToConsume
                 .Select(x => x.HumanUnitId)
@@ -39,7 +38,11 @@ namespace GameModule.Logic.GameLooperLogic
             {
                 if (tribe.Resources.FreshFood >= GameSETTINGS.TribeFoodNeededToFill20PercentageOfHumanUnit)
                 {
-                    await CreateTask(humanUnit.Id, tribe.Id, tasksToConsume);
+                    await CreateTask(humanUnit.Id, 
+                        tribe.Id, 
+                        tasksToConsume, 
+                        currentTimeInLoop);
+
                     tribe.Resources.FreshFood -= GameSETTINGS.TribeFoodNeededToFill20PercentageOfHumanUnit;
                 }
             }
@@ -47,21 +50,24 @@ namespace GameModule.Logic.GameLooperLogic
 
         async Task CreateTask(int humanUnitId, 
             int tribeId, 
-            List<HumanUnitTask> tasksToConsume)
+            List<HumanUnitTask> tasksToConsume,
+            DateTime currentTimeInLoop)
         {
             var entity = new HumanUnitTask
             {
-                From = _timeProvider.UtcNow(), // DateTime.UtcNow,
+                From = currentTimeInLoop,
                 HumanUnitId = humanUnitId,
                 TribeId = tribeId,
                 Type = ProjectNomad.Shared.Enums.EHumanUnitTaskType.ConsumeFood,
-                To = _timeProvider.UtcNow().AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood),
+                To = currentTimeInLoop.AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood),
                 MapTileId = null
             };
 
             tasksToConsume.Add(entity);
+            
             await _humanUnitTaskRepository.AddAsync(entity);
             await _humanUnitTaskRepository.SaveChangesAsync();
+
         }
     }
 }

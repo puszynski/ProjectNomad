@@ -53,18 +53,23 @@ namespace GameModule.Logic
             if (!humanUnits.Any())
                 return;
 
-            var mapTilesFromTasks = await _mapTileRepository.GetByIds(tasksToConsume.Select(y => y.MapTileId).ToList());
+            var mapTilesFromTasks = await _mapTileRepository.
+                GetByIds(tasksToConsume.Select(y => y.MapTileId)
+                .ToList());
 
             var lastUpdated = tribe.Updated;
             var loopCounter = 0;
 
-            var test = _dateTimeProvider.UtcNow().AddSeconds(-1);
+            var TEST = _dateTimeProvider.UtcNow().AddSeconds(-1);
             while (lastUpdated <= _dateTimeProvider.UtcNow().AddSeconds(-1))
             {
+                var currentTimeInLoop = lastUpdated.AddSeconds(1);
+
                 await _secundExecutor.Execute(humanUnits,
                     tribe,
                     tasksToConsume,
-                    mapTilesFromTasks);
+                    mapTilesFromTasks,
+                    currentTimeInLoop);
 
                 if (lastUpdated.Second == 0)
                     _minuteExecutor.Execute(humanUnits, tribe);
@@ -75,7 +80,7 @@ namespace GameModule.Logic
                 if (lastUpdated.Hour == 12 && lastUpdated.Minute == 0 && lastUpdated.Second == 0)
                     _dayExecutor.Execute();
 
-                lastUpdated = lastUpdated.AddSeconds(1);
+                lastUpdated = currentTimeInLoop;
                 loopCounter++;
             }
 
