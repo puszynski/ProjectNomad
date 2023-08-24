@@ -192,7 +192,7 @@ namespace UnitTests.GameModuleTests.Logic
         {
             //Assign
             var start = new DateTime(2020, 01, 01, 00, 00, 00);
-            var end = start.AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood).AddSeconds(1); // NOTE - in first loop(1sec) there is no task - it`s created, so second loop(2sec) is starting counting time for task
+            var end = start.AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood);
             MockData(start, end);
 
             var tribe = new Tribe { Id = 1, AccountId = _accountId, Updated = start, Resources = new Resources { FreshFood = GameSETTINGS.TribeFoodNeededToFill20PercentageOfHumanUnit } };
@@ -232,7 +232,7 @@ namespace UnitTests.GameModuleTests.Logic
         {
             //Assign
             var start = new DateTime(2020, 01, 01, 00, 00, 00);
-            var end = start.AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood).AddSeconds(0); // NOTE - in first loop(1sec) there is no task - it`s created, so second loop(2sec) is starting counting time for task
+            var end = start.AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood).AddSeconds(-1); 
             MockData(start, end);
 
             var tribe = new Tribe { Id = 1, AccountId = _accountId, Updated = start, Resources = new Resources { FreshFood = GameSETTINGS.TribeFoodNeededToFill20PercentageOfHumanUnit } };

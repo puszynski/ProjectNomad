@@ -60,7 +60,6 @@ namespace GameModule.Logic
             var lastUpdated = tribe.Updated;
             var loopCounter = 0;
 
-            var TEST = _dateTimeProvider.UtcNow().AddSeconds(-1);
             while (lastUpdated <= _dateTimeProvider.UtcNow().AddSeconds(-1))
             {
                 var currentTimeInLoop = lastUpdated.AddSeconds(1);

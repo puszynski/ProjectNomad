@@ -55,11 +55,11 @@ namespace GameModule.Logic.GameLooperLogic
         {
             var entity = new HumanUnitTask
             {
-                From = currentTimeInLoop,
+                From = currentTimeInLoop.AddSeconds(-1),//**
                 HumanUnitId = humanUnitId,
                 TribeId = tribeId,
                 Type = ProjectNomad.Shared.Enums.EHumanUnitTaskType.ConsumeFood,
-                To = currentTimeInLoop.AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood),
+                To = currentTimeInLoop.AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood).AddSeconds(-1),//**
                 MapTileId = null
             };
 
@@ -68,6 +68,7 @@ namespace GameModule.Logic.GameLooperLogic
             await _humanUnitTaskRepository.AddAsync(entity);
             await _humanUnitTaskRepository.SaveChangesAsync();
 
+            //** note - task is set up for the start time of the loop (currentTimeInLoop is time of the end of the loop)
         }
     }
 }
