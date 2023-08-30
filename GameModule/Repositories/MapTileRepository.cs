@@ -6,7 +6,7 @@ namespace GameModule.Repositories
 {
     internal interface IMapTileRepository : IRepository
     {
-        Task<List<MapTile>> GetByIds(List<int?> ids);
+        Task<List<MapTile>> GetByIds(List<int> ids);
     }
 
     internal class MapTileRepository : BaseRepository, IMapTileRepository 
@@ -15,11 +15,11 @@ namespace GameModule.Repositories
         {
         }
 
-        async Task<List<MapTile>> IMapTileRepository.GetByIds(List<int?> ids)
+        async Task<List<MapTile>> IMapTileRepository.GetByIds(List<int> ids)
         {
             return await _gameModuleDbContext
                 .MapTiles
-                .Where(x => ids.Where(x => x.HasValue).Contains(x.Id))
+                .Where(x => ids.Contains(x.Id))
                 .ToListAsync();
         }
     }

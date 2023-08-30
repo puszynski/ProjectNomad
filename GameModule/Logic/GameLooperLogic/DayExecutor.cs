@@ -12,7 +12,6 @@
         }
         void IDayExecutor.Execute()
         {
-            throw new NotImplementedException();
         }
     }
 }

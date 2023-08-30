@@ -1,10 +1,11 @@
 ﻿using GameModule.Entities;
+using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic.GameLooperLogic
 {
     internal interface ISecundExecutor
     {
-        Task Execute(List<HumanUnit> humanUnits,
+        Task<IEnumerable<INotification>> Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
             List<HumanUnitTask> tasksToConsume,
             List<MapTile> mapTilesToConsumeTasks,
@@ -22,7 +23,7 @@ namespace GameModule.Logic.GameLooperLogic
             _humanUnitAutoTaskScheduler = humanUnitAutoTaskScheduler;
         }
 
-        async Task ISecundExecutor.Execute(List<HumanUnit> humanUnits,
+        async Task<IEnumerable<INotification>> ISecundExecutor.Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
             List<HumanUnitTask> tasksToConsume,
             List<MapTile> mapTilesToConsumeTasks,
@@ -33,13 +34,14 @@ namespace GameModule.Logic.GameLooperLogic
                 tasksToConsume,
                 currentTimeInLoop);
 
-            _humanUnitTaskConsumer.Execute(humanUnits,
+            var notificationToSendToClient = _humanUnitTaskConsumer.Execute(humanUnits,
                 tribe,
                 tasksToConsume,
                 mapTilesToConsumeTasks,
                 currentTimeInLoop);
 
             await humanUnitAutoTaskSchedulerTask;
+            return notificationToSendToClient;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ProjectNomad.Shared.Interfaces;
+using ProjectNomad.Shared.Interfaces.Response;
 
 namespace GameModule
 {
@@ -12,7 +13,7 @@ namespace GameModule
         // CONCEPT
         // server is not running tasks in background,
         // instead its triggered by client of main player - or - other players that are coming into interaction
-        public Task TriggerPlayerGameObjectRecalculation(Guid accountId);
+        public Task<ITriggerGameLooperResponse> TriggerPlayerGameObjectRecalculation(Guid accountId);
 
         public Task AddTask(IAddHumanUnitTaskDto task);
         public Task<IEnumerable<IHumanUnitTaskDto>> GetActualTribeTasks(int tribeId);

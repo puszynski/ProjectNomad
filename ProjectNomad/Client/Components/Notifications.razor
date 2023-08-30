@@ -1,9 +1,9 @@
-﻿@using Blazored.LocalStorage;
+﻿@using ProjectNomad.Client.DtoModels;
+@using ProjectNomad.Client.Logic.GameLooperManagerLogic;
 @using ProjectNomad.Client.Logic;
-@using ProjectNomad.Client.Logic.NotificationsManagerLogic;
+
 @inject HttpClient _httpClient
-@inject ILocalStorageService _localStorageService
-@inject NotificationsManager _tribeNotificationsLoclStorageAndServerManager;
+@inject GameLooperManager _gameLooperManager
 @inject EventBroadcastService _eventBroadcastService;
 
 @if (NotificationsToDisplay is not null)
@@ -46,7 +46,7 @@
 
     internal async Task RefreshNotifications()
     {
-        NotificationsToDisplay = await _tribeNotificationsLoclStorageAndServerManager.Get();
+        NotificationsToDisplay = await _gameLooperManager.GetNotifications();
         StateHasChanged();
     }
 }

@@ -9,6 +9,7 @@ namespace GameModule.Repositories
         Task<List<HumanUnitTask>> GetHumanUnitTasksByTribeId(int tribeId);
         Task AddAsync(HumanUnitTask humanUnitTask);
         void Remove(HumanUnitTask humanUnitTask);
+        void RemoveRange(IEnumerable<HumanUnitTask> humanUnitTask);
     }
 
     internal class HumanUnitTaskRepository : BaseRepository, IHumanUnitTaskRepository
@@ -32,7 +33,12 @@ namespace GameModule.Repositories
 
         void IHumanUnitTaskRepository.Remove(HumanUnitTask humanUnitTask)
         {
-            _gameModuleDbContext.Remove(humanUnitTask);
+            _gameModuleDbContext.HumanUnitTasks.Remove(humanUnitTask);
+        }
+
+        public void RemoveRange(IEnumerable<HumanUnitTask> humanUnitTask)
+        {
+            _gameModuleDbContext.HumanUnitTasks.RemoveRange(humanUnitTask);
         }
     }
 }

@@ -1,14 +1,13 @@
 ﻿@using ProjectNomad.Client.Logic;
-@using ProjectNomad.Client.Logic.NotificationsManagerLogic;
 @using ProjectNomad.Shared.Enums;
 
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
-@inject EventBroadcastService _eventBroadcastService;
-@inject NotificationsManager _notificationsManager
+@inject EventBroadcastService _eventBroadcastService
+@inject GameLooperManager _gameLooperManager
 
 @if (ProgressBarDisplay != null)
 {
-    <small>[@ProgressBarDisplay] @RemainingTimeToDisplay</small>
+    <small>[@ProgressBarDisplay] @HumanUnitTask.HumanUnitName, @RemainingTimeToDisplay</small>
     <br />    
 }
 
@@ -50,8 +49,10 @@
         var max = HumanUnitTask.To - HumanUnitTask.From;
         string barToUpdate = string.Empty;
 
-        for (int i = 1; i <= 30; i++)
-            barToUpdate += (actuall.TotalSeconds * 30 / max.TotalSeconds) >= i ? DONE : TODO;
+        var barWidth = 25; //was 30
+
+        for (int i = 1; i <= barWidth; i++)
+            barToUpdate += (actuall.TotalSeconds * barWidth / max.TotalSeconds) >= i ? DONE : TODO;
 
         ProgressBarDisplay = barToUpdate;
     }
@@ -64,8 +65,7 @@
 
         if (timeLeft.Seconds < 0)
         {
-            //ZAPĘTLA SIE I CIĄGLE WYSYŁA NOTIFICATIONS.. TODO
-            await _notificationsManager.Add(HumanUnitTask.HumanUnitId, ENotificationType.FoodGatheringEnded, "123 todo");
+            //await _gameLooperManager.AddNotificationFromWASM(HumanUnitTask.HumanUnitId, ENotificationType.FoodGatheringEnded, "123 todo"); //that type will be created from server!
             _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
             _eventBroadcastService.AddMessage(EActionWASM.TaskEnded);
             return true;

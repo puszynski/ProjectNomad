@@ -1,6 +1,7 @@
 ﻿using GameModule;
 using Microsoft.AspNetCore.Mvc;
 using ProjectNomad.Shared.Interfaces;
+using ProjectNomad.Shared.Interfaces.Response;
 
 namespace ProjectNomad.Server.Controllers
 {
@@ -20,10 +21,17 @@ namespace ProjectNomad.Server.Controllers
         }
 
         [HttpPost("triggerPlayerGameObjectRecalculation")]
-        public async Task<ActionResult> TriggerPlayerGameObjectRecalculation([FromBody]Guid accountId)
+        public async Task<ActionResult<ITriggerGameLooperResponse>> TriggerPlayerGameObjectRecalculation([FromBody]Guid accountId)
         {
-            await _gameModule.TriggerPlayerGameObjectRecalculation(accountId);
-            return Ok();
+            try
+            {
+                var result = await _gameModule.TriggerPlayerGameObjectRecalculation(accountId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         [HttpGet("getMapTiles/{tribeId}")]

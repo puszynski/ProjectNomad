@@ -1,6 +1,9 @@
-﻿using GameModule.Logic.GameLooperLogic;
+﻿using GameModule.DtoModels;
+using GameModule.Logic.GameLooperLogic;
 using GameModule.Repositories;
 using ProjectNomad.Shared;
+using ProjectNomad.Shared.Interfaces;
+using ProjectNomad.Shared.Interfaces.Response;
 
 namespace GameModule.Logic
 {
@@ -37,41 +40,55 @@ namespace GameModule.Logic
             _humanUnitTaskRepository = humanUnitTaskRepository;
         }
 
-        public async Task LoopTribe(Guid accountId)
+        public async Task<ITriggerGameLooperResponse>  LoopTribe(Guid accountId)
         {
             var tribe = await _tribeRepository.GetByAccountId(accountId);
 
-            if (tribe == null) 
-                return;
+            if (tribe == null)
+                throw new ArgumentException($"GameLOOPER! There is no tribe assigned for given accountId {accountId}");
 
-            var humanUnits_task = _humanUnitRepository.GetHumanUnitsByTribeId(tribe.Id);
-            var tasksToConsume_task = _humanUnitTaskRepository.GetHumanUnitTasksByTribeId(tribe.Id);
-
-            var humanUnits = await humanUnits_task;
-            var tasksToConsume = await tasksToConsume_task;
-
+            var humanUnits = await _humanUnitRepository.GetHumanUnitsByTribeId(tribe.Id);
+            
             if (!humanUnits.Any())
-                return;
+                return new TriggerGameLooperResponse(
+                    new List<NotificationDto>() { new NotificationDto(0, _dateTimeProvider.UtcNow(), ProjectNomad.Shared.Enums.ENotificationType.GameOver, null) }, 
+                    new List<WorldEventDto>());
+            
+            var tasksToConsume = await _humanUnitTaskRepository.GetHumanUnitTasksByTribeId(tribe.Id);
 
-            var mapTilesFromTasks = await _mapTileRepository.
-                GetByIds(tasksToConsume.Select(y => y.MapTileId)
-                .ToList());
+
+            var mapTileIds = tasksToConsume
+                .Where(x => x.MapTileId.HasValue)
+                .Select(y => y.MapTileId.Value)
+                .ToList();
+
+            var mapTilesFromTasks = await _mapTileRepository.GetByIds(mapTileIds);
 
             var lastUpdated = tribe.Updated;
             var loopCounter = 0;
+            var shouldBreakGameLoop = false;
+
+            var notificationToSendToClient = new List<INotification>();
 
             while (lastUpdated <= _dateTimeProvider.UtcNow().AddSeconds(-1))
             {
                 var currentTimeInLoop = lastUpdated.AddSeconds(1);
 
-                await _secundExecutor.Execute(humanUnits,
+                var notificationsFromCurrentLoop = await _secundExecutor.Execute(humanUnits,
                     tribe,
                     tasksToConsume,
                     mapTilesFromTasks,
                     currentTimeInLoop);
 
+                notificationToSendToClient.AddRange(notificationsFromCurrentLoop);
+
                 if (lastUpdated.Second == 0)
-                    _minuteExecutor.Execute(humanUnits, tribe);
+                    shouldBreakGameLoop = _minuteExecutor.Execute(humanUnits, 
+                        tribe, 
+                        tasksToConsume);
+
+                if (shouldBreakGameLoop)
+                    break;
 
                 if (lastUpdated.Minute == 0 && lastUpdated.Second == 0)
                     _hourExecutor.Execute();
@@ -88,6 +105,8 @@ namespace GameModule.Logic
                 tribe.Updated = lastUpdated;
                 await _tribeRepository.SaveChangesAsync();
             }
+
+            return new TriggerGameLooperResponse(notificationToSendToClient, new List<WorldEventDto>()); //todo implement WorldEvents
         }
     }
 }

@@ -1,16 +1,16 @@
 ﻿using Blazored.LocalStorage;
-using ProjectNomad.Client.Logic.NotificationsManagerLogic;
+using ProjectNomad.Client.DtoModels;
 using ProjectNomad.Shared.Enums;
 
-namespace ProjectNomad.Client.Logic
+namespace ProjectNomad.Client.Logic.GameLooperManagerLogic
 {
-    internal class NotificationsManager
+    internal class LocalStorageNotificationsManager
     {
-        const string LOCAL_STORAGE_KEY = "Notifications";   
-        
+        const string LOCAL_STORAGE_KEY = "Notifications";
+
         readonly ILocalStorageService _localStorageService;
 
-        public NotificationsManager(ILocalStorageService localStorageService) 
+        public LocalStorageNotificationsManager(ILocalStorageService localStorageService)
             => _localStorageService = localStorageService;
 
         internal async Task<IEnumerable<Notification>> Get()
@@ -28,19 +28,23 @@ namespace ProjectNomad.Client.Logic
             return actualNotifications;
         }
 
-        internal async Task Add(int humanUnitId, 
-            ENotificationType Type, 
+        internal async Task Add(int humanUnitId,
+            ENotificationType type,
             string? customValue)
         {
-            var notification = new Notification(humanUnitId, 
-                DateTime.UtcNow, Type, 
+            var notification = new Notification(humanUnitId,
+                DateTime.UtcNow, type,
                 customValue);
 
-            var tribeNotificationsFromStorage = await _localStorageService.GetItemAsync<IEnumerable<Notification>>(LOCAL_STORAGE_KEY) 
+            var tribeNotificationsFromStorage = await _localStorageService.GetItemAsync<IEnumerable<Notification>>(LOCAL_STORAGE_KEY)
                 ?? new List<Notification>();
 
             var notificationsList = tribeNotificationsFromStorage.ToList();
-            notificationsList.Add(notification);
+
+            if (type is ENotificationType.GameOver)
+                notificationsList = new List<Notification>();
+            else
+                notificationsList.Add(notification);
 
             await _localStorageService.SetItemAsync(LOCAL_STORAGE_KEY, notificationsList.OrderByDescending(x => x.Added));
         }

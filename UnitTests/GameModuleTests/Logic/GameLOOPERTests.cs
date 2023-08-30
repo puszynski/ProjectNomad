@@ -48,7 +48,7 @@ namespace UnitTests.GameModuleTests.Logic
 
             var mapTiles = new List<MapTile>();
             _mapTileRepository = Substitute.For<IMapTileRepository>();
-            _mapTileRepository.GetByIds(new List<int?> { }).Returns(Task.FromResult(mapTiles));
+            _mapTileRepository.GetByIds(new List<int> { }).Returns(Task.FromResult(mapTiles));
 
             _secundExecutor = Substitute.For<ISecundExecutor>();
             _minuteExecutor = Substitute.For<IMinuteExecutor>();
@@ -122,7 +122,7 @@ namespace UnitTests.GameModuleTests.Logic
             //Assert
             _minuteExecutor
                 .Received(minute)
-                .Execute(Arg.Any<List<HumanUnit>>(), Arg.Any<Tribe>());
+                .Execute(Arg.Any<List<HumanUnit>>(), Arg.Any<Tribe>(), Arg.Any<List<HumanUnitTask>>());
         }
 
         [Theory]

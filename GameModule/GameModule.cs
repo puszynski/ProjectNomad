@@ -5,6 +5,7 @@ using GameModule.Logic;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Interfaces;
+using ProjectNomad.Shared.Interfaces.Response;
 
 namespace GameModule
 {
@@ -53,7 +54,7 @@ namespace GameModule
             
         }
 
-        public async Task TriggerPlayerGameObjectRecalculation(Guid accountId) 
+        public async Task<ITriggerGameLooperResponse> TriggerPlayerGameObjectRecalculation(Guid accountId) 
             => await _gameLooper.LoopTribe(accountId);
 
         public async Task InitPlayerGameObjects(Guid accountId)

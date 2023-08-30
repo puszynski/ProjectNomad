@@ -1,14 +1,16 @@
-﻿using GameModule.Entities;
+﻿using GameModule.DtoModels;
+using GameModule.Entities;
 using GameModule.Repositories;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
+using ProjectNomad.Shared.Interfaces;
 using System.Threading.Tasks;
 
 namespace GameModule.Logic.GameLooperLogic
 {
     internal interface IHumanUnitTaskConsumer
     {
-        void Execute(List<HumanUnit> humanUnits,
+        IEnumerable<INotification> Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
             List<HumanUnitTask> allTasksToConsume,
             List<MapTile> mapTilesToConsumeTasks,
@@ -23,7 +25,7 @@ namespace GameModule.Logic.GameLooperLogic
             _humanUnitTaskRepository = humanUnitTaskRepository;
         }
 
-        void IHumanUnitTaskConsumer.Execute(List<HumanUnit> humanUnits, 
+        IEnumerable<INotification> IHumanUnitTaskConsumer.Execute(List<HumanUnit> humanUnits, 
             Tribe tribe,
             List<HumanUnitTask> allTasksToConsume,
             List<MapTile> mapTilesToConsumeTasks,
@@ -38,22 +40,31 @@ namespace GameModule.Logic.GameLooperLogic
                 .Where(x => x.To <= currentTimeInLoop)
                 .ToList();
 
+            var notificationToSendToClient = new List<INotification>();
+
             foreach (var task in tasksToConsume) 
             {
-                ConsumeTask(task, 
+                var notification = ConsumeTask(task, 
                     humanUnits.Single(x => x.Id == task.HumanUnitId), 
                     tribe,
-                    mapTilesToConsumeTasks);
+                    mapTilesToConsumeTasks,
+                    currentTimeInLoop);
+
+                if (notification != null)
+                    notificationToSendToClient.Add(notification);
 
                 allTasksToConsume.Remove(task);
                 _humanUnitTaskRepository.Remove(task);
             }
+
+            return notificationToSendToClient;
         }
 
-        void ConsumeTask(HumanUnitTask humanUnitTask,
+        INotification? ConsumeTask(HumanUnitTask humanUnitTask,
             HumanUnit humanUnit,
             Tribe tribe,
-            List<MapTile> mapTilesToConsumeTasks)
+            List<MapTile> mapTilesToConsumeTasks,
+            DateTime currentTimeInLoop)
         {
             switch (humanUnitTask.Type)
             {
@@ -73,11 +84,13 @@ namespace GameModule.Logic.GameLooperLogic
                         : mapTileFoodPoints;
 
                     tribe.Resources.FreshFood += (int)gatheredFoodPoints;
-                    break;
+                    return new NotificationDto(humanUnit.Id, currentTimeInLoop, ENotificationType.FoodGatheringEnded, gatheredFoodPoints.ToString());
 
                 case EHumanUnitTaskType.ConsumeFood:
                     humanUnit.FoodLevelPercentage += 20;
-                    break;
+                    return null;
+
+                default: throw new NotImplementedException();
             }
         }
     }

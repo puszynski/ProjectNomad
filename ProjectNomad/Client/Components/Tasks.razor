@@ -1,13 +1,11 @@
 ﻿@using ProjectNomad.Client.Logic;
-@using ProjectNomad.Client.Logic.NotificationsManagerLogic;
 @using ProjectNomad.Client.ViewModels.Tasks;
 @using ProjectNomad.Shared.Enums;
 @using ProjectNomad.Shared.Interfaces;
-@using static ProjectNomad.Client.Components.Notifications;
 
 @inject HumanUnitTasksLocalStorageManager _humanUnitTasksLocalStorageManager
 @inject HttpClient _httpClient
-@inject NotificationsManager _notificationsManager
+@inject GameLooperManager _gameLooperManager
 @inject NavigationManager _navigationManager
 @inject EventBroadcastService _eventBroadcastService
 
@@ -106,11 +104,9 @@ else
 
         await _humanUnitTasksLocalStorageManager.AddToServer(dto);
         HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();
-        //HumanUnitTasks.Add(dto);//TODO SPÓBUJ PRZYSPIESZYĆ BO JEST DO D
 
-        await _notificationsManager.Add(humanUnitWithNoTaskId, ENotificationType.FoodGatheringStarted, null);
+        await _gameLooperManager.AddNotificationFromWASM(humanUnitWithNoTaskId, ENotificationType.FoodGatheringStarted, null);
         _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
-
         //StateHasChanged();
     }
 }

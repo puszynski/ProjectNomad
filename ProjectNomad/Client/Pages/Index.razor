@@ -7,23 +7,45 @@
 
 @if (accountViewModel != null)
 {
-    <EditForm Model="accountViewModel" OnValidSubmit="accountViewModel.LogIn">
-        <div>
-            <label for="">login:</label>
-            <InputText @bind-Value="accountViewModel.Name" class="form-control"></InputText>
-        </div>
-        <div>
-            <label for="">password:</label>
-            <InputText @bind-Value="accountViewModel.Password" class="form-control"></InputText>
-        </div>
-        <div>
-            <button type="submit" class="btn btn-primary">play</button>
-        </div>
-    </EditForm>
+    <div style="border: 2px dashed;
+                    border-color: Gainsboro;
+                    display: table;
+                    margin: auto;
+                    width: 400px; /*Optional*/
+                    table-layout: fixed; /*Optional*/
+                    border-spacing: 10px; /*Optional*/">
 
-    <button class="btn btn-primary" @onclick="CreateAccount">Create account</button>
-    <button class="btn btn-primary">Play as guest</button>
-    <button class="btn btn-primary">Continue as guest with guest-key</button>
+                <center>
+                    <p>>> p r o j e c t &nbsp;&nbsp; n o m a d &lt;&lt;</p>
+                </center>
+                <br/>
+                <smaller>
+                    <p>welcome to project nomad - simple survival game about first homo sapiens... struggling to survive.. </p>
+                    <p>please note - game is early stage of development.</p>
+                </smaller>
+                <br/>
+
+                <EditForm Model="accountViewModel" OnValidSubmit="accountViewModel.LogIn">
+                    <div>
+                        <label for="">login:</label>
+                        <InputText @bind-Value="accountViewModel.Name" class="form-control"></InputText>
+                    </div>
+                    <div>
+                        <label for="">password:</label>
+                        <InputText @bind-Value="accountViewModel.Password" class="form-control"></InputText>
+                    </div>
+                    <div>
+                        <button type="submit"  class="button"><span>PLAY</span></button>
+                    </div>
+                </EditForm>
+
+                <br/>
+                <button class="button" @onclick="CreateAccount"><span>CREATE ACCOUNT</span></button>
+                <button class="button"><span>PLAY AS GUEST</span></button>
+                <button class="button"><span>LOG AS GUEST WITH GUEST TOKEN</span></button>
+    </div>
+
+    
 }
 
 @code {

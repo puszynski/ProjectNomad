@@ -12,7 +12,6 @@ namespace ProjectNomad.Client.Logic
         readonly ILocalStorageService _localStorageService;
         readonly HttpClient _httpClient;
 
-
         public HumanUnitTasksLocalStorageManager(ILocalStorageService localStorageService, 
             HttpClient httpClient)
         {

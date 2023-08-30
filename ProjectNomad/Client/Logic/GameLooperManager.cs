@@ -1,7 +1,6 @@
-﻿using Blazored.LocalStorage;
-using ProjectNomad.Client.Logic.NotificationsManagerLogic;
+﻿using ProjectNomad.Client.DtoModels;
+using ProjectNomad.Client.Logic.GameLooperManagerLogic;
 using ProjectNomad.Shared.Enums;
-using ProjectNomad.Shared.Interfaces.Response;
 using System.Net.Http.Json;
 
 namespace ProjectNomad.Client.Logic
@@ -10,36 +9,40 @@ namespace ProjectNomad.Client.Logic
     {
         const string LOCAL_STORAGE_WORLD_EVENTS_NAME = "WorldEvents";
 
-        readonly NotificationsManager _notificationsManager;
-        readonly ILocalStorageService _localStorageService;
+        //todo LocalStorageWorldEventsManager
+        readonly LocalStorageNotificationsManager _notificationsManager;
         readonly HttpClient _httpClient;
 
-        internal GameLooperManager(NotificationsManager notificationsManager,
-            ILocalStorageService localStorageService,
+        public GameLooperManager(LocalStorageNotificationsManager notificationsManager,
             HttpClient httpClient)
         {
             _notificationsManager = notificationsManager;
-            _localStorageService = localStorageService;
             _httpClient = httpClient;
         }
 
         internal async Task TriggerGameLooper(Guid accountId) 
         {
-            //todo trigger
-            var response = await _httpClient.PostAsJsonAsync("api/game/triggerPlayerGameObjectRecalculation", accountId); //TODO RESPONSE FROM SERVER.. - NOTIFIFCATIONS + GAME EVENTS
-            var responseContent = await response.Content.ReadFromJsonAsync<ITriggerGameLooperResponse>();
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/game/triggerPlayerGameObjectRecalculation", accountId);
+                var responseContent = await response.Content.ReadFromJsonAsync<TriggerGameLooperResponse>(); 
+                //'Deserialization of interface types is not supported. Type 'ProjectNomad.Shared.Interfaces.INotification'. Path: $.notifications[0] | LineNumber: 0 | BytePositionInLine: 19.'
 
-            //fill _localStorageService via _notificationsManager with server notifications
-            if (responseContent?.Notifications != null)
-                foreach (var notificationToAdd in responseContent.Notifications)
-                    await _notificationsManager.Add(notificationToAdd.HumanUnitId, notificationToAdd.Type, notificationToAdd.CustomValue);
+                if (responseContent?.Notifications != null)
+                    foreach (var notificationToAdd in responseContent.Notifications)
+                        await _notificationsManager.Add(notificationToAdd.HumanUnitId, notificationToAdd.Type, notificationToAdd.CustomValue);
 
-            //fill WorldEvents _localStorageService with worldEvents
-            if (responseContent?.Notifications != null)
-                foreach (var notificationToRemove in responseContent.WorldEvents)
-                    throw new NotImplementedException();
-                    //await _worldEventsManager.Add();
+                //fill WorldEvents _localStorageService with worldEvents
+                if (responseContent?.Notifications != null)
+                    foreach (var notificationToRemove in responseContent.WorldEvents)
+                        throw new NotImplementedException();
+                //await _worldEventsManager.Add();
+            }
+            catch (Exception ex)
+            {
 
+                throw ex;
+            }
         }   
 
         internal async Task AddNotificationFromWASM(int humanUnitId, 

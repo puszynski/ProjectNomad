@@ -1,8 +1,12 @@
 ﻿@page "/game"
+
 @using Blazored.LocalStorage;
+@using ProjectNomad.Client.Logic;
 @using ProjectNomad.Client.ViewModels.Game
 @using ProjectNomad.Shared.Interfaces;
+
 @inject HttpClient _httpClient
+@inject GameLooperManager _gameLooperManager
 @inject ILocalStorageService _localStorageService
 
 
@@ -13,14 +17,15 @@
         <div style="border: 2px dashed;
                     border-color: Gainsboro;
                     margin: auto;
-                    width: 50%;
+                    width: 500px;
                     padding: 10px;">
-            @* todo dispLay in middle *@
             @* TODO COMPONENT *@
-            <img src="/images/game/todo_death.png" style="margin: auto;" />
+            <center>
+                <img src="/images/game/todo_death.png" style="margin: auto;" />
+                <h5>All members of your tribe have died.. </h5>
+                <button class="button" @onclick="ReBornTribeMembers"><span>Reborn tribe with new members</span></button>
+            </center>
 
-            <h5>All members of your tribe have died.. </h5>
-            <button class="btn btn-primary" @onclick="ReBornTribeMembers">Reborn tribe with new members</button>
         </div>
         
     }
@@ -88,18 +93,20 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await TrigerRecalculation();
-        await GetDataFromServer();
+        await TrigerRecalculationAndGetGameObjectsFromServer();
+
+        if (!GameObjectsViewModel.HumanUnits.Any())
+            return;
 
         var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         while (await timer.WaitForNextTickAsync())
-            await TrigerRecalculation();
+            await TrigerRecalculationAndGetGameObjectsFromServer();
     }
 
-    async Task TrigerRecalculation()
+    async Task TrigerRecalculationAndGetGameObjectsFromServer()
     {
         var accountId = await GetAccountIdOr404();
-        await _httpClient.PostAsJsonAsync("api/game/triggerPlayerGameObjectRecalculation", accountId);
+        await _gameLooperManager.TriggerGameLooper(accountId);
 
         await GetDataFromServer();
         StateHasChanged();
