@@ -29,11 +29,14 @@ namespace ProjectNomad.Client.Logic.GameLooperManagerLogic
         }
 
         internal async Task Add(int humanUnitId,
+            string humanUnitName,
             ENotificationType type,
             string? customValue)
         {
             var notification = new Notification(humanUnitId,
-                DateTime.UtcNow, type,
+                humanUnitName,
+                DateTime.UtcNow, 
+                type,
                 customValue);
 
             var tribeNotificationsFromStorage = await _localStorageService.GetItemAsync<IEnumerable<Notification>>(LOCAL_STORAGE_KEY)

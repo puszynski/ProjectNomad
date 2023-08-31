@@ -1,10 +1,8 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Repositories;
-using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
-using System.Threading.Tasks;
 
 namespace GameModule.Logic.GameLooperLogic
 {
@@ -84,11 +82,11 @@ namespace GameModule.Logic.GameLooperLogic
                         : mapTileFoodPoints;
 
                     tribe.Resources.FreshFood += (int)gatheredFoodPoints;
-                    return new NotificationDto(humanUnit.Id, currentTimeInLoop, ENotificationType.FoodGatheringEnded, gatheredFoodPoints.ToString());
+                    return new NotificationDto(humanUnit.Id, humanUnit.Name, currentTimeInLoop, ENotificationType.FoodGatheringEnded, gatheredFoodPoints.ToString());
 
                 case EHumanUnitTaskType.ConsumeFood:
-                    humanUnit.FoodLevelPercentage += 20;
-                    return null;
+                    //note: consumption of the food applies when task is created
+                    return new NotificationDto(humanUnit.Id, humanUnit.Name, currentTimeInLoop, ENotificationType.FoodConsumptionEnded, null);
 
                 default: throw new NotImplementedException();
             }

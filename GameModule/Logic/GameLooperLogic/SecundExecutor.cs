@@ -29,18 +29,22 @@ namespace GameModule.Logic.GameLooperLogic
             List<MapTile> mapTilesToConsumeTasks,
             DateTime currentTimeInLoop)
         {
+            var notificationToSendToClient = new List<INotification>();
+
             var humanUnitAutoTaskSchedulerTask = _humanUnitAutoTaskScheduler.Execute(humanUnits,
                 tribe,
                 tasksToConsume,
                 currentTimeInLoop);
 
-            var notificationToSendToClient = _humanUnitTaskConsumer.Execute(humanUnits,
+            var humanUnitTaskConsumerNotifications = _humanUnitTaskConsumer.Execute(humanUnits,
                 tribe,
                 tasksToConsume,
                 mapTilesToConsumeTasks,
                 currentTimeInLoop);
 
-            await humanUnitAutoTaskSchedulerTask;
+            notificationToSendToClient.AddRange(await humanUnitAutoTaskSchedulerTask);
+            notificationToSendToClient.AddRange(humanUnitTaskConsumerNotifications);
+
             return notificationToSendToClient;
         }
     }

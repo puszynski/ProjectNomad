@@ -11,15 +11,19 @@
 
 @if (HumanUnitIds != null && HumanUnitTasks != null)
 {
-    <button class="button"><span>gather wood(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button>
+    <span>» call for wood gathering(2/4)</span>
     <br />
     <small>[▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬------------] 4m22s</small>
     <br />
     <small>[▬▬▬▬▬▬▬▬▬---------------------] 24m22s</small>
     <br />
-    <small>[▬▬▬---------------------------] 1h54m22s</small>
+
+    <span>» call for food gathering(0/1)</span>
     <br />
+    <span>» call for wood gathering(0/2)</span>
     <br />
+
+    <hr/>
 
     <button class="button" @onclick="GatherFood"><span>gather food(@(HumanUnitIds.Count() - HumanUnitTasks.Count()))</span></button> @* TODO DISABLE WHEN NO FREE HUMAN UNITS.. *@
     <br />
@@ -34,9 +38,11 @@
     <button class="button"><span>Gather animal skull - 3d12m12s</span></button>
     <button class="button"><span>Catch fire after storm  - 15m36s</span></button>
 
+    <br/>
     @if (HumanUnitTasks.Any(x => AutoTasks.Contains(x.Type)))
     {
         <button class="button">Food consumingª</button>
+        <br/>
         @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.ConsumeFood))
         {
             <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@TribeId" />

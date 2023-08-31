@@ -45,13 +45,13 @@ namespace GameModule.Logic
             var tribe = await _tribeRepository.GetByAccountId(accountId);
 
             if (tribe == null)
-                throw new ArgumentException($"GameLOOPER! There is no tribe assigned for given accountId {accountId}");
+                throw new ArgumentException($"There is no tribe assigned for given accountId {accountId} :/");
 
             var humanUnits = await _humanUnitRepository.GetHumanUnitsByTribeId(tribe.Id);
             
             if (!humanUnits.Any())
                 return new TriggerGameLooperResponse(
-                    new List<NotificationDto>() { new NotificationDto(0, _dateTimeProvider.UtcNow(), ProjectNomad.Shared.Enums.ENotificationType.GameOver, null) }, 
+                    new List<NotificationDto>() { new NotificationDto(0, "none", _dateTimeProvider.UtcNow(), ProjectNomad.Shared.Enums.ENotificationType.GameOver, null) }, 
                     new List<WorldEventDto>());
             
             var tasksToConsume = await _humanUnitTaskRepository.GetHumanUnitTasksByTribeId(tribe.Id);

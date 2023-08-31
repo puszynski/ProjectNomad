@@ -5,6 +5,7 @@ namespace ProjectNomad.Shared.Interfaces
     public interface INotification
     {
         int HumanUnitId { get; }
+        string HumanUnitName { get; }
         DateTime Added { get; }
         ENotificationType Type { get; }
         string? CustomValue { get; }

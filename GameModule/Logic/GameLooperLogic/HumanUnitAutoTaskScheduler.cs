@@ -1,12 +1,15 @@
-﻿using GameModule.Entities;
+﻿using GameModule.DtoModels;
+using GameModule.Entities;
 using GameModule.Repositories;
 using ProjectNomad.Shared;
+using ProjectNomad.Shared.Enums;
+using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic.GameLooperLogic
 {
     internal interface IHumanUnitAutoTaskScheduler
     {
-        Task Execute(List<HumanUnit> humanUnits,
+        Task<IEnumerable<INotification>> Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
             List<HumanUnitTask> tasksToConsume,
             DateTime currentTimeInLoop);
@@ -20,7 +23,7 @@ namespace GameModule.Logic.GameLooperLogic
             _humanUnitTaskRepository = humanUnitTaskRepository;
         }
 
-        public async Task Execute(List<HumanUnit> humanUnits,
+        public async Task<IEnumerable<INotification>> Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
             List<HumanUnitTask> tasksToConsume,
             DateTime currentTimeInLoop)
@@ -29,37 +32,43 @@ namespace GameModule.Logic.GameLooperLogic
                 .Select(x => x.HumanUnitId)
                 .ToList();
 
-            var humanUnitWithNoTasksAndFoodLevelLessThen20 = humanUnits
+            var humanUnitWithNoTasksInProgressAndFoodLevelLessThen80 = humanUnits
                 .Where(x => !humanUnitIdsWithTaskInProgress.Contains(x.Id))
                 .Where(x => x.FoodLevelPercentage <= 80)
                 .ToList();
 
-            foreach (var humanUnit in humanUnitWithNoTasksAndFoodLevelLessThen20)
+            var notifications = new List<INotification>();
+
+            foreach (var humanUnit in humanUnitWithNoTasksInProgressAndFoodLevelLessThen80)
             {
                 if (tribe.Resources.FreshFood >= GameSETTINGS.TribeFoodNeededToFill20PercentageOfHumanUnit)
                 {
-                    await CreateTask(humanUnit.Id, 
+                    var notification = await CreateTask(humanUnit, 
                         tribe.Id, 
                         tasksToConsume, 
                         currentTimeInLoop);
 
                     tribe.Resources.FreshFood -= GameSETTINGS.TribeFoodNeededToFill20PercentageOfHumanUnit;
+                    humanUnit.FoodLevelPercentage += 20;
+                    notifications.Add(notification);
                 }
             }
+
+            return notifications;
         }
 
-        async Task CreateTask(int humanUnitId, 
+        async Task<INotification> CreateTask(HumanUnit humanUnit, 
             int tribeId, 
             List<HumanUnitTask> tasksToConsume,
             DateTime currentTimeInLoop)
         {
             var entity = new HumanUnitTask
             {
-                From = currentTimeInLoop.AddSeconds(-1),//**
-                HumanUnitId = humanUnitId,
+                From = currentTimeInLoop.AddSeconds(-1),//todo remove it due to TaskRequire mechanism and change UT
+                HumanUnitId = humanUnit.Id,
                 TribeId = tribeId,
-                Type = ProjectNomad.Shared.Enums.EHumanUnitTaskType.ConsumeFood,
-                To = currentTimeInLoop.AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood).AddSeconds(-1),//**
+                Type = EHumanUnitTaskType.ConsumeFood,
+                To = currentTimeInLoop.AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood).AddSeconds(-1),//todo remove it TaskRequire mechanism and change UT
                 MapTileId = null
             };
 
@@ -68,7 +77,11 @@ namespace GameModule.Logic.GameLooperLogic
             await _humanUnitTaskRepository.AddAsync(entity);
             await _humanUnitTaskRepository.SaveChangesAsync();
 
-            //** note - task is set up for the start time of the loop (currentTimeInLoop is time of the end of the loop)
+            return new NotificationDto(humanUnit.Id, 
+                humanUnit.Name, 
+                currentTimeInLoop, 
+                ENotificationType.FoodConsumptionStarted, 
+                entity.To.ToString());
         }
     }
 }

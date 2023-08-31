@@ -30,7 +30,10 @@ namespace ProjectNomad.Client.Logic
 
                 if (responseContent?.Notifications != null)
                     foreach (var notificationToAdd in responseContent.Notifications)
-                        await _notificationsManager.Add(notificationToAdd.HumanUnitId, notificationToAdd.Type, notificationToAdd.CustomValue);
+                        await _notificationsManager.Add(notificationToAdd.HumanUnitId, 
+                            notificationToAdd.HumanUnitName, 
+                            notificationToAdd.Type, 
+                            notificationToAdd.CustomValue);
 
                 //fill WorldEvents _localStorageService with worldEvents
                 if (responseContent?.Notifications != null)
@@ -52,7 +55,7 @@ namespace ProjectNomad.Client.Logic
             if (!NotificationTypeValidator.IsWASMNotification(type))
                 throw new ArgumentException($"Ops WASM! GameLooperManager.AddNotificationFromWASM() can receive only WASM notification, {type} is server one :/");
 
-            await _notificationsManager.Add(humanUnitId, type, customValue);
+            await _notificationsManager.Add(humanUnitId, "unknowWasmTodo", type, customValue);
         }
 
         internal async Task<IEnumerable<Notification>> GetNotifications() 

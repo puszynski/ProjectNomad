@@ -9,9 +9,12 @@
 
         FoodGatheringStarted,
         FoodGatheringEnded,
+
+        FoodConsumptionStarted,
+        FoodConsumptionEnded,
     }
 
-    public static class NotificationTypeValidator
+    public static class NotificationTypeValidator //TODO OBSOLETE DELETE
     {
         public static bool IsWASMNotification(this ENotificationType type) => WASMNotifications.Contains(type);
         public static bool IsServerNotification(this ENotificationType type) => !WASMNotifications.Contains(type);
