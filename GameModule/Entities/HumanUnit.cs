@@ -1,9 +1,9 @@
 ﻿using GameModule.Entities.ValueObjects;
-using ProjectNomad.Shared.Interfaces;
+using ProjectNomad.Shared.Interfaces.Properties;
 
 namespace GameModule.Entities
 {
-    internal class HumanUnit : IId
+    internal class HumanUnit : IId, ITribeId
     {
         public int Id { get; set; }
 

@@ -4,6 +4,7 @@ using GameModule.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameModule.Migrations
 {
     [DbContext(typeof(GameModuleDbContext))]
-    partial class GameModuleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230901212915_HumanUnitTaskOrder")]
+    partial class HumanUnitTaskOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,9 +95,6 @@ namespace GameModule.Migrations
 
                     b.Property<bool>("IsInProgress")
                         .HasColumnType("bit");
-
-                    b.Property<int?>("MapTileId")
-                        .HasColumnType("int");
 
                     b.Property<int>("TribeId")
                         .HasColumnType("int");

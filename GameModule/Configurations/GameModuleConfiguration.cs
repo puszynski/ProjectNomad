@@ -12,7 +12,7 @@ namespace GameModule.Configurations
         /// <summary>
         /// to run migration
         ///     cd .\GameModule
-        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add HumanUnitTaskMakeMapTileNullable -c GameModuleDbContext
+        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add HumanUnitTaskOrderAddMapTileId -c GameModuleDbContext
         ///     
         ///  note: you are in migration and context library project and are referring to startup project
         ///  plus specify context where multiple are detected by -c Name
@@ -41,6 +41,7 @@ namespace GameModule.Configurations
             services.AddScoped<IMapTileRepository, MapTileRepository>();
             services.AddScoped<IHumanUnitRepository, HumanUnitRepository>();
             services.AddScoped<IHumanUnitTaskRepository,  HumanUnitTaskRepository>();
+            services.AddScoped<IHumanUnitTaskOrderRepository,  HumanUnitTaskOrderRepository>();
 
             services.AddScoped<GameLOOPER>();
             services.AddScoped<ISecundExecutor, SecundExecutor>();
@@ -51,6 +52,7 @@ namespace GameModule.Configurations
             services.AddScoped<MapService>();
             services.AddScoped<IHumanUnitTaskConsumer, HumanUnitTaskConsumer>();
             services.AddScoped<IHumanUnitAutoTaskScheduler, HumanUnitAutoTaskScheduler>();
+            services.AddScoped<ITaskAssigner, TaskAssigner>();
         }
     }
 }

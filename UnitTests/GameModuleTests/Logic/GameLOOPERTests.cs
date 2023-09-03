@@ -13,9 +13,10 @@ namespace UnitTests.GameModuleTests.Logic
         Guid _accountId;
 
         ITribeRepository _tribeRepository;
+        IMapTileRepository _mapTileRepository;
         IHumanUnitRepository _humanUnitRepository;
         IHumanUnitTaskRepository _humanUnitTaskRepository;
-        IMapTileRepository _mapTileRepository;
+        IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
 
         IDateTimeProvider _dateTimeProvider;
 
@@ -45,6 +46,8 @@ namespace UnitTests.GameModuleTests.Logic
             var humanUnitTasks = new List<HumanUnitTask>();
             _humanUnitTaskRepository = Substitute.For<IHumanUnitTaskRepository>();
             _humanUnitTaskRepository.GetHumanUnitTasksByTribeId(1).Returns(humanUnitTasks);
+
+            _humanUnitTaskOrderRepository = Substitute.For<IHumanUnitTaskOrderRepository>();
 
             var mapTiles = new List<MapTile>();
             _mapTileRepository = Substitute.For<IMapTileRepository>();
@@ -79,7 +82,8 @@ namespace UnitTests.GameModuleTests.Logic
                 _dateTimeProvider,
                 _mapTileRepository,
                 _humanUnitRepository,
-                _humanUnitTaskRepository);
+                _humanUnitTaskRepository,
+                _humanUnitTaskOrderRepository);
 
             //Act
             await gameLooper.LoopTribe(_accountId);
@@ -90,6 +94,7 @@ namespace UnitTests.GameModuleTests.Logic
                 .Execute(Arg.Any<List<HumanUnit>>(), 
                 Arg.Any<Tribe>(), 
                 Arg.Any<List<HumanUnitTask>>(), 
+                Arg.Any<List<HumanUnitTaskOrder>>(),
                 Arg.Any<List<MapTile>>(), 
                 Arg.Any<DateTime>());
         }
@@ -114,7 +119,8 @@ namespace UnitTests.GameModuleTests.Logic
                 _dateTimeProvider,
                 _mapTileRepository,
                 _humanUnitRepository,
-                _humanUnitTaskRepository);
+                _humanUnitTaskRepository,
+                _humanUnitTaskOrderRepository);
 
             //Act
             await gameLooper.LoopTribe(_accountId);
@@ -145,7 +151,8 @@ namespace UnitTests.GameModuleTests.Logic
                 _dateTimeProvider,
                 _mapTileRepository,
                 _humanUnitRepository,
-                _humanUnitTaskRepository);
+                _humanUnitTaskRepository,
+                _humanUnitTaskOrderRepository);
 
             //Act
             await gameLooper.LoopTribe(_accountId);
@@ -176,7 +183,8 @@ namespace UnitTests.GameModuleTests.Logic
                 _dateTimeProvider,
                 _mapTileRepository,
                 _humanUnitRepository,
-                _humanUnitTaskRepository);
+                _humanUnitTaskRepository,
+                _humanUnitTaskOrderRepository);
 
             //Act
             await gameLooper.LoopTribe(_accountId);
@@ -204,8 +212,10 @@ namespace UnitTests.GameModuleTests.Logic
             _humanUnitRepository.GetHumanUnitsByTribeId(1).Returns(Task.FromResult(humanUnits));
 
             var humanUnitTaskConsumer = new HumanUnitTaskConsumer(_humanUnitTaskRepository);
-            var hHumanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(_humanUnitTaskRepository);
-            _secundExecutor = new SecundExecutor(humanUnitTaskConsumer, hHumanUnitAutoTaskScheduler);
+            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(_humanUnitTaskRepository);
+            var taskAssigner = Substitute.For<ITaskAssigner>();
+
+            _secundExecutor = new SecundExecutor(taskAssigner, humanUnitTaskConsumer, humanUnitAutoTaskScheduler);
 
             var gameLooper = new GameLOOPER(
                 _dayExecutor,
@@ -216,7 +226,8 @@ namespace UnitTests.GameModuleTests.Logic
                 _dateTimeProvider,
                 _mapTileRepository,
                 _humanUnitRepository,
-                _humanUnitTaskRepository);
+                _humanUnitTaskRepository,
+                _humanUnitTaskOrderRepository);
 
             //Act
             await gameLooper.LoopTribe(_accountId);
@@ -244,8 +255,9 @@ namespace UnitTests.GameModuleTests.Logic
             _humanUnitRepository.GetHumanUnitsByTribeId(1).Returns(Task.FromResult(humanUnits));
 
             var humanUnitTaskConsumer = new HumanUnitTaskConsumer(_humanUnitTaskRepository);
-            var hHumanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(_humanUnitTaskRepository);
-            _secundExecutor = new SecundExecutor(humanUnitTaskConsumer, hHumanUnitAutoTaskScheduler);
+            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(_humanUnitTaskRepository);
+            var taskAssigner = Substitute.For<ITaskAssigner>();
+            _secundExecutor = new SecundExecutor(taskAssigner, humanUnitTaskConsumer, humanUnitAutoTaskScheduler);
 
             var gameLooper = new GameLOOPER(
                 _dayExecutor,
@@ -256,7 +268,8 @@ namespace UnitTests.GameModuleTests.Logic
                 _dateTimeProvider,
                 _mapTileRepository,
                 _humanUnitRepository,
-                _humanUnitTaskRepository);
+                _humanUnitTaskRepository,
+                _humanUnitTaskOrderRepository);
 
             //Act
             await gameLooper.LoopTribe(_accountId);
@@ -284,8 +297,9 @@ namespace UnitTests.GameModuleTests.Logic
             _humanUnitRepository.GetHumanUnitsByTribeId(1).Returns(Task.FromResult(humanUnits));
 
             var humanUnitTaskConsumer = new HumanUnitTaskConsumer(_humanUnitTaskRepository);
-            var hHumanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(_humanUnitTaskRepository);
-            _secundExecutor = new SecundExecutor(humanUnitTaskConsumer, hHumanUnitAutoTaskScheduler);
+            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(_humanUnitTaskRepository);
+            var taskAssigner = Substitute.For<ITaskAssigner>();
+            _secundExecutor = new SecundExecutor(taskAssigner, humanUnitTaskConsumer, humanUnitAutoTaskScheduler);
 
             var gameLooper = new GameLOOPER(
                 _dayExecutor,
@@ -296,7 +310,8 @@ namespace UnitTests.GameModuleTests.Logic
                 _dateTimeProvider,
                 _mapTileRepository,
                 _humanUnitRepository,
-                _humanUnitTaskRepository);
+                _humanUnitTaskRepository,
+                _humanUnitTaskOrderRepository);
 
             //Act
             await gameLooper.LoopTribe(_accountId);

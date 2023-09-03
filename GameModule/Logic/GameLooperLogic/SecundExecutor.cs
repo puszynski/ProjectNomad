@@ -7,41 +7,53 @@ namespace GameModule.Logic.GameLooperLogic
     {
         Task<IEnumerable<INotification>> Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
-            List<HumanUnitTask> tasksToConsume,
-            List<MapTile> mapTilesToConsumeTasks,
+            List<HumanUnitTask> tasks,
+            List<HumanUnitTaskOrder> taskOrders,
+            List<MapTile> mapTiles,
             DateTime currentTimeInLoop);
     }
 
     internal class SecundExecutor : ISecundExecutor
     {
+        readonly ITaskAssigner _taskAssigner;
         readonly IHumanUnitTaskConsumer _humanUnitTaskConsumer;
         readonly IHumanUnitAutoTaskScheduler _humanUnitAutoTaskScheduler;
-        public SecundExecutor(IHumanUnitTaskConsumer humanUnitTaskConsumer, 
+        public SecundExecutor(ITaskAssigner taskAssigner,
+            IHumanUnitTaskConsumer humanUnitTaskConsumer,
             IHumanUnitAutoTaskScheduler humanUnitAutoTaskScheduler)
         {
+            _taskAssigner = taskAssigner;
             _humanUnitTaskConsumer = humanUnitTaskConsumer;
             _humanUnitAutoTaskScheduler = humanUnitAutoTaskScheduler;
         }
 
         async Task<IEnumerable<INotification>> ISecundExecutor.Execute(List<HumanUnit> humanUnits,
             Tribe tribe,
-            List<HumanUnitTask> tasksToConsume,
-            List<MapTile> mapTilesToConsumeTasks,
+            List<HumanUnitTask> tasks,
+            List<HumanUnitTaskOrder> taskOrders,
+            List<MapTile> mapTiles,
             DateTime currentTimeInLoop)
         {
             var notificationToSendToClient = new List<INotification>();
 
+            var taskAssignerTask = _taskAssigner.Execute(taskOrders,
+                tasks, 
+                humanUnits, 
+                tribe, 
+                mapTiles);
+
             var humanUnitAutoTaskSchedulerTask = _humanUnitAutoTaskScheduler.Execute(humanUnits,
                 tribe,
-                tasksToConsume,
+                tasks,
                 currentTimeInLoop);
 
             var humanUnitTaskConsumerNotifications = _humanUnitTaskConsumer.Execute(humanUnits,
                 tribe,
-                tasksToConsume,
-                mapTilesToConsumeTasks,
+                tasks,
+                mapTiles,
                 currentTimeInLoop);
 
+            await taskAssignerTask;//todo add to some list??
             notificationToSendToClient.AddRange(await humanUnitAutoTaskSchedulerTask);
             notificationToSendToClient.AddRange(humanUnitTaskConsumerNotifications);
 

@@ -4,6 +4,7 @@
     {
         public const int MinutesToTravelOneTile = 10;
 
+        public const double ProbabilityToAssignToTaskOrder = 0.1;
         public const int MinutesToGatherFood = 10;
         public const int MinutesToConsumeFoodToFill20PercentageOfFood = 1;
         public const int FoodToGetHungryForHumanUnitEachMinute = 1;

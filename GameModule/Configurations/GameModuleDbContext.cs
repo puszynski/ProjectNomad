@@ -13,6 +13,7 @@ namespace GameModule.Configurations
         public DbSet<HumanUnit> HumanUnits { get; set; }
         public DbSet<MapTile> MapTiles { get; set; }
         public DbSet<HumanUnitTask> HumanUnitTasks { get; set; }
+        public DbSet<HumanUnitTaskOrder> HumanUnitTaskOrders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
             => modelBuilder.HasDefaultSchema("GameModule");

@@ -15,11 +15,14 @@ namespace GameModule.Logic.GameLooperLogic
     {
         readonly IHumanUnitRepository _humanUnitRepository;
         readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
-        public MinuteExecutor(IHumanUnitRepository humanUnitRepository, 
-            IHumanUnitTaskRepository humanUnitTaskRepository)
+        readonly IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
+        public MinuteExecutor(IHumanUnitRepository humanUnitRepository,
+            IHumanUnitTaskRepository humanUnitTaskRepository,
+            IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository)
         {
             _humanUnitRepository = humanUnitRepository;
             _humanUnitTaskRepository = humanUnitTaskRepository;
+            _humanUnitTaskOrderRepository = humanUnitTaskOrderRepository;
         }
 
         public bool Execute(List<HumanUnit> humanUnits, Tribe tribe, List<HumanUnitTask> tasksToConsume)
@@ -27,7 +30,7 @@ namespace GameModule.Logic.GameLooperLogic
             var shouldBreakGameLoop = false;
 
             humanUnits.ForEach(x => x.FoodLevelPercentage = x.FoodLevelPercentage - GameSETTINGS.FoodToGetHungryForHumanUnitEachMinute);
-            DeathApplicator.StarvationDeath(_humanUnitRepository, humanUnits);
+            DeathApplicator.StarvationDeath(_humanUnitTaskOrderRepository, _humanUnitRepository, humanUnits, tribe.Id);
 
             if (!humanUnits.Any())
             {

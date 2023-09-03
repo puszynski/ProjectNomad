@@ -1,13 +1,14 @@
-﻿using GameModule.Configurations;
-using GameModule.Entities;
+﻿using GameModule.Entities;
 using GameModule.Repositories;
 
 namespace GameModule.Logic.GameLooperLogic
 {
     internal static class DeathApplicator
     {
-        internal static void StarvationDeath(IHumanUnitRepository humanUnitRepository,
-            ICollection<HumanUnit> humanUnits)
+        internal static void StarvationDeath(IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository,
+            IHumanUnitRepository humanUnitRepository,
+            ICollection<HumanUnit> humanUnits,
+            int tribeId)
         {
             var humansToDieFromStarving = humanUnits.Where(x => x.FoodLevelPercentage <= 0).ToList();
 
@@ -20,6 +21,9 @@ namespace GameModule.Logic.GameLooperLogic
                 foreach (var humanUnitRemoved in humansToDieFromStarving)
                         humanUnits.Remove(humanUnitRemoved);
             }
+
+            humanUnitTaskOrderRepository.RemoveAll(tribeId);
+
         }
     }
 }

@@ -18,6 +18,7 @@ namespace GameModule.Logic
         readonly IMapTileRepository _mapTileRepository;
         readonly IHumanUnitRepository _humanUnitRepository;
         readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
+        readonly IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
         public GameLOOPER(
             IDayExecutor dayExecutor,
             IHourExecutor hourExecutor,
@@ -27,7 +28,8 @@ namespace GameModule.Logic
             IDateTimeProvider dateTimeProvider,
             IMapTileRepository mapTileRepository,
             IHumanUnitRepository humanUnitRepository,
-            IHumanUnitTaskRepository humanUnitTaskRepository)
+            IHumanUnitTaskRepository humanUnitTaskRepository,
+            IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository)
         {
             _dayExecutor = dayExecutor;
             _hourExecutor = hourExecutor;
@@ -38,14 +40,13 @@ namespace GameModule.Logic
             _mapTileRepository = mapTileRepository;
             _humanUnitRepository = humanUnitRepository;
             _humanUnitTaskRepository = humanUnitTaskRepository;
+            _humanUnitTaskOrderRepository = humanUnitTaskOrderRepository;
         }
 
         public async Task<ITriggerGameLooperResponse>  LoopTribe(Guid accountId)
         {
-            var tribe = await _tribeRepository.GetByAccountId(accountId);
-
-            if (tribe == null)
-                throw new ArgumentException($"There is no tribe assigned for given accountId {accountId} :/");
+            var tribe = await _tribeRepository.GetByAccountId(accountId) 
+                ?? throw new ArgumentException($"There is no tribe assigned for given accountId {accountId} :/");
 
             var humanUnits = await _humanUnitRepository.GetHumanUnitsByTribeId(tribe.Id);
             
@@ -55,14 +56,17 @@ namespace GameModule.Logic
                     new List<WorldEventDto>());
             
             var tasksToConsume = await _humanUnitTaskRepository.GetHumanUnitTasksByTribeId(tribe.Id);
+            var taskOrders = await _humanUnitTaskOrderRepository.Get(tribe.Id);
 
-
-            var mapTileIds = tasksToConsume
+            var mapTileIdsForTasks = tasksToConsume//TODO ADD ALSO FROM FROM TASK-ORDERS
                 .Where(x => x.MapTileId.HasValue)
                 .Select(y => y.MapTileId.Value)
                 .ToList();
-
-            var mapTilesFromTasks = await _mapTileRepository.GetByIds(mapTileIds);
+            var mapTileIdsForTaskOrders = taskOrders
+                .Where(x => x.MapTileId.HasValue)
+                .Select(y => y.MapTileId.Value)
+                .ToList();
+            var mapTilesFromTasksOrTaskOrders = await _mapTileRepository.GetByIds(mapTileIdsForTasks.Union(mapTileIdsForTaskOrders).ToList());
 
             var lastUpdated = tribe.Updated;
             var loopCounter = 0;
@@ -77,7 +81,8 @@ namespace GameModule.Logic
                 var notificationsFromCurrentLoop = await _secundExecutor.Execute(humanUnits,
                     tribe,
                     tasksToConsume,
-                    mapTilesFromTasks,
+                    taskOrders,
+                    mapTilesFromTasksOrTaskOrders,
                     currentTimeInLoop);
 
                 notificationToSendToClient.AddRange(notificationsFromCurrentLoop);

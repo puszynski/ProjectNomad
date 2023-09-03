@@ -2,8 +2,10 @@
 using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Logic;
+using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
+using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Interfaces.Response;
 
@@ -16,6 +18,7 @@ namespace GameModule
 
         readonly NewTribeLocalizationInitializer _newTribeLocalizationInitializer;
         readonly IDateTimeProvider _dateTimeProvider;
+        readonly IMapTileRepository _mapTileRepository;
         readonly GameModuleDbContext _dbContext;
         readonly GameLOOPER _gameLooper;
         readonly MapService _mapService;
@@ -24,13 +27,15 @@ namespace GameModule
             NewTribeLocalizationInitializer newTribeLocalizationInitializer,
             GameLOOPER gameLooper,
             MapService mapService,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            IMapTileRepository mapTileRepository)
         {
             _dbContext = dbContext;
             _newTribeLocalizationInitializer = newTribeLocalizationInitializer;
             _gameLooper = gameLooper;
             _mapService = mapService;
             _dateTimeProvider = dateTimeProvider;
+            _mapTileRepository = mapTileRepository;
         }
 
         public async Task<ITribeGameObjects> GetPlayerGameObject(Guid accountId)
@@ -193,6 +198,28 @@ namespace GameModule
 
             tribeTasks ??= new List<HumanUnitTaskDto>();
             return tribeTasks;
+        }
+
+
+        //TODO START MAKING SMALLER CLASSES, GAME-MODULE IS TOO BIG => IHumanUnitTaskOrder_GameModule ?
+        public async Task<IEnumerable<IHumanUnitTaskOrder>> GetHumanUnitTaskOrders(int tribeId)
+            => await _dbContext
+            .HumanUnitTaskOrders
+            .Where(x => x.TribeId == tribeId)
+            .Select(x => new HumanUnitTaskOrderDto(x.Id, x.TribeId, x.Added, x.Type, x.IsInProgress, x.MapTileId))
+            .ToListAsync();
+
+        public async Task AddHumanUnitTaskOrder(int tribeId, EHumanUnitTaskType type, int mapTileX, int mapTileY)
+        {
+            int mapTileId = await _mapTileRepository.GetIdByLocalization(mapTileX, mapTileY);
+            await _mapTileRepository.Add(tribeId, type, mapTileId, _dateTimeProvider.UtcNow());
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteHumanUnitTaskOrder(int taskOrderId)
+        {
+            await _mapTileRepository.Remove(taskOrderId);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

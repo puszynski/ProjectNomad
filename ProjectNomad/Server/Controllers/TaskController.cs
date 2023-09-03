@@ -1,6 +1,6 @@
 ﻿using GameModule;
-using GameModule.DtoModels;
 using Microsoft.AspNetCore.Mvc;
+using ProjectNomad.Server.Models.RequestModels;
 using ProjectNomad.Shared.Interfaces;
 
 namespace ProjectNomad.Server.Controllers
@@ -25,7 +25,7 @@ namespace ProjectNomad.Server.Controllers
 
         // POST api/task/add-task
         [HttpPost("add-task")]
-        public async Task<ActionResult> AddTask(AddHumanUnitTaskDto humanUnitTask)
+        public async Task<ActionResult> AddTask(AddHumanUnitTask humanUnitTask)
         {
             await _gameModule.AddTask(humanUnitTask);
             return Ok();

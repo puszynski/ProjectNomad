@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using ProjectNomad.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using ProjectNomad.Shared.Interfaces.Properties;
 
 namespace GameModule.Entities
 {

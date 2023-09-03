@@ -1,4 +1,6 @@
-﻿using ProjectNomad.Shared.Interfaces;
+﻿using GameModule.Entities;
+using ProjectNomad.Shared.Enums;
+using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Interfaces.Response;
 
 namespace GameModule
@@ -24,5 +26,10 @@ namespace GameModule
         // NOTE
         // map tiles can be generated whole sections, eg. from 100|100 to 199|199
         public Task GenerateMapTiles(int x, int y);
+
+
+        public Task<IEnumerable<IHumanUnitTaskOrder>> GetHumanUnitTaskOrders(int tribeId);
+        public Task AddHumanUnitTaskOrder(int tribeId, EHumanUnitTaskType type, int mapTileX, int mapTileY);
+        public Task DeleteHumanUnitTaskOrder(int id);
     }
 }
