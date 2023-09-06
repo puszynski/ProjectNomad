@@ -31,7 +31,13 @@
     }
     else
     {
-        <p>dev info: @(string.Join(" - ", GameObjectsViewModel.HumanUnits.Select(x => x.FoodLevelPercentage))) ☀ ☁ ❄</p>
+        <p>dev info:
+            @foreach (var human in GameObjectsViewModel.HumanUnits)
+            {
+                <span>@human.FoodLevelPercentage-@human.Name &nbsp; </span>
+            }
+            ☀ ☁ ❄
+        </p>
 
         <div style="border: 2px dashed;
                     border-color: Gainsboro;
@@ -107,7 +113,7 @@ else
     async Task TrigerRecalculationAndGetGameObjectsFromServer()
     {
         var accountId = await GetAccountIdOr404();
-        await _gameLooperManager.TriggerGameLooper(accountId);
+        await _gameLooperManager.TriggerGameLooper(accountId);//TRIGGER IS SENDING YOU NOTIFIFCATION NOW! -> PUSH JE TO NOTIFY COMPONENT
 
         await GetDataFromServer();
         StateHasChanged();

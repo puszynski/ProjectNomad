@@ -17,6 +17,7 @@ namespace GameModule
         const int TILE_MAX_WOOD_POINTS_LIMIT = 100;
 
         readonly NewTribeLocalizationInitializer _newTribeLocalizationInitializer;
+        readonly IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
         readonly IDateTimeProvider _dateTimeProvider;
         readonly IMapTileRepository _mapTileRepository;
         readonly GameModuleDbContext _dbContext;
@@ -25,6 +26,7 @@ namespace GameModule
 
         public GameModule(GameModuleDbContext dbContext,
             NewTribeLocalizationInitializer newTribeLocalizationInitializer,
+            IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository,
             GameLOOPER gameLooper,
             MapService mapService,
             IDateTimeProvider dateTimeProvider,
@@ -32,6 +34,7 @@ namespace GameModule
         {
             _dbContext = dbContext;
             _newTribeLocalizationInitializer = newTribeLocalizationInitializer;
+            _humanUnitTaskOrderRepository = humanUnitTaskOrderRepository;
             _gameLooper = gameLooper;
             _mapService = mapService;
             _dateTimeProvider = dateTimeProvider;
@@ -193,7 +196,8 @@ namespace GameModule
             var tribeTasks = await _dbContext
                 .HumanUnitTasks
                 .Where(x => x.TribeId == tribeId)
-                .Select(x => new HumanUnitTaskDto(x.TribeId, x.HumanUnitId, x.Type, x.From, x.To))
+                .Include(b => b.HumanUnit)
+                .Select(x => new HumanUnitTaskDto(x.TribeId, x.HumanUnitId, x.HumanUnit.Name, x.Type, x.From, x.To)) //todo
                 .ToListAsync();
 
             tribeTasks ??= new List<HumanUnitTaskDto>();
@@ -212,7 +216,7 @@ namespace GameModule
         public async Task AddHumanUnitTaskOrder(int tribeId, EHumanUnitTaskType type, int mapTileX, int mapTileY)
         {
             int mapTileId = await _mapTileRepository.GetIdByLocalization(mapTileX, mapTileY);
-            await _mapTileRepository.Add(tribeId, type, mapTileId, _dateTimeProvider.UtcNow());
+            await _humanUnitTaskOrderRepository.Add(tribeId, type, mapTileId, _dateTimeProvider.UtcNow());
             await _dbContext.SaveChangesAsync();
         }
 

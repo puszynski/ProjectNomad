@@ -1,44 +1,35 @@
 ﻿using GameModule.Entities;
-using GameModule.Repositories;
 using ProjectNomad.Shared;
+using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic.GameLooperLogic
 {
     internal interface IMinuteExecutor
     {
-        bool Execute(List<HumanUnit> humanUnits, 
+        List<INotification> Execute(List<HumanUnit> humanUnits, 
             Tribe tribe, 
             List<HumanUnitTask> tasksToConsume);
     }
 
     internal class MinuteExecutor : IMinuteExecutor
     {
-        readonly IHumanUnitRepository _humanUnitRepository;
-        readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
-        readonly IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
-        public MinuteExecutor(IHumanUnitRepository humanUnitRepository,
-            IHumanUnitTaskRepository humanUnitTaskRepository,
-            IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository)
+        readonly IGameOverApplicator _gameOverApplicator;
+        readonly IHumansDeathApplicator _humansDeathApplicator;
+        public MinuteExecutor(IGameOverApplicator gameOverApplicator,
+            IHumansDeathApplicator humansDeathApplicator)
         {
-            _humanUnitRepository = humanUnitRepository;
-            _humanUnitTaskRepository = humanUnitTaskRepository;
-            _humanUnitTaskOrderRepository = humanUnitTaskOrderRepository;
+            _gameOverApplicator = gameOverApplicator;
+            _humansDeathApplicator = humansDeathApplicator;
         }
 
-        public bool Execute(List<HumanUnit> humanUnits, Tribe tribe, List<HumanUnitTask> tasksToConsume)
+        public List<INotification> Execute(List<HumanUnit> humanUnits, Tribe tribe, List<HumanUnitTask> tasksToConsume)
         {
-            var shouldBreakGameLoop = false;
+            var notifications = new List<INotification>();
 
             humanUnits.ForEach(x => x.FoodLevelPercentage = x.FoodLevelPercentage - GameSETTINGS.FoodToGetHungryForHumanUnitEachMinute);
-            DeathApplicator.StarvationDeath(_humanUnitTaskOrderRepository, _humanUnitRepository, humanUnits, tribe.Id);
+            notifications.AddRange(_humansDeathApplicator.StarvationDeath(humanUnits));
 
-            if (!humanUnits.Any())
-            {
-                TribeDeathApplicator.Execute(tasksToConsume, _humanUnitTaskRepository);
-                shouldBreakGameLoop = true;
-            }
-
-            return shouldBreakGameLoop;
+            return notifications;
         }
     }
 }

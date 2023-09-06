@@ -1,13 +1,16 @@
-﻿using GameModule.Entities;
+﻿using GameModule.DtoModels;
+using GameModule.Entities;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
+using ProjectNomad.Shared.Enums;
+using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic.GameLooperLogic
 {
     internal interface ITaskAssigner
     {
-        Task Execute(List<HumanUnitTaskOrder> humanUnitTaskOrders,
+        Task<IEnumerable<INotification>> Execute(List<HumanUnitTaskOrder> humanUnitTaskOrders,
             List<HumanUnitTask> humanUnitTasks,
             List<HumanUnit> humanUnits,
             Tribe tribe,
@@ -25,22 +28,27 @@ namespace GameModule.Logic.GameLooperLogic
             _dateTimeProvider = dateTimeProvider;
         }
 
-        async Task ITaskAssigner.Execute(List<HumanUnitTaskOrder> humanUnitTaskOrders,
+        async Task<IEnumerable<INotification>> ITaskAssigner.Execute(List<HumanUnitTaskOrder> humanUnitTaskOrders,
             List<HumanUnitTask> humanUnitTasks,
             List<HumanUnit> humanUnits,
             Tribe tribe,
             List<MapTile> mapTiles)
         {
+            var notifications = new List<INotification>();
+
+            if (!humanUnitTaskOrders.Where(x => !x.IsInProgress).Any())
+                return notifications;
+
             var humanIDsWithTaskAssigned = humanUnitTasks.Select(x => x.HumanUnitId);
             var humansWithNoTasks = humanUnits.Where(x => !humanIDsWithTaskAssigned.Contains(x.Id));
 
-            //OPTION 1
+
             foreach (var human in humansWithNoTasks)
             {
                 var taskOrderToAssign = humanUnitTaskOrders.Where(x => !x.IsInProgress).OrderBy(x => x.Added).FirstOrDefault();
 
                 if (taskOrderToAssign == null)
-                    return;
+                    return notifications;
 
                 var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.ProbabilityToAssignToTaskOrder); //todo base on some parameters like foodLevel, morals..
 
@@ -61,10 +69,20 @@ namespace GameModule.Logic.GameLooperLogic
 
                 taskOrderToAssign.IsInProgress = true;
 
+                var notification = new NotificationDto(human.Id,
+                    human.Name,
+                    taskToAdd.From,
+                    ENotificationType.FoodGatheringStarted,
+                    taskToAdd.To.ToString());
+                notifications.Add(notification);
+
+                //await _humanUnitTaskRepository.SaveChangesAsync(); ze niby pomoglo, jak nie wiesz o co common to wywal
                 await _humanUnitTaskRepository.AddAsync(taskToAdd);
-                await _humanUnitTaskRepository.SaveChangesAsync();
+                await _humanUnitTaskRepository.SaveChangesAsync(); 
                 humanUnitTasks.Add(taskToAdd);
             }
+
+            return notifications;
         }
 
         DateTime CalculateTimeToEndTask(MapTile destinyMapTile, Tribe tribe, HumanUnit human)
@@ -75,7 +93,6 @@ namespace GameModule.Logic.GameLooperLogic
                 destinyMapTile.Localization.Y);
 
             var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, human.FoodLevelPercentage) + TimeSpan.FromMinutes(GameSETTINGS.MinutesToGatherFood);
-
             return _dateTimeProvider.UtcNow().Add(timeToEndTask);
         }
     }

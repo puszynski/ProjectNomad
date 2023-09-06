@@ -5,7 +5,7 @@ namespace ProjectNomad.Shared.Interfaces
     public interface IHumanUnitTaskDto
     {
         public int TribeId { get; }
-        public string HumanUnitName { get => "Adam"; } //todo
+        public string HumanUnitName { get; }
         public int HumanUnitId { get; }
         public EHumanUnitTaskType Type { get; }
         public DateTime From { get; }

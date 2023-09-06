@@ -16,6 +16,7 @@ namespace GameModule.Logic
         readonly ITribeRepository _tribeRepository;
         readonly IDateTimeProvider _dateTimeProvider;
         readonly IMapTileRepository _mapTileRepository;
+        readonly IGameOverApplicator _gameOverApplicator;
         readonly IHumanUnitRepository _humanUnitRepository;
         readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
         readonly IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
@@ -27,6 +28,7 @@ namespace GameModule.Logic
             ITribeRepository tribeRepository,
             IDateTimeProvider dateTimeProvider,
             IMapTileRepository mapTileRepository,
+            IGameOverApplicator gameOverApplicator,
             IHumanUnitRepository humanUnitRepository,
             IHumanUnitTaskRepository humanUnitTaskRepository,
             IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository)
@@ -38,6 +40,7 @@ namespace GameModule.Logic
             _tribeRepository = tribeRepository;
             _dateTimeProvider = dateTimeProvider;
             _mapTileRepository = mapTileRepository;
+            _gameOverApplicator = gameOverApplicator;
             _humanUnitRepository = humanUnitRepository;
             _humanUnitTaskRepository = humanUnitTaskRepository;
             _humanUnitTaskOrderRepository = humanUnitTaskOrderRepository;
@@ -58,7 +61,7 @@ namespace GameModule.Logic
             var tasksToConsume = await _humanUnitTaskRepository.GetHumanUnitTasksByTribeId(tribe.Id);
             var taskOrders = await _humanUnitTaskOrderRepository.Get(tribe.Id);
 
-            var mapTileIdsForTasks = tasksToConsume//TODO ADD ALSO FROM FROM TASK-ORDERS
+            var mapTileIdsForTasks = tasksToConsume
                 .Where(x => x.MapTileId.HasValue)
                 .Select(y => y.MapTileId.Value)
                 .ToList();
@@ -88,12 +91,19 @@ namespace GameModule.Logic
                 notificationToSendToClient.AddRange(notificationsFromCurrentLoop);
 
                 if (lastUpdated.Second == 0)
-                    shouldBreakGameLoop = _minuteExecutor.Execute(humanUnits, 
+                {
+                    var notificationsFromMinuteExecutor = _minuteExecutor.Execute(humanUnits, 
                         tribe, 
                         tasksToConsume);
+                    notificationToSendToClient.AddRange(notificationsFromMinuteExecutor);
 
-                if (shouldBreakGameLoop)
-                    break;
+
+                    if (IGameOverApplicator.IsGameOver(humanUnits))
+                    {
+                        _gameOverApplicator.Execute(tribe.Id);
+                        break;
+                    }
+                }
 
                 if (lastUpdated.Minute == 0 && lastUpdated.Second == 0)
                     _hourExecutor.Execute();
@@ -107,7 +117,7 @@ namespace GameModule.Logic
 
             if (loopCounter != 0)
             {
-                tribe.Updated = lastUpdated;
+                tribe.Updated = humanUnits.Count == 0 ? _dateTimeProvider.UtcNow() : lastUpdated;  
                 await _tribeRepository.SaveChangesAsync();
             }
 

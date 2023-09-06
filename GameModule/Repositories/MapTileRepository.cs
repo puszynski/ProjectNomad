@@ -9,7 +9,6 @@ namespace GameModule.Repositories
     {
         Task<List<MapTile>> GetByIds(List<int> ids);
         Task<int> GetIdByLocalization(int x, int y);
-        Task Add(int tribeId, EHumanUnitTaskType type, int mapTileId, DateTime now);
         Task Remove(int taskOrderId);
     }
 
@@ -34,18 +33,6 @@ namespace GameModule.Repositories
                 .Where(mt => mt.Localization.X == x && mt.Localization.Y == y)
                 .Select(mt => mt.Id)
                 .SingleAsync();
-        }
-
-        async Task IMapTileRepository.Add(int tribeId, EHumanUnitTaskType type, int mapTileId, DateTime now)
-        {
-            await _gameModuleDbContext.HumanUnitTaskOrders.AddAsync(new HumanUnitTaskOrder
-            {
-                Added = now,
-                TribeId = tribeId,
-                Type = type,
-                IsInProgress = false,
-                MapTileId = mapTileId
-            });
         }
 
         async Task IMapTileRepository.Remove(int taskOrderId)

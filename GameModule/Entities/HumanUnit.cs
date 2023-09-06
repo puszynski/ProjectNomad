@@ -15,7 +15,7 @@ namespace GameModule.Entities
         //1-100
         public int FoodLevelPercentage { get; set; }
 
-        ICollection<HumanUnitTask> HumanUnitTasks { get; set; }
+        public ICollection<HumanUnitTask> HumanUnitTasks { get; set; }
     }
 }
 

@@ -53,7 +53,7 @@ namespace GameModule.Logic.GameLooperLogic
                 mapTiles,
                 currentTimeInLoop);
 
-            await taskAssignerTask;//todo add to some list??
+            notificationToSendToClient.AddRange(await taskAssignerTask);
             notificationToSendToClient.AddRange(await humanUnitAutoTaskSchedulerTask);
             notificationToSendToClient.AddRange(humanUnitTaskConsumerNotifications);
 

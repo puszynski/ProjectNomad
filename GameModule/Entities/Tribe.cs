@@ -19,7 +19,7 @@ namespace GameModule.Entities
         public DateTime Updated { get; set; }
         public string Name { get; set; }
         public Localization Localization { get; set; }
-        ICollection<HumanUnit> HumanUnits { get; set; }
+        public ICollection<HumanUnit> HumanUnits { get; set; }
         public Resources Resources { get; set; }
     }
 

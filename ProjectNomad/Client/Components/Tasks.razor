@@ -16,15 +16,16 @@
     <smaller>dev info - task orders:</smaller>
     @foreach (var humanUnitTaskOrder in HumanUnitTaskOrders)
     {
+        <br />
         string descrption = humanUnitTaskOrder.Type == EHumanUnitTaskType.GatheringFood ? "call for wood gathering" : "todo name it";
         <span>» @descrption (0/1)</span>
-        <br />
     } 
     <hr />
 
     <smaller>dev info - food gather tasks:</smaller>
     @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.GatheringFood))
     {
+        <br />
         <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@TribeId" />
     }
     <hr />

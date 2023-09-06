@@ -14,6 +14,7 @@ namespace UnitTests.GameModuleTests.Logic
 
         ITribeRepository _tribeRepository;
         IMapTileRepository _mapTileRepository;
+        IGameOverApplicator _gameOverApplicator;
         IHumanUnitRepository _humanUnitRepository;
         IHumanUnitTaskRepository _humanUnitTaskRepository;
         IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
@@ -30,6 +31,8 @@ namespace UnitTests.GameModuleTests.Logic
 
         public void MockData(DateTime startLoop, DateTime endLoop)
         {
+            _gameOverApplicator = Substitute.For<IGameOverApplicator>();
+
             _accountId = Guid.NewGuid();
 
             _startLoopFrom = startLoop;
@@ -79,8 +82,9 @@ namespace UnitTests.GameModuleTests.Logic
                 _secundExecutor,
                 _minuteExecutor,
                 _tribeRepository,
-                _dateTimeProvider,
+                _dateTimeProvider, 
                 _mapTileRepository,
+                _gameOverApplicator,
                 _humanUnitRepository,
                 _humanUnitTaskRepository,
                 _humanUnitTaskOrderRepository);
@@ -118,6 +122,7 @@ namespace UnitTests.GameModuleTests.Logic
                 _tribeRepository,
                 _dateTimeProvider,
                 _mapTileRepository,
+                _gameOverApplicator,
                 _humanUnitRepository,
                 _humanUnitTaskRepository,
                 _humanUnitTaskOrderRepository);
@@ -150,6 +155,7 @@ namespace UnitTests.GameModuleTests.Logic
                 _tribeRepository,
                 _dateTimeProvider,
                 _mapTileRepository,
+                _gameOverApplicator,
                 _humanUnitRepository,
                 _humanUnitTaskRepository,
                 _humanUnitTaskOrderRepository);
@@ -182,6 +188,7 @@ namespace UnitTests.GameModuleTests.Logic
                 _tribeRepository,
                 _dateTimeProvider,
                 _mapTileRepository,
+                _gameOverApplicator,
                 _humanUnitRepository,
                 _humanUnitTaskRepository,
                 _humanUnitTaskOrderRepository);
@@ -225,6 +232,7 @@ namespace UnitTests.GameModuleTests.Logic
                 _tribeRepository,
                 _dateTimeProvider,
                 _mapTileRepository,
+                _gameOverApplicator,
                 _humanUnitRepository,
                 _humanUnitTaskRepository,
                 _humanUnitTaskOrderRepository);
@@ -267,6 +275,7 @@ namespace UnitTests.GameModuleTests.Logic
                 _tribeRepository,
                 _dateTimeProvider,
                 _mapTileRepository,
+                _gameOverApplicator,
                 _humanUnitRepository,
                 _humanUnitTaskRepository,
                 _humanUnitTaskOrderRepository);
@@ -309,6 +318,7 @@ namespace UnitTests.GameModuleTests.Logic
                 _tribeRepository,
                 _dateTimeProvider,
                 _mapTileRepository,
+                _gameOverApplicator,                
                 _humanUnitRepository,
                 _humanUnitTaskRepository,
                 _humanUnitTaskOrderRepository);
