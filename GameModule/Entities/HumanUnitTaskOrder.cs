@@ -6,7 +6,10 @@ namespace GameModule.Entities
     internal class HumanUnitTaskOrder : IId, ITribeId
     {
         public int Id { get; set; }
+
         public int TribeId { get; set; }
+        public Tribe Tribe { get; set; }
+
         public DateTime Added { get; set; }
         public EHumanUnitTaskType Type { get; set; }
         public bool IsInProgress { get; set; }

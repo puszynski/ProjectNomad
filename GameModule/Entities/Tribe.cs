@@ -19,8 +19,11 @@ namespace GameModule.Entities
         public DateTime Updated { get; set; }
         public string Name { get; set; }
         public Localization Localization { get; set; }
-        public ICollection<HumanUnit> HumanUnits { get; set; }
         public Resources Resources { get; set; }
+
+        public ICollection<HumanUnit> HumanUnits { get; set; }
+        public ICollection<HumanUnitTask> HumanUnitTasks { get; set; }
+        public ICollection<HumanUnitTaskOrder> HumanUnitTaskOrders { get; set; }
     }
 
     [Owned]
