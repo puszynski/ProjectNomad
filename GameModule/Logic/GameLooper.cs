@@ -52,12 +52,10 @@ namespace GameModule.Logic
                 ?? throw new ArgumentException($"There is no tribe assigned for given accountId {accountId} :/");
 
             var humanUnits = await _humanUnitRepository.GetHumanUnitsByTribeId(tribe.Id);
-            
+
             if (!humanUnits.Any())
-                return new TriggerGameLooperResponse(
-                    new List<NotificationDto>() { new NotificationDto(0, "none", _dateTimeProvider.UtcNow(), ProjectNomad.Shared.Enums.ENotificationType.GameOver, null) }, 
-                    new List<WorldEventDto>());
-            
+                return GetGameOverResponse();
+
             var tasksToConsume = await _humanUnitTaskRepository.GetHumanUnitTasksByTribeId(tribe.Id);
             var taskOrders = await _humanUnitTaskOrderRepository.Get(tribe.Id);
 
@@ -79,7 +77,10 @@ namespace GameModule.Logic
 
             while (lastUpdated <= _dateTimeProvider.UtcNow().AddSeconds(-1))
             {
+                loopCounter++;
                 var currentTimeInLoop = lastUpdated.AddSeconds(1);
+                lastUpdated = currentTimeInLoop;
+
 
                 var notificationsFromCurrentLoop = await _secundExecutor.Execute(humanUnits,
                     tribe,
@@ -111,8 +112,6 @@ namespace GameModule.Logic
                 if (lastUpdated.Hour == 12 && lastUpdated.Minute == 0 && lastUpdated.Second == 0)
                     _dayExecutor.Execute();
 
-                lastUpdated = currentTimeInLoop;
-                loopCounter++;
             }
 
             if (loopCounter != 0)
@@ -121,7 +120,15 @@ namespace GameModule.Logic
                 await _tribeRepository.SaveChangesAsync();
             }
 
-            return new TriggerGameLooperResponse(notificationToSendToClient, new List<WorldEventDto>()); //todo implement WorldEvents
+            if (!humanUnits.Any())
+                return GetGameOverResponse();
+            else
+                return new TriggerGameLooperResponse(notificationToSendToClient, new List<WorldEventDto>()); //todo implement WorldEvents
         }
+
+        TriggerGameLooperResponse GetGameOverResponse()
+            => new TriggerGameLooperResponse(
+                    new List<NotificationDto>() { new NotificationDto(0, "none", _dateTimeProvider.UtcNow(), ProjectNomad.Shared.Enums.ENotificationType.GameOver, null) },
+                    new List<WorldEventDto>());
     }
 }

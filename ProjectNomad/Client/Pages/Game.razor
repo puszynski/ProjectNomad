@@ -7,87 +7,67 @@
 
 @inject HttpClient _httpClient
 @inject GameLooperManager _gameLooperManager
+@inject NavigationManager _navigationManager
 @inject ILocalStorageService _localStorageService
 
 
 @if (GameObjectsViewModel != null)
-{
-    @if (!GameObjectsViewModel.HumanUnits.Any())
-    {
+{   
+    <p>dev info:
+        @foreach (var human in GameObjectsViewModel.HumanUnits)
+        {
+            <span>@human.FoodLevelPercentage-@human.Name &nbsp; </span>
+        }
+        ☀ ☁ ❄ ⛆ ⛈ ⛏ ⚶ ♂ ♀
+    </p>
+
+    <div style="border: 2px dashed;
+                border-color: Gainsboro;
+                margin: auto;
+                width: 50%;
+                padding: 0px;">
+        <center>                
+            <ProjectNomad.Client.Components.GameMenu />
+
+            <br/>
+            <ProjectNomad.Client.Components.BasicStatsBar GameObjectsViewModel="GameObjectsViewModel" />
+
+            <br />
+            <ProjectNomad.Client.Components.GameTimeDisplayer />
+        </center>
+    </div>
+
+    <br />
+
+    <div style="border: 2px dashed;
+                border-color: Gainsboro;
+                display: table;
+                margin: auto;
+                width: 1500px; /*Optional*/
+                table-layout: fixed; /*Optional*/
+                border-spacing: 10px; /*Optional*/">
+        
+        <div id="tasks" style="border: 2px dashed;
+                    border-color: Gainsboro;
+                    display: table-cell;">     
+            <ProjectNomad.Client.Components.Tasks TribeId="GameObjectsViewModel.Tribe.Id" HumanUnitIds="GameObjectsViewModel.HumanUnits.Select(x =>x.Id).ToList()" />
+        </div>
+
         <div style="border: 2px dashed;
                     border-color: Gainsboro;
-                    margin: auto;
-                    width: 500px;
-                    padding: 10px;">
-            @* TODO COMPONENT *@
-            <center>
-                <img src="/images/game/todo_death.png" style="margin: auto;" />
-                <h5>All members of your tribe have died.. </h5>
-                <button class="button" @onclick="ReBornTribeMembers"><span>Reborn tribe with new members</span></button>
-            </center>
-
+                    width: 700px;
+                    display: table-cell;">
+            <ProjectNomad.Client.Components.MiniMap TribeId="@GameObjectsViewModel.Tribe.Id" />
         </div>
         
-    }
-    else
-    {
-        <p>dev info:
-            @foreach (var human in GameObjectsViewModel.HumanUnits)
-            {
-                <span>@human.FoodLevelPercentage-@human.Name &nbsp; </span>
-            }
-            ☀ ☁ ❄
-        </p>
-
-        <div style="border: 2px dashed;
-                    border-color: Gainsboro;
-                    margin: auto;
-                    width: 50%;
-                    padding: 0px;">
-            <center>                
-                <ProjectNomad.Client.Components.GameMenu />
-
-                <br/>
-                <ProjectNomad.Client.Components.BasicStatsBar GameObjectsViewModel="GameObjectsViewModel" />
-
-                <br />
-                <ProjectNomad.Client.Components.GameTimeDisplayer />
-            </center>
+        <div id="notifications" style ="border: 2px dashed;
+                     border-color: Gainsboro;
+                     display: table-cell;">
+            <ProjectNomad.Client.Components.Notifications TribeId="@GameObjectsViewModel.Tribe.Id" />
         </div>
-
-        <br />
-
-        <div style="border: 2px dashed;
-                    border-color: Gainsboro;
-                    display: table;
-                    margin: auto;
-                    width: 1500px; /*Optional*/
-                    table-layout: fixed; /*Optional*/
-                    border-spacing: 10px; /*Optional*/">
-            
-            <div id="tasks" style="border: 2px dashed;
-                        border-color: Gainsboro;
-                        display: table-cell;">         
-                @* concept of task assign component - HIDDEN 
-                <ProjectNomad.Client.Components.TaskAssigner TribeId="GameObjectsViewModel.Tribe.Id" HumanUnits="GameObjectsViewModel.HumanUnits" TilePositionX="@GameObjectsViewModel.Tribe.X" TilePositionY="GameObjectsViewModel.Tribe.Y" /> *@
-                <ProjectNomad.Client.Components.Tasks TribeId="GameObjectsViewModel.Tribe.Id" HumanUnitIds="GameObjectsViewModel.HumanUnits.Select(x => x.Id).ToList()" />
-            </div>
-
-            <div style="border: 2px dashed;
-                        border-color: Gainsboro;
-                        width: 700px;
-                        display: table-cell;">
-                <ProjectNomad.Client.Components.MiniMap TribeId="@GameObjectsViewModel.Tribe.Id" />
-            </div>
-            
-            <div id="notifications" style ="border: 2px dashed;
-                         border-color: Gainsboro;
-                         display: table-cell;">
-                <ProjectNomad.Client.Components.Notifications TribeId="@GameObjectsViewModel.Tribe.Id" />
-            </div>
-            
-        </div>
-    }
+        
+    </div>
+    
 }
 else
 {
@@ -113,7 +93,7 @@ else
     async Task TrigerRecalculationAndGetGameObjectsFromServer()
     {
         var accountId = await GetAccountIdOr404();
-        await _gameLooperManager.TriggerGameLooper(accountId);//TRIGGER IS SENDING YOU NOTIFIFCATION NOW! -> PUSH JE TO NOTIFY COMPONENT
+        await _gameLooperManager.TriggerGameLooper(accountId);
 
         await GetDataFromServer();
         StateHasChanged();
@@ -124,23 +104,15 @@ else
         var accountId = await GetAccountIdOr404();
         var result = await _httpClient.GetFromJsonAsync<TribeGameObjectsViewModel>($"api/game/getGameObjects/{accountId}");
 
+        if (!result.HumanUnits.Any())
+            _navigationManager.NavigateTo("gameOver"); //todo dispose that component (to stop it from calling server...)
+
         GameObjectsViewModel = new TribeGameObjectsViewModel
         { 
             Tribe = result.Tribe, 
             HumanUnits = result.HumanUnits 
         };
     }
-
-    async Task ReBornTribeMembers()
-    {
-        var accountId = await GetAccountIdOr404();
-        await _httpClient.PostAsJsonAsync("api/account/generateNewTribeMembers", accountId);
-        
-        await GetDataFromServer();
-        StateHasChanged();
-    }
-
-    
 
     async Task<Guid> GetAccountIdOr404()
     {
@@ -151,5 +123,4 @@ else
 
         return accountId.Value;
     }
-
 }

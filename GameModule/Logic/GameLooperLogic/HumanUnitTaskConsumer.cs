@@ -12,22 +12,27 @@ namespace GameModule.Logic.GameLooperLogic
             Tribe tribe,
             List<HumanUnitTask> allTasksToConsume,
             List<MapTile> mapTilesToConsumeTasks,
-            DateTime currentTimeInLoop);
+            DateTime currentTimeInLoop,
+            List<HumanUnitTaskOrder> humanUnitTaskOrders);
     }
 
     internal class HumanUnitTaskConsumer : IHumanUnitTaskConsumer
     {
         readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
-        public HumanUnitTaskConsumer(IHumanUnitTaskRepository humanUnitTaskRepository)
+        readonly IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
+        public HumanUnitTaskConsumer(IHumanUnitTaskRepository humanUnitTaskRepository, 
+            IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository)
         {
             _humanUnitTaskRepository = humanUnitTaskRepository;
+            _humanUnitTaskOrderRepository = humanUnitTaskOrderRepository;
         }
 
         IEnumerable<INotification> IHumanUnitTaskConsumer.Execute(List<HumanUnit> humanUnits, 
             Tribe tribe,
             List<HumanUnitTask> allTasksToConsume,
             List<MapTile> mapTilesToConsumeTasks,
-            DateTime currentTimeInLoop)
+            DateTime currentTimeInLoop,
+            List<HumanUnitTaskOrder> humanUnitTaskOrders)
         {
             var humanUnitIds = humanUnits
                 .Select(x => x.Id)
@@ -46,7 +51,8 @@ namespace GameModule.Logic.GameLooperLogic
                     humanUnits.Single(x => x.Id == task.HumanUnitId), 
                     tribe,
                     mapTilesToConsumeTasks,
-                    currentTimeInLoop);
+                    currentTimeInLoop,
+                    humanUnitTaskOrders);
 
                 if (notification != null)
                     notificationToSendToClient.Add(notification);
@@ -62,7 +68,8 @@ namespace GameModule.Logic.GameLooperLogic
             HumanUnit humanUnit,
             Tribe tribe,
             List<MapTile> mapTilesToConsumeTasks,
-            DateTime currentTimeInLoop)
+            DateTime currentTimeInLoop,
+            List<HumanUnitTaskOrder> humanUnitTaskOrders)
         {
             switch (humanUnitTask.Type)
             {
@@ -82,6 +89,11 @@ namespace GameModule.Logic.GameLooperLogic
                         : mapTileFoodPoints;
 
                     tribe.Resources.FreshFood += (int)gatheredFoodPoints;
+
+                    var finishedHumanTaskOrder = humanUnitTaskOrders.Where(x => x.IsInProgress).OrderBy(x => x.Added).First();
+                    _humanUnitTaskOrderRepository.Remove(finishedHumanTaskOrder);
+                    humanUnitTaskOrders.Remove(finishedHumanTaskOrder);
+
                     return new NotificationDto(humanUnit.Id, humanUnit.Name, currentTimeInLoop, ENotificationType.FoodGatheringEnded, gatheredFoodPoints.ToString());
 
                 case EHumanUnitTaskType.ConsumeFood:

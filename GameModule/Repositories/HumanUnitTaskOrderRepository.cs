@@ -7,6 +7,7 @@ namespace GameModule.Repositories
 {
     internal interface IHumanUnitTaskOrderRepository : IRepository
     {
+        void Remove(HumanUnitTaskOrder task);
         Task RemoveAll(int tribeId);
         Task<List<HumanUnitTaskOrder>> Get(int tribeId);
         Task Add(int tribeId, EHumanUnitTaskType type, int mapTileId, DateTime now);
@@ -20,6 +21,9 @@ namespace GameModule.Repositories
 
         async Task<List<HumanUnitTaskOrder>> IHumanUnitTaskOrderRepository.Get(int tribeId)
             => await _gameModuleDbContext.HumanUnitTaskOrders.Where(x => x.TribeId == tribeId).ToListAsync();
+
+        void IHumanUnitTaskOrderRepository.Remove(HumanUnitTaskOrder task)
+            => _gameModuleDbContext.HumanUnitTaskOrders.Remove(task);
 
         async Task IHumanUnitTaskOrderRepository.RemoveAll(int tribeId) 
             => await _gameModuleDbContext.HumanUnitTaskOrders.Where(x => x.TribeId == tribeId).ExecuteDeleteAsync();

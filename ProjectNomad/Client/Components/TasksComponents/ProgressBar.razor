@@ -66,8 +66,8 @@
         if (timeLeft.Seconds < 0)
         {
             //await _gameLooperManager.AddNotificationFromWASM(HumanUnitTask.HumanUnitId, ENotificationType.FoodGatheringEnded, "123 todo"); //that type will be created from server!
-            _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
-            _eventBroadcastService.AddMessage(EActionWASM.TaskEnded);
+            _eventBroadcastService.AddEvent(EActionWASM.NotificationAdded);
+            _eventBroadcastService.AddEvent(EActionWASM.TaskEnded);
             return true;
         }
 

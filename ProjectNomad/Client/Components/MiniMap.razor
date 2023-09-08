@@ -4,44 +4,51 @@
 
 <br/>
 
-    <div style="position: relative;
-                            border: 2px dashed;
-                            border-color: Gainsboro;
-                            width:562px;
-                            height:562px;
-                            margin: auto;">
+<div style="position: relative;
+                        border: 2px dashed;
+                        border-color: Gainsboro;
+                        width:562px;
+                        height:562px;
+                        margin: auto;">
 
-        @if (mapViewModel != null)
+    @if (mapViewModel != null)
+    {
+        var row = 0;
+        var column = 0;
+
+        @*SIZE FOR ONE TILE 80x80 - BUT - IMG MAP TILES => FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
+        @foreach (var mapTile in mapViewModel.MapTiles)
         {
-            var row = 0;
-            var column = 0;
+            <img src="@mapTile.GetTileImgPath()"
+                 height="100"
+                 width="100"
+                 style="position: absolute;
+                                        left: @(row * 80 -10)px;
+                                        top: @(column * 80 -10)px" />
 
-            @*SIZE FOR ONE TILE 80x80 - BUT - IMG MAP TILES => FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
-            @foreach (var mapTile in mapViewModel.MapTiles)
+
+            if (row == 6)
             {
-                <img src="@mapTile.GetTileImgPath()"
-                     height="100"
-                     width="100"
-                     style="position: absolute;
-                                            left: @(row * 80 -10)px;
-                                            top: @(column * 80 -10)px" />
-
-
-                if (row == 6)
-                {
-                    row = 0;
-                    ++column;
-                }
-                else
-                {
-                    ++row;
-                }
-
+                row = 0;
+                ++column;
             }
+            else
+            {
+                ++row;
+            }
+
         }
+    }
+</div>
 
-    </div>
-
+<div>
+    <p>legend</p>
+    <p>tent => 	⚻ ⋏ ∧ ⋀ ∩ ⋂ ⊓ ⊼ ◬ ◮ ☖ ☗ ⛰ ⛫</p>
+    <p>shaman/hero tent => 	⛩</p>
+    <p>storage =>	⛼ ⛶</p>
+    <p>fire => 	❍ ※ ⋇ ❊ ❋ ❉</p>
+    <p>behaviour => ☮ ☯ ♆ ⚔</p>
+</div>
 
 
 

@@ -51,7 +51,8 @@ namespace GameModule.Logic.GameLooperLogic
                 tribe,
                 tasks,
                 mapTiles,
-                currentTimeInLoop);
+                currentTimeInLoop,
+                taskOrders);
 
             notificationToSendToClient.AddRange(await taskAssignerTask);
             notificationToSendToClient.AddRange(await humanUnitAutoTaskSchedulerTask);
