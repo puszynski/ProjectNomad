@@ -40,6 +40,12 @@ smaller {
     font-size: 0.7em;
 }
 
+p.always-visible {
+    font-size: 15px;
+    color: white;
+    text-shadow: 0.07em 0 black, 0 0.07em black, -0.07em 0 black, 0 -0.07em black;
+}
+
 h1:focus {
     outline: none;
 }

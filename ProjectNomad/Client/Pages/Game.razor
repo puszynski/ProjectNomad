@@ -93,9 +93,11 @@ else
     async Task TrigerRecalculationAndGetGameObjectsFromServer()
     {
         var accountId = await GetAccountIdOr404();
-        await _gameLooperManager.TriggerGameLooper(accountId);
 
+        //trigger & getDataFromServer <= todo make one call..
+        await _gameLooperManager.TriggerGameLooper(accountId);
         await GetDataFromServer();
+
         StateHasChanged();
     }
 

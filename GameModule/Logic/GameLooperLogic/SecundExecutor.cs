@@ -5,11 +5,9 @@ namespace GameModule.Logic.GameLooperLogic
 {
     internal interface ISecundExecutor
     {
-        Task<IEnumerable<INotification>> Execute(List<HumanUnit> humanUnits,
-            Tribe tribe,
-            List<HumanUnitTask> tasks,
-            List<HumanUnitTaskOrder> taskOrders,
+        Task Execute(Tribe tribe,
             List<MapTile> mapTiles,
+            List<INotification> notifications,
             DateTime currentTimeInLoop);
     }
 
@@ -27,38 +25,14 @@ namespace GameModule.Logic.GameLooperLogic
             _humanUnitAutoTaskScheduler = humanUnitAutoTaskScheduler;
         }
 
-        async Task<IEnumerable<INotification>> ISecundExecutor.Execute(List<HumanUnit> humanUnits,
-            Tribe tribe,
-            List<HumanUnitTask> tasks,
-            List<HumanUnitTaskOrder> taskOrders,
+        async Task ISecundExecutor.Execute(Tribe tribe,
             List<MapTile> mapTiles,
+            List<INotification> notifications,
             DateTime currentTimeInLoop)
         {
-            var notificationToSendToClient = new List<INotification>();
-
-            var taskAssignerTask = _taskAssigner.Execute(taskOrders,
-                tasks, 
-                humanUnits, 
-                tribe, 
-                mapTiles);
-
-            var humanUnitAutoTaskSchedulerTask = _humanUnitAutoTaskScheduler.Execute(humanUnits,
-                tribe,
-                tasks,
-                currentTimeInLoop);
-
-            var humanUnitTaskConsumerNotifications = _humanUnitTaskConsumer.Execute(humanUnits,
-                tribe,
-                tasks,
-                mapTiles,
-                currentTimeInLoop,
-                taskOrders);
-
-            notificationToSendToClient.AddRange(await taskAssignerTask);
-            notificationToSendToClient.AddRange(await humanUnitAutoTaskSchedulerTask);
-            notificationToSendToClient.AddRange(humanUnitTaskConsumerNotifications);
-
-            return notificationToSendToClient;
+            await _taskAssigner.Execute(tribe, mapTiles, notifications);
+            await _humanUnitAutoTaskScheduler.Execute(tribe, notifications, currentTimeInLoop);
+            _humanUnitTaskConsumer.Execute(tribe, mapTiles, currentTimeInLoop, notifications);
         }
     }
 }

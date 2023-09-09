@@ -26,6 +26,8 @@
                                         left: @(row * 80 -10)px;
                                         top: @(column * 80 -10)px" />
 
+            <p class="always-visible" style="position: absolute; left: @(row * 80 - 3)px; top: @(column * 80 - 2)px">@mapTile.FoodPoints</p>
+
 
             if (row == 6)
             {
@@ -48,6 +50,7 @@
     <p>storage =>	⛼ ⛶</p>
     <p>fire => 	❍ ※ ⋇ ❊ ❋ ❉</p>
     <p>behaviour => ☮ ☯ ♆ ⚔</p>
+    <p>others => 🕶 🍽 </p>
 </div>
 
 
@@ -60,6 +63,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        //TODO  REFRESH on event(after gathering food from tile) + once per 1 hour? 
         await UpdateMapFromServer();
     }
 

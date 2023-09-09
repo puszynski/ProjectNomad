@@ -59,7 +59,6 @@ namespace GameModule
                 .ToListAsync();
 
             return new TribeGameObjectDto(tribeDto, await humanUnitsTask);
-            
         }
 
         public async Task<ITriggerGameLooperResponse> TriggerPlayerGameObjectRecalculation(Guid accountId) 

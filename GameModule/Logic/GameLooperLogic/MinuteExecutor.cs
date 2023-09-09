@@ -6,30 +6,25 @@ namespace GameModule.Logic.GameLooperLogic
 {
     internal interface IMinuteExecutor
     {
-        List<INotification> Execute(List<HumanUnit> humanUnits, 
-            Tribe tribe, 
-            List<HumanUnitTask> tasksToConsume);
+        void Execute(Tribe tribe, List<INotification> notifications);
     }
+
 
     internal class MinuteExecutor : IMinuteExecutor
     {
-        readonly IGameOverApplicator _gameOverApplicator;
         readonly IHumansDeathApplicator _humansDeathApplicator;
-        public MinuteExecutor(IGameOverApplicator gameOverApplicator,
-            IHumansDeathApplicator humansDeathApplicator)
+        public MinuteExecutor(IHumansDeathApplicator humansDeathApplicator)
         {
-            _gameOverApplicator = gameOverApplicator;
             _humansDeathApplicator = humansDeathApplicator;
         }
 
-        public List<INotification> Execute(List<HumanUnit> humanUnits, Tribe tribe, List<HumanUnitTask> tasksToConsume)
+        void IMinuteExecutor.Execute(Tribe tribe, List<INotification> notifications)
         {
-            var notifications = new List<INotification>();
+            foreach (var human in tribe.HumanUnits)
+                human.FoodLevelPercentage -= GameSETTINGS.FoodToGetHungryForHumanUnitEachMinute;
 
-            humanUnits.ForEach(x => x.FoodLevelPercentage = x.FoodLevelPercentage - GameSETTINGS.FoodToGetHungryForHumanUnitEachMinute);
-            notifications.AddRange(_humansDeathApplicator.StarvationDeath(humanUnits));
-
-            return notifications;
+            var notificationsAbouStarvations = _humansDeathApplicator.StarvationDeath(tribe.HumanUnits);
+            notifications.AddRange(notificationsAbouStarvations);
         }
     }
 }

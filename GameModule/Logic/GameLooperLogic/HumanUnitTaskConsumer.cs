@@ -1,6 +1,5 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
-using GameModule.Repositories;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 
@@ -8,68 +7,50 @@ namespace GameModule.Logic.GameLooperLogic
 {
     internal interface IHumanUnitTaskConsumer
     {
-        IEnumerable<INotification> Execute(List<HumanUnit> humanUnits,
-            Tribe tribe,
-            List<HumanUnitTask> allTasksToConsume,
+        void Execute(Tribe tribe,
             List<MapTile> mapTilesToConsumeTasks,
             DateTime currentTimeInLoop,
-            List<HumanUnitTaskOrder> humanUnitTaskOrders);
+            List<INotification> notifications);
     }
 
     internal class HumanUnitTaskConsumer : IHumanUnitTaskConsumer
     {
-        readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
-        readonly IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
-        public HumanUnitTaskConsumer(IHumanUnitTaskRepository humanUnitTaskRepository, 
-            IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository)
-        {
-            _humanUnitTaskRepository = humanUnitTaskRepository;
-            _humanUnitTaskOrderRepository = humanUnitTaskOrderRepository;
-        }
-
-        IEnumerable<INotification> IHumanUnitTaskConsumer.Execute(List<HumanUnit> humanUnits, 
-            Tribe tribe,
-            List<HumanUnitTask> allTasksToConsume,
+        void IHumanUnitTaskConsumer.Execute(Tribe tribe,
             List<MapTile> mapTilesToConsumeTasks,
             DateTime currentTimeInLoop,
-            List<HumanUnitTaskOrder> humanUnitTaskOrders)
+            List<INotification> notifications)
         {
-            var humanUnitIds = humanUnits
+            var humanUnitIds = tribe.HumanUnits
                 .Select(x => x.Id)
                 .ToList();
 
-            var tasksToConsume = allTasksToConsume
+            var tasksToConsume = tribe.HumanUnitTasks
                 .Where(x => humanUnitIds.Contains(x.HumanUnitId))
                 .Where(x => x.To <= currentTimeInLoop)
                 .ToList();
 
-            var notificationToSendToClient = new List<INotification>();
-
             foreach (var task in tasksToConsume) 
             {
-                var notification = ConsumeTask(task, 
-                    humanUnits.Single(x => x.Id == task.HumanUnitId), 
+                var notification = ConsumeTask(task,
+                    tribe.HumanUnits.Single(x => x.Id == task.HumanUnitId), 
                     tribe,
                     mapTilesToConsumeTasks,
                     currentTimeInLoop,
-                    humanUnitTaskOrders);
+                    tribe.HumanUnitTaskOrders);
 
                 if (notification != null)
-                    notificationToSendToClient.Add(notification);
+                    notifications.Add(notification);
 
-                allTasksToConsume.Remove(task);
-                _humanUnitTaskRepository.Remove(task);
+                tribe.HumanUnitTasks.Remove(task);
             }
-
-            return notificationToSendToClient;
         }
 
         INotification? ConsumeTask(HumanUnitTask humanUnitTask,
             HumanUnit humanUnit,
             Tribe tribe,
-            List<MapTile> mapTilesToConsumeTasks,
+            ICollection<MapTile> mapTilesToConsumeTasks,
             DateTime currentTimeInLoop,
-            List<HumanUnitTaskOrder> humanUnitTaskOrders)
+            ICollection<HumanUnitTaskOrder> humanUnitTaskOrders)
         {
             switch (humanUnitTask.Type)
             {
@@ -91,7 +72,6 @@ namespace GameModule.Logic.GameLooperLogic
                     tribe.Resources.FreshFood += (int)gatheredFoodPoints;
 
                     var finishedHumanTaskOrder = humanUnitTaskOrders.Where(x => x.IsInProgress).OrderBy(x => x.Added).First();
-                    _humanUnitTaskOrderRepository.Remove(finishedHumanTaskOrder);
                     humanUnitTaskOrders.Remove(finishedHumanTaskOrder);
 
                     return new NotificationDto(humanUnit.Id, humanUnit.Name, currentTimeInLoop, ENotificationType.FoodGatheringEnded, gatheredFoodPoints.ToString());

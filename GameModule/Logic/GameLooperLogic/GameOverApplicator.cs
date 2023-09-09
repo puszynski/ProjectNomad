@@ -8,7 +8,7 @@ namespace GameModule.Logic.GameLooperLogic
 {
     internal interface IGameOverApplicator
     {
-        static bool IsGameOver(List<HumanUnit> humans) => !humans.Any();
+        static bool IsGameOver(ICollection<HumanUnit> humans) => !humans.Any();
         INotification Execute(int tribeId);
     }
 

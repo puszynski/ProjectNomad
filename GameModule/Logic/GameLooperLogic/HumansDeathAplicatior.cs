@@ -8,7 +8,7 @@ namespace GameModule.Logic.GameLooperLogic
 {
     internal interface IHumansDeathApplicator
     {
-        List<INotification> StarvationDeath(List<HumanUnit> humanUnits);
+        List<INotification> StarvationDeath(ICollection<HumanUnit> humanUnits);
     }
 
     internal class HumansDeathApplicator : IHumansDeathApplicator
@@ -22,7 +22,7 @@ namespace GameModule.Logic.GameLooperLogic
             _humanUnitRepository = humanUnitRepository;
         }
 
-        List<INotification> IHumansDeathApplicator.StarvationDeath(List<HumanUnit> humanUnits)
+        List<INotification> IHumansDeathApplicator.StarvationDeath(ICollection<HumanUnit> humanUnits)
         {
             List<INotification> notifications = new List<INotification>();
             var humansToDieFromStarving = humanUnits.Where(x => x.FoodLevelPercentage <= 0).ToList();
