@@ -1,5 +1,6 @@
 ﻿using GameModule.Logic;
 using GameModule.Logic.GameLooperLogic;
+using GameModule.Logic.GameLooperLogic.HourExecutorLogic;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +47,11 @@ namespace GameModule.Configurations
             services.AddScoped<GameLOOPER>();
             services.AddScoped<ISecundExecutor, SecundExecutor>();
             services.AddScoped<IMinuteExecutor, MinuteExecutor>();
+
             services.AddScoped<IHourExecutor, HourExecutor>();
+            services.AddScoped<MapTileRegenerator>();
+            services.AddScoped<BreedingApplicator>();
+
             services.AddScoped<IDayExecutor, DayExecutor>();
 
             services.AddScoped<MapService>();

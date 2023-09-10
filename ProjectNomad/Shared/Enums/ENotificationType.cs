@@ -6,12 +6,16 @@
 
         Starvation,
         DeathFromStarvation,
+        DeathFromAgeOrIllness, 
 
         FoodGatheringStarted,
         FoodGatheringEnded,
 
         FoodConsumptionStarted,
         FoodConsumptionEnded,
+
+        Newborn,
+
     }
 
     public static class NotificationTypeValidator //TODO OBSOLETE DELETE

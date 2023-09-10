@@ -94,13 +94,21 @@ else
     {
         var accountId = await GetAccountIdOr404();
 
-        //trigger & getDataFromServer <= todo make one call..
-        await _gameLooperManager.TriggerGameLooper(accountId);
-        await GetDataFromServer();
+        var result = await _gameLooperManager.TriggerGameLooper(accountId);
+
+        if (!result.HumanUnits.Any())
+            _navigationManager.NavigateTo("gameOver"); //todo dispose that component (to stop it from calling server...)
+
+        GameObjectsViewModel = new TribeGameObjectsViewModel
+        {
+            Tribe = result.Tribe,
+            HumanUnits = result.HumanUnits
+        };
 
         StateHasChanged();
     }
 
+    [Obsolete]
     async Task GetDataFromServer()
     {
         var accountId = await GetAccountIdOr404();

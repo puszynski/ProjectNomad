@@ -19,13 +19,12 @@ namespace ProjectNomad.Client.Logic
             _httpClient = httpClient;
         }
 
-        internal async Task TriggerGameLooper(Guid accountId) 
+        internal async Task<TriggerGameLooperResponse> TriggerGameLooper(Guid accountId) 
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("api/game/triggerPlayerGameObjectRecalculation", accountId);
                 var responseContent = await response.Content.ReadFromJsonAsync<TriggerGameLooperResponse>(); 
-                //'Deserialization of interface types is not supported. Type 'ProjectNomad.Shared.Interfaces.INotification'. Path: $.notifications[0] | LineNumber: 0 | BytePositionInLine: 19.'
 
                 if (responseContent?.Notifications?.Any() == true)
                 {
@@ -38,11 +37,8 @@ namespace ProjectNomad.Client.Logic
                     _eventBroadcastService.AddEvent(EActionWASM.NotificationAdded); //chyba się jeszcze utworzyły i nie zasuskrybowały inne componenty..
                 }
 
-                //TODO WorldEvents
-                //if (responseContent?.WorldEvents != null)
-                //foreach (var notificationToRemove in responseContent.WorldEvents)
-                //throw new NotImplementedException();
-                //await _worldEventsManager.Add();
+                return responseContent;
+
             }
             catch (Exception ex)
             {

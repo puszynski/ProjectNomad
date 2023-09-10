@@ -35,12 +35,11 @@
     @if (HumanUnitTasks.Any(x => AutoTasks.Contains(x.Type)))
     {
         <button class="button">Food consumingª</button>
-        <br />
         @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.ConsumeFood))
         {
+            <br />
             <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@TribeId" />
         }
-        <br />
     }
     <hr />
 
@@ -75,15 +74,6 @@ else
             await Reload();
     }
 
-    private void EventHandler(EActionWASM actionWASM)
-    {
-        if (actionWASM != EActionWASM.TaskEnded)
-            return;
-
-        Reload();
-        _eventBroadcastService.ClearEvent();
-    }
-
     private async Task Reload()
     {
         HumanUnitTaskOrders = await _taskOrderManager.GetAll(TribeId);
@@ -93,24 +83,6 @@ else
 
     async Task OrderToGatherFood()
     {
-        //OBSOLETE => MOVING FOR TASK ORDER
-        // var humanUnitIdsWithTasksInProgress = HumanUnitTasks.Select(y => y.HumanUnitId);
-        // var humanUnitWithNoTaskId = HumanUnitIds.Where(x => !humanUnitIdsWithTasksInProgress.Contains(x)).FirstOrDefault();
-
-        // if (humanUnitWithNoTaskId == 0)
-        //     throw new ArgumentOutOfRangeException("Ożesz WASM! GatherFood method was used but there is no humanUnit to assign. :/");
-
-        // var dto = new AddHumanUnitTaskViewModel(TribeId, 
-        //     humanUnitWithNoTaskId,
-        //     ProjectNomad.Shared.Enums.EHumanUnitTaskType.GatheringFood, 
-        //     3, 3, 3, 3); //positions hardcoded
-
-        // await _humanUnitTasksLocalStorageManager.AddToServer(dto);
-        // HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAllFromLocalStorageAndCleanOutdated();
-
-        // await _gameLooperManager.AddNotificationFromWASM(humanUnitWithNoTaskId, ENotificationType.FoodGatheringStarted, null);
-        // _eventBroadcastService.AddMessage(EActionWASM.NotificationAdded);
-
-        _taskOrderManager.Add(TribeId, EHumanUnitTaskType.GatheringFood, 3, 3); //TODO - 3|3 HARDCODED
+        _taskOrderManager.Add(TribeId, EHumanUnitTaskType.GatheringFood, 3, 3);
     }
 }

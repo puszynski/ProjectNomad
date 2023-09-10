@@ -44,13 +44,12 @@ namespace GameModule.Logic
             var tribe = await _tribeRepository.GetAllDataMaterialized(accountId);
 
             if (!tribe.HumanUnits.Any())
-                return GetGameOverResponse();
-                //throw new NotImplementedException(); //todo?
+                return GetGameOverResponse(tribe);
 
             var lastUpdated = tribe.Updated;
 
             if (lastUpdated > _dateTimeProvider.UtcNow().AddSeconds(-1))
-                return GetEmptyResponse();
+                return GetEmptyResponse(tribe);
 
             var mapTiles = await GetMapTileToInteract(tribe);
             var notifications = new List<INotification>();
@@ -71,7 +70,7 @@ namespace GameModule.Logic
                     break;
 
                 if (lastUpdated.Minute == 0 && lastUpdated.Second == 0)
-                    _hourExecutor.Execute();
+                    _hourExecutor.Execute(tribe, mapTiles, notifications);
 
                 if (lastUpdated.Hour == 12 && lastUpdated.Minute == 0 && lastUpdated.Second == 0)
                     _dayExecutor.Execute();
@@ -84,17 +83,23 @@ namespace GameModule.Logic
                 _gameOverApplicator.Execute(tribe.Id);
                 tribe.Updated = _dateTimeProvider.UtcNow();
                 await _tribeRepository.SaveChangesAsync();
-                return GetGameOverResponse();
+
+                return GetGameOverResponse(tribe);
             }
             else
             {
                 tribe.Updated =  lastUpdated;
                 await _tribeRepository.SaveChangesAsync();
-                return new TriggerGameLooperResponse(notifications, new List<WorldEventDto>());
+
+                return new TriggerGameLooperResponse(
+                    new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood), 
+                    tribe.HumanUnits.Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage)), 
+                    notifications, 
+                    new List<WorldEventDto>());
             }
         }
 
-        async Task<List<MapTile>> GetMapTileToInteract(Tribe tribe)
+        async Task<ICollection<MapTile>> GetMapTileToInteract(Tribe tribe)
         {
             var mapTileIdsForTasks = tribe.HumanUnitTasks
                 .Where(x => x.MapTileId.HasValue)
@@ -111,8 +116,10 @@ namespace GameModule.Logic
             return await _mapTileRepository.GetByIds(allMapTileIds);
         }
 
-        TriggerGameLooperResponse GetGameOverResponse()
+        TriggerGameLooperResponse GetGameOverResponse(Tribe tribe)
             => new(
+                new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood),
+                new List<HumanUnitDto>(),
                 new List<NotificationDto>() 
                 { 
                     new NotificationDto(0, 
@@ -123,7 +130,11 @@ namespace GameModule.Logic
                 },
                 new List<WorldEventDto>());
 
-        TriggerGameLooperResponse GetEmptyResponse()
-            => new(new List<NotificationDto>(), new List<WorldEventDto>());
+        TriggerGameLooperResponse GetEmptyResponse(Tribe tribe)
+            => new(
+                new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood),
+                tribe.HumanUnits.Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage)),
+                new List<NotificationDto>(), 
+                new List<WorldEventDto>());
     }
 }

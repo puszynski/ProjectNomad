@@ -13,13 +13,6 @@ namespace ProjectNomad.Server.Controllers
         public GameController(IGameModule gameModule) 
             => _gameModule = gameModule;
 
-        [HttpGet("getGameObjects/{accountId}")]
-        public async Task<ActionResult<ITribeGameObjects>> GetGameObjects(Guid accountId) 
-        {
-            var result = await _gameModule.GetPlayerGameObject(accountId);
-            return Ok(result);
-        }
-
         [HttpPost("triggerPlayerGameObjectRecalculation")]
         public async Task<ActionResult<ITriggerGameLooperResponse>> TriggerPlayerGameObjectRecalculation([FromBody]Guid accountId)
         {
@@ -30,7 +23,8 @@ namespace ProjectNomad.Server.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex; //todo problem with new born or natural death?
+                // NOT REOLVED {"The connection does not support MultipleActiveResultSets."} => https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/enabling-multiple-active-result-sets
             }
         }
 

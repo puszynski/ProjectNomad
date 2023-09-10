@@ -30,14 +30,14 @@ namespace GameModule.Logic.GameLooperLogic
 
             foreach (var humanUnit in humanUnitWithNoTasksInProgressAndFoodLevelLessThen80)
             {
-                if (tribe.Resources.FreshFood >= GameSETTINGS.TribeFoodNeededToFill20PercentageOfHumanUnit)
+                if (tribe.Resources.FreshFood >= GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit)
                 {
                     var notification = await CreateTask(humanUnit, 
                         tribe.Id, 
                         tribe.HumanUnitTasks, 
                         currentTimeInLoop);
 
-                    tribe.Resources.FreshFood -= GameSETTINGS.TribeFoodNeededToFill20PercentageOfHumanUnit;
+                    tribe.Resources.FreshFood -= GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit;
                     humanUnit.FoodLevelPercentage += 20;
                     notifications.Add(notification);
                 }
@@ -55,7 +55,7 @@ namespace GameModule.Logic.GameLooperLogic
                 HumanUnitId = humanUnit.Id,
                 TribeId = tribeId,
                 Type = EHumanUnitTaskType.ConsumeFood,
-                To = currentTimeInLoop.AddMinutes(GameSETTINGS.MinutesToConsumeFoodToFill20PercentageOfFood).AddSeconds(-1),//todo remove -1 TaskRequire mechanism and change UT
+                To = currentTimeInLoop.AddMinutes(GameSETTINGS.Food.MinutesToConsumeFoodToFill20PercentageOfFood).AddSeconds(-1),//todo remove -1 TaskRequire mechanism and change UT
                 MapTileId = null
             };
 

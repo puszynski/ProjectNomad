@@ -1,17 +1,32 @@
-﻿namespace GameModule.Logic.GameLooperLogic
+﻿using GameModule.Entities;
+using GameModule.Logic.GameLooperLogic.HourExecutorLogic;
+using ProjectNomad.Shared.Interfaces;
+
+namespace GameModule.Logic.GameLooperLogic
 {
     internal interface IHourExecutor
     {
-        void Execute();
+        void Execute(Tribe tribe, ICollection<MapTile> mapTiles, List<INotification> notifications);
     }
     internal class HourExecutor : IHourExecutor
     {
-        public HourExecutor()
+        readonly MapTileRegenerator _mapTileRegenerator;
+        readonly BreedingApplicator _breedingApplicator;
+        readonly IHumansDeathApplicator _humansDeathApplicator;
+        public HourExecutor(MapTileRegenerator mapTileRegenerator,
+            BreedingApplicator breedingApplicator,
+            IHumansDeathApplicator humansDeathApplicator)
         {
-            
+            _mapTileRegenerator = mapTileRegenerator;
+            _breedingApplicator = breedingApplicator;
+            _humansDeathApplicator = humansDeathApplicator;
         }
-        void IHourExecutor.Execute()
+
+        void IHourExecutor.Execute(Tribe tribe, ICollection<MapTile> mapTiles, List<INotification> notifications)
         {
+            _mapTileRegenerator.Execute(mapTiles);
+            _breedingApplicator.Execute(tribe, notifications);
+            _humansDeathApplicator.DeathFromAgeOrIllness(tribe.HumanUnits, notifications);
         }
     }
 }

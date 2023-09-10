@@ -9,6 +9,7 @@ namespace GameModule.Logic.GameLooperLogic
     internal interface IHumansDeathApplicator
     {
         List<INotification> StarvationDeath(ICollection<HumanUnit> humanUnits);
+        void DeathFromAgeOrIllness(ICollection<HumanUnit> humanUnits, List<INotification> notifications);
     }
 
     internal class HumansDeathApplicator : IHumansDeathApplicator
@@ -44,6 +45,21 @@ namespace GameModule.Logic.GameLooperLogic
             }           
 
             return notifications;
+        }
+
+        void IHumansDeathApplicator.DeathFromAgeOrIllness(ICollection<HumanUnit> humanUnits, List<INotification> notifications)
+        {
+            if (!RandomCalculator.GetBoolWithGivenProbability(humanUnits.Count() * GameSETTINGS.Population.NaturalDeathChancePerHumanPerHour))
+                return;
+
+            var human = humanUnits.First();
+            humanUnits.Remove(human);
+
+            notifications.Add(new NotificationDto(human.Id,
+                    human.Name,
+                    _dateTimeProvider.UtcNow(),
+                    ProjectNomad.Shared.Enums.ENotificationType.DeathFromAgeOrIllness,
+                    null));
         }
     }
 }

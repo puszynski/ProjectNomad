@@ -1,10 +1,10 @@
 ﻿using GameModule.Entities.ValueObjects;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using ProjectNomad.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
+using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Interfaces.Properties;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GameModule.Entities
 {
@@ -21,6 +21,7 @@ namespace GameModule.Entities
         public Localization Localization { get; set; }
         public Resources Resources { get; set; }
 
+        public Relocalization? Relocalization { get; set; }
         public ICollection<HumanUnit> HumanUnits { get; set; }
         public ICollection<HumanUnitTask> HumanUnitTasks { get; set; }
         public ICollection<HumanUnitTaskOrder> HumanUnitTaskOrders { get; set; }

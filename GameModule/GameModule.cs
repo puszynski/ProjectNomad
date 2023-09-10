@@ -174,7 +174,7 @@ namespace GameModule
             var humanUnit = await _dbContext.HumanUnits.SingleAsync(x => x.Id == task.HumanUnitId);
             var mapTile = await _dbContext.MapTiles.SingleAsync(x => x.Localization.X == task.LocalizationStart_X && x.Localization.Y == task.LocalizationStart_Y);
 
-            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, humanUnit.FoodLevelPercentage) + TimeSpan.FromMinutes(GameSETTINGS.MinutesToGatherFood);
+            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, humanUnit.FoodLevelPercentage) + TimeSpan.FromMinutes(GameSETTINGS.Food.MinutesToGatherFood);
 
             var entity = new HumanUnitTask 
             {

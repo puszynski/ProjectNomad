@@ -21,6 +21,7 @@
         None = 0,
 
         NotificationAdded,
-        TaskEnded
+        TaskEnded,
+        FoodGatheringStart //MiniMap.razor
     }
 }

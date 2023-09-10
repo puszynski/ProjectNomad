@@ -10,7 +10,7 @@ namespace GameModule.Logic.GameLooperLogic
     internal interface ITaskAssigner
     {
         Task Execute(Tribe tribe,
-            List<MapTile> mapTiles, 
+            ICollection<MapTile> mapTiles, 
             List<INotification> notifications);
     }
 
@@ -23,7 +23,7 @@ namespace GameModule.Logic.GameLooperLogic
         }
 
         async Task ITaskAssigner.Execute(Tribe tribe,
-            List<MapTile> mapTiles,
+            ICollection<MapTile> mapTiles,
             List<INotification> notifications)
         {
 
@@ -33,10 +33,10 @@ namespace GameModule.Logic.GameLooperLogic
             var humanIDsWithTaskAssigned = tribe.HumanUnitTasks.Select(x => x.HumanUnitId);
             var humansWithConditionToStartNewTask = tribe
                 .HumanUnits
-                .Where(x => !humanIDsWithTaskAssigned.Contains(x.Id))
-                .Where(x => x.FoodLevelPercentage > 20);//starvation, too week to work..
+                .Where(x => !humanIDsWithTaskAssigned.Contains(x.Id)) //only 1 task per human unit
+                .Where(x => x.FoodLevelPercentage > 20); //too week to work..
 
-
+            //TODO!!! SPLIT for each type of tasks.. now y have here only food gathering started <= BUILD FACTORY
             foreach (var human in humansWithConditionToStartNewTask)
             {
                 var taskOrderToAssign = tribe.HumanUnitTaskOrders.Where(x => !x.IsInProgress).OrderBy(x => x.Added).FirstOrDefault();
@@ -44,12 +44,16 @@ namespace GameModule.Logic.GameLooperLogic
                 if (taskOrderToAssign == null)
                     return;
 
-                var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.ProbabilityToAssignToTaskOrder); //todo base on some parameters like foodLevel, morals..
+                var destinyMapTile = mapTiles.Single(x => x.Id == taskOrderToAssign.MapTileId);
+
+                if (destinyMapTile.Food.ActualPoints < GameSETTINGS.Food.MapTileFoodGathered)
+                    return;
+
+                var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond); //todo base on some parameters like foodLevel, morals..
 
                 if (!shouldAssign)
                     continue;
 
-                var destinyMapTile = mapTiles.Single(x => x.Id == taskOrderToAssign.MapTileId);
 
                 var taskToAdd = new HumanUnitTask
                 {
@@ -62,6 +66,7 @@ namespace GameModule.Logic.GameLooperLogic
                 };
 
                 taskOrderToAssign.IsInProgress = true;
+                destinyMapTile.Food.ActualPoints -= GameSETTINGS.Food.MapTileFoodGathered;
 
                 var notification = new NotificationDto(human.Id,
                     human.Name,
@@ -81,7 +86,7 @@ namespace GameModule.Logic.GameLooperLogic
                 destinyMapTile.Localization.X,
                 destinyMapTile.Localization.Y);
 
-            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, human.FoodLevelPercentage) + TimeSpan.FromMinutes(GameSETTINGS.MinutesToGatherFood);
+            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, human.FoodLevelPercentage) + TimeSpan.FromMinutes(GameSETTINGS.Food.MinutesToGatherFood);
             return _dateTimeProvider.UtcNow().Add(timeToEndTask);
         }
     }

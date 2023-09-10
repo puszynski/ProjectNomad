@@ -1,8 +1,15 @@
-﻿@using ProjectNomad.Client.ViewModels.Game;
+﻿@using ProjectNomad.Client.Logic;
+@using ProjectNomad.Client.ViewModels.Game;
 @using ProjectNomad.Shared;
 @inject HttpClient _httpClient
+@inject EventBroadcastService _eventBroadcastService;
 
-<br/>
+<center>
+<p>Tribe is camping at (3|3). It`s warm and sunny. There is a lot of resources around.</p>
+@* It`s boiling hot!
+It`s freezing outside!
+A storm seems to be coming that way. *@
+</center>
 
 <div style="position: relative;
                         border: 2px dashed;
@@ -11,25 +18,30 @@
                         height:562px;
                         margin: auto;">
 
+
     @if (mapViewModel != null)
     {
         var row = 0;
         var column = 0;
 
         @*SIZE FOR ONE TILE 80x80 - BUT - IMG MAP TILES => FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
-        @foreach (var mapTile in mapViewModel.MapTiles)
+        foreach (var mapTile in mapViewModel.MapTiles)
         {
             <img src="@mapTile.GetTileImgPath()"
                  height="100"
                  width="100"
                  style="position: absolute;
-                                        left: @(row * 80 -10)px;
-                                        top: @(column * 80 -10)px" />
+                 left: @(row * 80 -10)px;
+                 top: @(column * 80 -10)px" />
 
-            <p class="always-visible" style="position: absolute; left: @(row * 80 - 3)px; top: @(column * 80 - 2)px">@mapTile.FoodPoints</p>
+            <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80)px">@mapTile.FoodPoints</p>
 
+            if (mapTile.X == 3 && mapTile.Y == 3)
+            {
+                <p style="position: absolute; left: @(row * 80 + 30)px; top: @(column * 80 + 30)px">⛶</p>
+            }
 
-            if (row == 6)
+            @if (row == 6)
             {
                 row = 0;
                 ++column;
@@ -38,20 +50,23 @@
             {
                 ++row;
             }
-
         }
+    }
+    else
+    {
+        <p>loading..</p>
     }
 </div>
 
-<div>
+@* <div>
     <p>legend</p>
     <p>tent => 	⚻ ⋏ ∧ ⋀ ∩ ⋂ ⊓ ⊼ ◬ ◮ ☖ ☗ ⛰ ⛫</p>
     <p>shaman/hero tent => 	⛩</p>
     <p>storage =>	⛼ ⛶</p>
     <p>fire => 	❍ ※ ⋇ ❊ ❋ ❉</p>
     <p>behaviour => ☮ ☯ ♆ ⚔</p>
-    <p>others => 🕶 🍽 </p>
-</div>
+    <p>others => 🕶 </p>
+</div> *@
 
 
 
@@ -63,11 +78,25 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //TODO  REFRESH on event(after gathering food from tile) + once per 1 hour? 
-        await UpdateMapFromServer();
+        _eventBroadcastService.OnAction += EventHandler;
+
+        await Reload();
+
+        var timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
+        while (await timer.WaitForNextTickAsync())
+            await Reload();
     }
 
-    async Task UpdateMapFromServer()
+    private void EventHandler(EActionWASM actionWASM)
+    {
+        if (actionWASM != EActionWASM.FoodGatheringStart)
+            return;
+
+        Reload();
+        _eventBroadcastService.ClearEvent();
+    }
+
+    async Task Reload()
     {
         var mapTiles = await _httpClient.GetFromJsonAsync<IEnumerable<MapTileViewModel>>($"api/game/getMapTiles/{TribeId}");
 
@@ -75,5 +104,6 @@
             throw new NullReferenceException("MapTileViewModels null. No data was returned from server.");
 
         mapViewModel = new MapViewModel { MapTiles = mapTiles };
+        StateHasChanged();
     }
 }

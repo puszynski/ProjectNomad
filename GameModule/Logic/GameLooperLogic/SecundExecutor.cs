@@ -6,7 +6,7 @@ namespace GameModule.Logic.GameLooperLogic
     internal interface ISecundExecutor
     {
         Task Execute(Tribe tribe,
-            List<MapTile> mapTiles,
+            ICollection<MapTile> mapTiles,
             List<INotification> notifications,
             DateTime currentTimeInLoop);
     }
@@ -26,7 +26,7 @@ namespace GameModule.Logic.GameLooperLogic
         }
 
         async Task ISecundExecutor.Execute(Tribe tribe,
-            List<MapTile> mapTiles,
+            ICollection<MapTile> mapTiles,
             List<INotification> notifications,
             DateTime currentTimeInLoop)
         {
