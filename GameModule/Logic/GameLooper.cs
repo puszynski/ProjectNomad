@@ -63,6 +63,8 @@ namespace GameModule.Logic
                     notifications,
                     currentTimeInLoop);
 
+                //todo - make classes for 2secundExecutor, 5sec, 10sec <- event 2s is 2x less calculation!! it`s worth it!
+
                 if (lastUpdated.Second == 0)
                     _minuteExecutor.Execute(tribe, notifications);
 

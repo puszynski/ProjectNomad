@@ -21,7 +21,7 @@ namespace GameModule.Entities
         public Localization Localization { get; set; }
         public Resources Resources { get; set; }
 
-        public Relocalization? Relocalization { get; set; }
+        public TribeRelocation? TribeRelocation { get; set; }
         public ICollection<HumanUnit> HumanUnits { get; set; }
         public ICollection<HumanUnitTask> HumanUnitTasks { get; set; }
         public ICollection<HumanUnitTaskOrder> HumanUnitTaskOrders { get; set; }

@@ -1,9 +1,11 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
+using GameModule.Entities.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
+using System.Diagnostics;
 
 namespace GameModule.Logic.GameLooperLogic
 {
@@ -30,6 +32,44 @@ namespace GameModule.Logic.GameLooperLogic
             if (!tribe.HumanUnitTaskOrders.Where(x => !x.IsInProgress).Any())
                 return;
 
+            //todo factory
+            GatheringFoodTasksAssign(tribe, mapTiles, notifications);
+            TribeRelocationTasksAssign(tribe, mapTiles);
+
+        }
+
+        void TribeRelocationTasksAssign(Tribe tribe, ICollection<MapTile> mapTiles)
+        {
+            var relocationTaskOrder = tribe.HumanUnitTaskOrders
+                .Where(x => x.Type == EHumanUnitTaskType.TribeRelocation)
+                .SingleOrDefault();
+
+            if (relocationTaskOrder == null)
+                return;
+
+            var mapTile = mapTiles.Single(x => x.Id == relocationTaskOrder.MapTileId);
+
+            var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
+                        tribe.Localization.Y,
+                        mapTile.Localization.X,
+                        mapTile.Localization.Y);
+
+            var relocation = new TribeRelocation
+            {
+                From = _dateTimeProvider.UtcNow(),
+                To = _dateTimeProvider.UtcNow().AddMinutes(distance * GameSETTINGS.Moving.MinutesToTravelOneTileWhileTribeIsRelocating),
+                Start = new Localization { X = tribe.Localization.X, Y = tribe.Localization.Y },
+                Destiny = new Localization { X = mapTile.Localization.X, Y = mapTile.Localization.Y }, 
+            };
+
+            tribe.TribeRelocation = relocation;
+            tribe.HumanUnitTaskOrders.Remove(relocationTaskOrder);
+        }
+
+        async Task GatheringFoodTasksAssign(Tribe tribe,
+            ICollection<MapTile> mapTiles,
+            List<INotification> notifications)
+        {
             var humanIDsWithTaskAssigned = tribe.HumanUnitTasks.Select(x => x.HumanUnitId);
             var humansWithConditionToStartNewTask = tribe
                 .HumanUnits
@@ -39,7 +79,11 @@ namespace GameModule.Logic.GameLooperLogic
             //TODO!!! SPLIT for each type of tasks.. now y have here only food gathering started <= BUILD FACTORY
             foreach (var human in humansWithConditionToStartNewTask)
             {
-                var taskOrderToAssign = tribe.HumanUnitTaskOrders.Where(x => !x.IsInProgress).OrderBy(x => x.Added).FirstOrDefault();
+                var taskOrderToAssign = tribe.HumanUnitTaskOrders
+                    .Where(x => x.Type == EHumanUnitTaskType.GatheringFood)
+                    .Where(x => !x.IsInProgress)
+                    .OrderBy(x => x.Added)
+                    .FirstOrDefault();
 
                 if (taskOrderToAssign == null)
                     return;
@@ -60,9 +104,9 @@ namespace GameModule.Logic.GameLooperLogic
                     From = _dateTimeProvider.UtcNow(),
                     HumanUnitId = human.Id,
                     MapTileId = taskOrderToAssign.MapTileId,
-                    To = CalculateTimeToEndTask(destinyMapTile, tribe, human),
+                    To = CalculateTimeToEndTask(),
                     TribeId = tribe.Id,
-                    Type = taskOrderToAssign.Type,
+                    Type = EHumanUnitTaskType.GatheringFood,
                 };
 
                 taskOrderToAssign.IsInProgress = true;
@@ -76,18 +120,19 @@ namespace GameModule.Logic.GameLooperLogic
                 notifications.Add(notification);
 
                 tribe.HumanUnitTasks.Add(taskToAdd);
+
+                //nested
+                DateTime CalculateTimeToEndTask()
+                {
+                    var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
+                        tribe.Localization.Y,
+                        destinyMapTile.Localization.X,
+                        destinyMapTile.Localization.Y);
+
+                    var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, human.FoodLevelPercentage) + TimeSpan.FromMinutes(GameSETTINGS.Food.MinutesToGatherFood);
+                    return _dateTimeProvider.UtcNow().Add(timeToEndTask);
+                }
             }
-        }
-
-        DateTime CalculateTimeToEndTask(MapTile destinyMapTile, Tribe tribe, HumanUnit human)
-        {
-            var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
-                tribe.Localization.Y,
-                destinyMapTile.Localization.X,
-                destinyMapTile.Localization.Y);
-
-            var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, human.FoodLevelPercentage) + TimeSpan.FromMinutes(GameSETTINGS.Food.MinutesToGatherFood);
-            return _dateTimeProvider.UtcNow().Add(timeToEndTask);
         }
     }
 }

@@ -31,6 +31,7 @@ namespace GameModule.Repositories
             return await _gameModuleDbContext
                 .Tribes
                 .Where(x => x.AccountId == accountId)
+                .Include(x => x.TribeRelocation)
                 .Include(x => x.HumanUnits)                
                 .Include(x => x.HumanUnitTasks)
                 .Include(x => x.HumanUnitTaskOrders)

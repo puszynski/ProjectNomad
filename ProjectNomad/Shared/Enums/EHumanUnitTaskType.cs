@@ -6,5 +6,7 @@
         ConsumeFood = 101,
 
         GatheringWood = 200,
+
+        TribeRelocation = 300,
     }
 }

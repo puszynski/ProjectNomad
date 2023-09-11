@@ -23,7 +23,10 @@ namespace ProjectNomad.Server.Controllers
             }
             catch (Exception ex)
             {
-                throw ex; //todo problem with new born or natural death?
+                throw ex;  //{"Invalid object name 'GameModule.TribeRelocations'."}
+
+
+                //todo problem with new born or natural death?
                 // NOT REOLVED {"The connection does not support MultipleActiveResultSets."} => https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/enabling-multiple-active-result-sets
             }
         }
