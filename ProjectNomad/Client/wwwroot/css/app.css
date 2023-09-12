@@ -36,6 +36,14 @@ html, body {
     }
 /* button class animation END*/
 
+asciiart {
+    display: inline-block;
+    font-family: 'Courier New', monospace;
+    line-height: 0.6em;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    white-space: pre;
+}
+
 smaller {
     font-size: 0.7em;
 }

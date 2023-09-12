@@ -9,9 +9,14 @@
 @* It`s boiling hot!
 It`s freezing outside!
 A storm seems to be coming that way. *@
+    <button class="button" @onclick="VersionOld"><span>old</span></button>
+    <button class="button" @onclick="VersionV2"><span>v2</span></button>
+    <button class="button" @onclick="VersionMini"><span>mini-map</span></button>
 </center>
 
-<div style="position: relative;
+@if (VERSION == "OLD")
+{
+    <div style="position: relative;
                         border: 2px dashed;
                         border-color: Gainsboro;
                         width:562px;
@@ -19,44 +24,109 @@ A storm seems to be coming that way. *@
                         margin: auto;">
 
 
-    @if (mapViewModel != null)
-    {
-        var row = 0;
-        var column = 0;
-
-        @*SIZE FOR ONE TILE 80x80 - BUT - IMG MAP TILES => FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
-        foreach (var mapTile in mapViewModel.MapTiles)
+        @if (mapViewModel != null)
         {
-            <img src="@mapTile.GetTileImgPath()"
-                 height="100"
-                 width="100"
-                 style="position: absolute;
+            var row = 0;
+            var column = 0;
+
+            @*SIZE FOR ONE TILE 80x80 - BUT - IMG MAP TILES => FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
+            foreach (var mapTile in mapViewModel.MapTiles)
+            {
+                <img src="@mapTile.GetTileImgPath()"
+                     height="100"
+                     width="100"
+                     style="position: absolute;
                  left: @(row * 80 -10)px;
                  top: @(column * 80 -10)px" />
 
-            <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80)px">@mapTile.FoodPoints</p>
+                <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80)px">@mapTile.FoodPoints</p>
 
-            if (mapTile.X == 3 && mapTile.Y == 3)
-            {
-                <p style="position: absolute; left: @(row * 80 + 30)px; top: @(column * 80 + 30)px">⛶</p>
+                if (mapTile.X == 3 && mapTile.Y == 3)
+                {
+                    <p style="position: absolute; left: @(row * 80 + 30)px; top: @(column * 80 + 30)px">⛶</p>
+                }
+
+                @if (row == 6)
+                {
+                    row = 0;
+                    ++column;
+                }
+                else
+                {
+                    ++row;
+                }
             }
+        }
+        else
+        {
+            <p>loading..</p>
+        }
+    </div>
+}    
+else if (VERSION == "V2")
+{
+<asciiart>
++++++++
++++++++
+++....+
+++....+
+++....+
++++++++
++++++++
+</asciiart>
 
-            @if (row == 6)
+}
+else if (VERSION == "MINI")
+{
+    //tut: https://stackoverflow.com/questions/26342182/style-table-as-ascii-art-table-using-css
+
+    <div style="position: relative;
+                        border: 2px dashed;
+                        border-color: Gainsboro;
+                        width:562px;
+                        height:562px;
+                        margin: auto;">
+
+        <asciiart>
+            @if (mapViewModel != null)
             {
-                row = 0;
-                ++column;
+                var row = 0;
+                var column = 0;
+
+                @* map tiles: ⚺ *@
+
+                foreach (var mapTile in mapViewModel.MapTiles)
+                {
+                    var characterToDisplay = string.Empty;
+
+                    @switch (mapTile.Type)
+                    {
+                        case ProjectNomad.Shared.Enums.EMapType.DenseConiferousForest: characterToDisplay = "⛼"; break;
+                        default: characterToDisplay = "≈"; break;
+                    }
+
+<span>@characterToDisplay</span>
+
+                    @if (row == 6)
+                    {
+                        <br/>
+                        row = 0;
+                        ++column;
+                    }
+                    else
+                    {
+                        ++row;
+                    }
+                }
             }
             else
             {
-                ++row;
+                <p>loading..</p>
             }
-        }
-    }
-    else
-    {
-        <p>loading..</p>
-    }
-</div>
+        </asciiart>
+    </div>
+}
+
 
 @* <div>
     <p>legend</p>
@@ -73,6 +143,7 @@ A storm seems to be coming that way. *@
 @code {
     [ParameterAttribute]
     public int TribeId { get; set; }
+
 
     private MapViewModel? mapViewModel;
 
@@ -106,4 +177,11 @@ A storm seems to be coming that way. *@
         mapViewModel = new MapViewModel { MapTiles = mapTiles };
         StateHasChanged();
     }
+
+    //temp
+    string VERSION = "OLD";
+    void VersionOld() => VERSION = "OLD";
+    void VersionV2() => VERSION = "V2";
+    void VersionMini() => VERSION = "MINI";
+
 }
