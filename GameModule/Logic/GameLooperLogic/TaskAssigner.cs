@@ -40,6 +40,9 @@ namespace GameModule.Logic.GameLooperLogic
 
         void TribeRelocationTasksAssign(Tribe tribe, ICollection<MapTile> mapTiles)
         {
+            //1 w8 for some time (player can cancell if missclicked etc)
+            //2 validate resources etc
+
             var relocationTaskOrder = tribe.HumanUnitTaskOrders
                 .Where(x => x.Type == EHumanUnitTaskType.TribeRelocation)
                 .SingleOrDefault();

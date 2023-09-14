@@ -23,6 +23,9 @@ namespace GameModule
         // returns 7x7, x&y is pointing to the middle of teh square
         public Task<IEnumerable<IMapTile>> GetMapTiles(int tribeId);
 
+        //get larger count of tiles (depends on mini-map size)
+        public Task<IEnumerable<IMapTile>> GetMapTileForMiniMap(int tribeId, int miniMapSizeInTiles = 31);
+
         // NOTE
         // map tiles can be generated whole sections, eg. from 100|100 to 199|199
         public Task GenerateMapTiles(int x, int y);

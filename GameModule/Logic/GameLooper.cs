@@ -56,28 +56,37 @@ namespace GameModule.Logic
 
             while (lastUpdated <= _dateTimeProvider.UtcNow().AddSeconds(-1))
             {
-                var currentTimeInLoop = lastUpdated.AddSeconds(1);
+                try
+                {
+                    var currentTimeInLoop = lastUpdated.AddSeconds(1);
 
-                await _secundExecutor.Execute(tribe,
-                    mapTiles,
-                    notifications,
-                    currentTimeInLoop);
+                    await _secundExecutor.Execute(tribe,
+                        mapTiles,
+                        notifications,
+                        currentTimeInLoop);
 
-                //todo - make classes for 2secundExecutor, 5sec, 10sec <- event 2s is 2x less calculation!! it`s worth it!
+                    //todo - make classes for 2secundExecutor, 5sec, 10sec <- event 2s is 2x less calculation!! it`s worth it!
 
-                if (lastUpdated.Second == 0)
-                    _minuteExecutor.Execute(tribe, notifications);
+                    if (lastUpdated.Second == 0)
+                        _minuteExecutor.Execute(tribe, notifications);
 
-                if (IGameOverApplicator.IsGameOver(tribe.HumanUnits))
-                    break;
+                    if (IGameOverApplicator.IsGameOver(tribe.HumanUnits))
+                        break;
 
-                if (lastUpdated.Minute == 0 && lastUpdated.Second == 0)
-                    _hourExecutor.Execute(tribe, mapTiles, notifications);
+                    if (lastUpdated.Minute == 0 && lastUpdated.Second == 0)
+                        _hourExecutor.Execute(tribe, mapTiles, notifications);
 
-                if (lastUpdated.Hour == 12 && lastUpdated.Minute == 0 && lastUpdated.Second == 0)
-                    _dayExecutor.Execute();
+                    if (lastUpdated.Hour == 12 && lastUpdated.Minute == 0 && lastUpdated.Second == 0)
+                        _dayExecutor.Execute();
 
-                lastUpdated = currentTimeInLoop;
+                    lastUpdated = currentTimeInLoop;
+                }
+                catch (Exception ex)
+                {
+                    //todo log
+                    var error = ex;
+                }
+                
             }
 
             if (IGameOverApplicator.IsGameOver(tribe.HumanUnits))

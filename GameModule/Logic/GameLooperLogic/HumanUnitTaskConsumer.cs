@@ -71,8 +71,14 @@ namespace GameModule.Logic.GameLooperLogic
 
                     tribe.Resources.FreshFood += (int)gatheredFoodPoints;
 
-                    var finishedHumanTaskOrder = humanUnitTaskOrders.Where(x => x.IsInProgress).OrderBy(x => x.Added).First();
-                    humanUnitTaskOrders.Remove(finishedHumanTaskOrder);
+                    var finishedHumanTaskOrder = humanUnitTaskOrders.Where(x => x.IsInProgress).OrderBy(x => x.Added).FirstOrDefault();
+                    
+                    if (finishedHumanTaskOrder != null)
+                        humanUnitTaskOrders.Remove(finishedHumanTaskOrder);
+                    else
+                    {
+                        //todo add logs - finishedHumanTaskOrder should always exists, if its null its due to problem - happens 2 times.. 
+                    }
 
                     return new NotificationDto(humanUnit.Id, humanUnit.Name, currentTimeInLoop, ENotificationType.FoodGatheringEnded, gatheredFoodPoints.ToString());
 

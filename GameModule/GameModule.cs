@@ -127,10 +127,45 @@ namespace GameModule
              return tiles;
         }
 
+        public async Task<IEnumerable<IMapTile>> GetMapTileForMiniMap(int tribeId, int miniMapSizeInTiles = 31)
+        {
+            if (miniMapSizeInTiles % 2 == 0)
+                throw new NotSupportedException($"{nameof(miniMapSizeInTiles)} is even, but must be odd number :/");
+
+            var tribe = await GetTribeOrArgumentException(tribeId);
+
+            var x = tribe.Localization.X;
+            var y = tribe.Localization.Y;
+
+            var tiles_count_from_center_to_edge = (miniMapSizeInTiles - 1) / 2;
+
+            var tiles = await _dbContext.MapTiles
+                .Where(t => t.Localization.X >= x - tiles_count_from_center_to_edge && t.Localization.X <= x + tiles_count_from_center_to_edge)
+                .Where(t => t.Localization.Y >= y - tiles_count_from_center_to_edge && t.Localization.Y <= y + tiles_count_from_center_to_edge)
+                .OrderBy(t => t.Localization.Y)
+                .ThenBy(t => t.Localization.X)
+                .Select(t => new MapTileDto(t.Localization.X, t.Localization.Y, t.Type, t.Food.ActualPoints, t.Wood.ActualPoints))
+                .ToListAsync();
+
+            var tilesInOrder = new List<IMapTile>();
+
+            //ocean - todo UT and separate method/class..
+            for (int X = x - tiles_count_from_center_to_edge; X <= x + tiles_count_from_center_to_edge; X++)
+                for (int Y = y - tiles_count_from_center_to_edge; Y <= y + tiles_count_from_center_to_edge; Y++)
+                    if (!tiles.Any(x => x.X == X && x.Y == Y))
+                        tilesInOrder.Add(new MapTileDto(X, Y, EMapType.Ocean, 0, 0));
+                    else
+                        tilesInOrder.Add(tiles.Single(x => x.X == X && x.Y == Y));
+
+            if (tilesInOrder.Count() != miniMapSizeInTiles * miniMapSizeInTiles)//961
+                throw new NotImplementedException();
+
+            return tilesInOrder;
+        }
+
         public async Task GenerateMapTiles(int x_start, int y_start)
         {
             //todo check if not exists, or override?
-
             var tiles = await _mapService.GenerateMapTiles(x_start, 
                 y_start,
                 TILE_MAX_FOOD_POINTS_LIMIT, 

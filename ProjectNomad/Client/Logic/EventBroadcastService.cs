@@ -16,12 +16,12 @@
         }
     }
 
-    public enum EActionWASM
+    public enum EActionWASM //A MOŻE INFORMOWAĆ JAKI COMONENT CHCEMY ODŚWIEŻYC???
     {
         None = 0,
 
         NotificationAdded,
-        TaskEnded,
-        FoodGatheringStart //MiniMap.razor
+        TaskEnded,//e.g. TasksComponentCallForReload
+        FoodGatheringStart //w.g MapCallForReload? 
     }
 }

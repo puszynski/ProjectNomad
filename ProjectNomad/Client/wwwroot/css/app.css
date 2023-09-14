@@ -39,6 +39,8 @@ html, body {
 asciiart {
     display: inline-block;
     font-family: 'Courier New', monospace;
+    /*font-family: "Lucida Console", Monaco, monospace;*/
+    /*letter-spacing: 0.1em;*/    
     line-height: 0.6em;
     text-shadow: 0 0 5px rgba(0,0,0,0.5);
     white-space: pre;

@@ -22,7 +22,7 @@
 
             public const int TribeFoodNeededToFill20PercentageOfHumanUnit = 3;
 
-            public const int MapTileFoodGathered = 3;
+            public const int MapTileFoodGathered = 7;
         }
         
         public static class MapResources
@@ -34,7 +34,7 @@
         public static class  Population
         {
             public const double BreedingChancePerHumanPerHour = 100;//0.02 * GAME_SPEED_FACTOR;//todo after tests retrive orginal factor
-            public const double NaturalDeathChancePerHumanPerHour = 100;//0.01 * GAME_SPEED_FACTOR;//todo after tests retrive orginal factor
+            public const double NaturalDeathChancePerHumanPerHour = 0.01 * GAME_SPEED_FACTOR;
 
         }
 

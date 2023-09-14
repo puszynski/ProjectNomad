@@ -3,6 +3,7 @@
     public enum EMapType
     {
         Ocean = 0,
+        HighMountains = 1,
 
         DenseConiferousForest = 110,
         MediumConiferousForest = 111,

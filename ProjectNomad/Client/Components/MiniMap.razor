@@ -4,81 +4,8 @@
 @inject HttpClient _httpClient
 @inject EventBroadcastService _eventBroadcastService;
 
-<center>
-<p>Tribe is camping at (3|3). It`s warm and sunny. There is a lot of resources around.</p>
-@* It`s boiling hot!
-It`s freezing outside!
-A storm seems to be coming that way. *@
-    <button class="button" @onclick="VersionOld"><span>old</span></button>
-    <button class="button" @onclick="VersionV2"><span>v2</span></button>
-    <button class="button" @onclick="VersionMini"><span>mini-map</span></button>
-</center>
 
-@if (VERSION == "OLD")
-{
-    <div style="position: relative;
-                        border: 2px dashed;
-                        border-color: Gainsboro;
-                        width:562px;
-                        height:562px;
-                        margin: auto;">
-
-
-        @if (mapViewModel != null)
-        {
-            var row = 0;
-            var column = 0;
-
-            @*SIZE FOR ONE TILE 80x80 - BUT - IMG MAP TILES => FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
-            foreach (var mapTile in mapViewModel.MapTiles)
-            {
-                <img src="@mapTile.GetTileImgPath()"
-                     height="100"
-                     width="100"
-                     style="position: absolute;
-                 left: @(row * 80 -10)px;
-                 top: @(column * 80 -10)px" />
-
-                <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80)px">@mapTile.FoodPoints</p>
-
-                if (mapTile.X == 3 && mapTile.Y == 3)
-                {
-                    <p style="position: absolute; left: @(row * 80 + 30)px; top: @(column * 80 + 30)px">⛶</p>
-                }
-
-                @if (row == 6)
-                {
-                    row = 0;
-                    ++column;
-                }
-                else
-                {
-                    ++row;
-                }
-            }
-        }
-        else
-        {
-            <p>loading..</p>
-        }
-    </div>
-}    
-else if (VERSION == "V2")
-{
-<asciiart>
-+++++++
-+++++++
-++....+
-++....+
-++....+
-+++++++
-+++++++
-</asciiart>
-
-}
-else if (VERSION == "MINI")
-{
-    //tut: https://stackoverflow.com/questions/26342182/style-table-as-ascii-art-table-using-css
+     @* https://stackoverflow.com/questions/26342182/style-table-as-ascii-art-table-using-css *@
 
     <div style="position: relative;
                         border: 2px dashed;
@@ -86,14 +13,14 @@ else if (VERSION == "MINI")
                         width:562px;
                         height:562px;
                         margin: auto;">
-
+        <center>
         <asciiart>
             @if (mapViewModel != null)
             {
                 var row = 0;
                 var column = 0;
 
-                @* map tiles: ⚺ *@
+                @* map tiles: ⚺ ⛼ ≈   ❆ ❄  ⩓  ∷   ◉ ↟↑⥾↿⥣↾⇈  *@
 
                 foreach (var mapTile in mapViewModel.MapTiles)
                 {
@@ -101,13 +28,23 @@ else if (VERSION == "MINI")
 
                     @switch (mapTile.Type)
                     {
-                        case ProjectNomad.Shared.Enums.EMapType.DenseConiferousForest: characterToDisplay = "⛼"; break;
-                        default: characterToDisplay = "≈"; break;
+                        case ProjectNomad.Shared.Enums.EMapType.DenseConiferousForest: characterToDisplay = "∷"; break;
+                        case ProjectNomad.Shared.Enums.EMapType.MediumConiferousForest: characterToDisplay = "∵"; break;
+                        case ProjectNomad.Shared.Enums.EMapType.RareConiferousForest: characterToDisplay = "·"; break;
+                        case ProjectNomad.Shared.Enums.EMapType.HighMountains: characterToDisplay = "▲"; break;
+
+
+                        default: characterToDisplay = "≈"; break; @*emtpy  means ocean*@
+                    }   
+
+                    @if (mapTile.X == Tribe.X && mapTile.Y == Tribe.Y)
+                    {
+                        characterToDisplay = "◉"; //should be dependent from population..  like in maps..
                     }
 
 <span>@characterToDisplay</span>
 
-                    @if (row == 6)
+                    @if (row == 30) @* width of the map minus one tile *@
                     {
                         <br/>
                         row = 0;
@@ -124,8 +61,8 @@ else if (VERSION == "MINI")
                 <p>loading..</p>
             }
         </asciiart>
+        </center>
     </div>
-}
 
 
 @* <div>
@@ -142,34 +79,19 @@ else if (VERSION == "MINI")
 
 @code {
     [ParameterAttribute]
-    public int TribeId { get; set; }
+    public TribeViewModel Tribe { get; set; }
 
 
     private MapViewModel? mapViewModel;
 
     protected override async Task OnInitializedAsync()
     {
-        _eventBroadcastService.OnAction += EventHandler;
-
         await Reload();
-
-        var timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
-        while (await timer.WaitForNextTickAsync())
-            await Reload();
-    }
-
-    private void EventHandler(EActionWASM actionWASM)
-    {
-        if (actionWASM != EActionWASM.FoodGatheringStart)
-            return;
-
-        Reload();
-        _eventBroadcastService.ClearEvent();
     }
 
     async Task Reload()
     {
-        var mapTiles = await _httpClient.GetFromJsonAsync<IEnumerable<MapTileViewModel>>($"api/game/getMapTiles/{TribeId}");
+        var mapTiles = await _httpClient.GetFromJsonAsync<IEnumerable<MapTileViewModel>>($"api/game/getMiniMapTiles/{Tribe.Id}");
 
         if (mapTiles == null)
             throw new NullReferenceException("MapTileViewModels null. No data was returned from server.");
@@ -177,11 +99,5 @@ else if (VERSION == "MINI")
         mapViewModel = new MapViewModel { MapTiles = mapTiles };
         StateHasChanged();
     }
-
-    //temp
-    string VERSION = "OLD";
-    void VersionOld() => VERSION = "OLD";
-    void VersionV2() => VERSION = "V2";
-    void VersionMini() => VERSION = "MINI";
 
 }

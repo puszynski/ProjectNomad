@@ -37,5 +37,12 @@ namespace ProjectNomad.Server.Controllers
             var result = await _gameModule.GetMapTiles(tribeId);
             return Ok(result);
         }
+
+        [HttpGet("getMiniMapTiles/{tribeId}")]
+        public async Task<ActionResult<IEnumerable<IMapTile>>> GetMapTileForMiniMap(int tribeId)
+        {
+            var result = await _gameModule.GetMapTileForMiniMap(tribeId);
+            return Ok(result);
+        }
     }
 }

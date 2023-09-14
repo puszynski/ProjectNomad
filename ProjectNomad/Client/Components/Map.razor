@@ -1,0 +1,128 @@
+﻿@using ProjectNomad.Client.Logic;
+@using ProjectNomad.Client.ViewModels.Game;
+@using ProjectNomad.Shared;
+@inject HttpClient _httpClient
+@inject TaskOrderManager _taskOrderManager;
+@inject EventBroadcastService _eventBroadcastService;
+
+<center>
+    <p>Tribe is camping at (3|3). It`s warm and sunny. There is a lot of resources around.</p>
+    @* It`s boiling hot!
+    It`s freezing outside!
+    A storm seems to be coming that way. *@
+</center>
+
+<div style="position: relative;
+                    border: 2px dashed;
+                    border-color: Gainsboro;
+                    width:562px;
+                    height:562px;
+                    margin: auto;">
+
+
+    @if (mapViewModel != null)
+    {
+        var row = 0;
+        var column = 0;
+
+        @*SIZE FOR ONE TILE 80x80 - BUT - IMG MAP TILES => FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
+        foreach (var mapTile in mapViewModel.MapTiles)
+        {
+                <img src="@mapTile.GetTileImgPath()"
+                     height="100"
+                     width="100"
+                     style="position: absolute;
+                     left: @(row * 80 -10)px;
+                     top: @(column * 80 -10)px"
+                     @onclick="() => SelectMapTile(mapTile)" />
+
+                <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80)px">@mapTile.FoodPoints</p>
+
+                if (mapTile.X == 3 && mapTile.Y == 3)
+                {
+                    <p style="position: absolute; left: @(row * 80 + 10)px; top: @(column * 80 + 30)px">⛶</p>
+
+                    
+                }
+
+                if (SelectedMapTile == mapTile)
+                {
+                    <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 30)px" class="button" @onclick="() => RelocateTribe(mapTile)"><span>relocate</span></button>
+
+                    <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 60)px" class="button" @onclick="DeselectMapTile"><span>cancel</span></button>
+                }
+
+                @if (row == 6)
+                {
+                    row = 0;
+                    ++column;
+                }
+                else
+                {
+                    ++row;
+                }
+            }
+        }
+        else
+        {
+            <p>loading..</p>
+        }
+    </div>
+
+
+
+
+@code {
+    [ParameterAttribute]
+    public TribeViewModel Tribe { get; set; }
+    MapViewModel? mapViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _eventBroadcastService.OnAction += EventHandler;
+
+        await Reload();
+
+        var timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
+        while (await timer.WaitForNextTickAsync())
+            await Reload();
+    }
+
+    void EventHandler(EActionWASM actionWASM)
+    {
+        if (actionWASM != EActionWASM.FoodGatheringStart)
+            return;
+
+        Reload();
+        _eventBroadcastService.ClearEvent();
+    }
+
+    async Task Reload()
+    {
+        var mapTiles = await _httpClient.GetFromJsonAsync<IEnumerable<MapTileViewModel>>($"api/game/getMapTiles/{Tribe.Id}");
+
+        if (mapTiles == null)
+            throw new NullReferenceException("MapTileViewModels null. No data was returned from server.");
+
+        mapViewModel = new MapViewModel { MapTiles = mapTiles };
+        StateHasChanged();
+    }
+
+
+    MapTileViewModel? SelectedMapTile;
+    void SelectMapTile(MapTileViewModel selectedMapTile) => SelectedMapTile = selectedMapTile;
+    void DeselectMapTile() => SelectedMapTile = null;
+
+    async Task RelocateTribe(MapTileViewModel mapTile)
+    {
+
+        await _taskOrderManager.Add(Tribe.Id, 
+            ProjectNomad.Shared.Enums.EHumanUnitTaskType.TribeRelocation, 
+            mapTile.X, 
+            mapTile.Y);
+
+        _eventBroadcastService.AddEvent(EActionWASM.TaskEnded);
+        SelectedMapTile = null;
+        //todo assign taks order via server + bradcast event for TasksComponent
+    }
+}

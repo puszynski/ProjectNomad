@@ -7,6 +7,7 @@ namespace ProjectNomad.Client.ViewModels.Game
     internal class MapViewModel
     {
         internal IEnumerable<MapTileViewModel> MapTiles { get; set; }
+        MapTileViewModel? SelectedMapTile { get; set; }
     }
 
     internal class MapTileViewModel : IMapTile
