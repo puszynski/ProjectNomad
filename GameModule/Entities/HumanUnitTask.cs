@@ -3,6 +3,7 @@ using ProjectNomad.Shared.Interfaces.Properties;
 
 namespace GameModule.Entities
 {
+    //todo rename to "HumanTask"
     internal class HumanUnitTask : IId, ITribeId
     {
         public int Id { get; set; }

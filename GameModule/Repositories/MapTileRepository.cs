@@ -1,7 +1,6 @@
 ﻿using GameModule.Configurations;
 using GameModule.Entities;
 using Microsoft.EntityFrameworkCore;
-using ProjectNomad.Shared.Enums;
 
 namespace GameModule.Repositories
 {

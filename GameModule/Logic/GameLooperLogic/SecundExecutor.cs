@@ -1,5 +1,6 @@
 ﻿using GameModule.Entities;
 using ProjectNomad.Shared.Interfaces;
+using System.Windows.Markup;
 
 namespace GameModule.Logic.GameLooperLogic
 {
@@ -33,6 +34,7 @@ namespace GameModule.Logic.GameLooperLogic
             await _taskAssigner.Execute(tribe, mapTiles, notifications);
             await _humanUnitAutoTaskScheduler.Execute(tribe, notifications, currentTimeInLoop);
             _humanUnitTaskConsumer.Execute(tribe, mapTiles, currentTimeInLoop, notifications);
+
         }
     }
 }

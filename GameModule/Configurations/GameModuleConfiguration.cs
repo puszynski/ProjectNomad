@@ -13,7 +13,7 @@ namespace GameModule.Configurations
         /// <summary>
         /// to run migration
         ///     cd .\GameModule
-        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add RelocationOneToOne -c GameModuleDbContext
+        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add TribeRelocationFromToNullableToAllowSchedule -c GameModuleDbContext
         ///     
         ///  note: you are in migration and context library project and are referring to startup project
         ///  plus specify context where multiple are detected by -c Name
@@ -42,6 +42,7 @@ namespace GameModule.Configurations
             services.AddScoped<IMapTileRepository, MapTileRepository>();
             services.AddScoped<IHumanUnitRepository, HumanUnitRepository>();
             services.AddScoped<IHumanUnitTaskRepository,  HumanUnitTaskRepository>();
+            services.AddScoped<ITribeRelocationRepository, TribeRelocationRepository>();
             services.AddScoped<IHumanUnitTaskOrderRepository,  HumanUnitTaskOrderRepository>();
 
             services.AddScoped<GameLOOPER>();

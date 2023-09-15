@@ -18,11 +18,3 @@ namespace GameModule.Entities
         public ICollection<HumanUnitTask> HumanUnitTasks { get; set; }
     }
 }
-
-
-
-
-
-
-
-

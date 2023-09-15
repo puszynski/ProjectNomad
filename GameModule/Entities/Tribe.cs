@@ -18,7 +18,7 @@ namespace GameModule.Entities
         public Guid AccountId { get; set; }
         public DateTime Updated { get; set; }
         public string Name { get; set; }
-        public Localization Localization { get; set; }
+        public Localization Localization { get; set; } //MUSICZ BYĆ SPÓJNY - ALBO WSZĘDZIE LOCALIZATION - ALOB MAP-TILE-ID
         public Resources Resources { get; set; }
 
         public TribeRelocation? TribeRelocation { get; set; }
