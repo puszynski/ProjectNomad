@@ -57,7 +57,7 @@ namespace GameModule.Logic.GameLooperLogic
                 case EHumanUnitTaskType.GatheringFood:
                     const int MAX_FOOD_PONTS_GATHERED_BY_ONE_TASK = 5;
 
-                    var mapTile = mapTiles.Single(x => x.Localization == humanUnitTask.Localization);
+                    var mapTile = mapTiles.Single(x => x.Localization.Equals(humanUnitTask.Localization));
                     var mapTileFoodPoints = mapTile.Food.ActualPoints;
 
                     var foodGatheringCoefficient = (double)humanUnit.FoodLevelPercentage / 100 * 2;

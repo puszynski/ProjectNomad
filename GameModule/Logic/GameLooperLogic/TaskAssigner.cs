@@ -39,7 +39,6 @@ namespace GameModule.Logic.GameLooperLogic
             //todo factory
             GatheringFoodTasksAssign(tribe, mapTiles, notifications);
             TribeRelocationTasksAssign(tribe);
-            _relocationService.EndRelocationProcess(tribe);
 
         }
 
@@ -87,7 +86,7 @@ namespace GameModule.Logic.GameLooperLogic
                 if (taskOrderToAssign == null)
                     return;
 
-                var destinyMapTile = mapTiles.Single(x => x.Localization == taskOrderToAssign.Localization);
+                var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskOrderToAssign.Localization));
 
                 if (destinyMapTile.Food.ActualPoints < GameSETTINGS.Food.MapTileFoodGathered)
                     return;

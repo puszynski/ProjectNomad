@@ -19,8 +19,7 @@ namespace GameModule.Logic
             {
                 try
                 {
-                    //'No backing field could be found for property 'Tribe.Localization#Localization.TribeId' and the property does not have a getter
-                    while (_dbContext.Tribes.Any(x => x.Localization.X == localization.X && x.Localization.Y == localization.Y))//not working..
+                    while (_dbContext.Tribes.Any(x => x.Localization.X == localization.X && x.Localization.Y == localization.Y))
                     {
                         //note - simple fast solution to be updated in the future
                         var maxX_Task = _dbContext.Tribes.Select(x => x.Localization).MaxAsync(x => x.X);

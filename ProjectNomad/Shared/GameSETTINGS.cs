@@ -9,7 +9,8 @@
         public static class Moving
         {
             public const int MinutesToTravelOneTile = 10 / GAME_SPEED_FACTOR;
-            public const int MinutesToTravelOneTileWhileTribeIsRelocating = 30 / GAME_SPEED_FACTOR;
+            public const int MinutesToTravelOneTileWhileTribeIsRelocating = 1; // temp for test
+            //public const int MinutesToTravelOneTileWhileTribeIsRelocating = 30 / GAME_SPEED_FACTOR;;
         }
 
         public static class Food
@@ -20,7 +21,7 @@
 
             public const int FoodToGetHungryForHumanUnitEachMinute = 1 * GAME_SPEED_FACTOR;
 
-            public const int TribeFoodNeededToFill20PercentageOfHumanUnit = 3;
+            public const int TribeFoodNeededToFill20PercentageOfHumanUnit = 2;
 
             public const int MapTileFoodGathered = 7;
         }

@@ -1,6 +1,6 @@
 ﻿using GameModule.Entities;
+using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using ProjectNomad.Shared.Interfaces;
-using System.Windows.Markup;
 
 namespace GameModule.Logic.GameLooperLogic
 {
@@ -16,13 +16,17 @@ namespace GameModule.Logic.GameLooperLogic
     {
         readonly ITaskAssigner _taskAssigner;
         readonly ITaskConsumer _humanUnitTaskConsumer;
+        readonly ITribeRelocationService _tribeRelocationService;
         readonly IHumanUnitAutoTaskScheduler _humanUnitAutoTaskScheduler;
-        public SecundExecutor(ITaskAssigner taskAssigner,
+        public SecundExecutor(
+            ITaskAssigner taskAssigner,
             ITaskConsumer humanUnitTaskConsumer,
+            ITribeRelocationService tribeRelocationService,
             IHumanUnitAutoTaskScheduler humanUnitAutoTaskScheduler)
         {
             _taskAssigner = taskAssigner;
             _humanUnitTaskConsumer = humanUnitTaskConsumer;
+            _tribeRelocationService = tribeRelocationService;
             _humanUnitAutoTaskScheduler = humanUnitAutoTaskScheduler;
         }
 
@@ -34,10 +38,7 @@ namespace GameModule.Logic.GameLooperLogic
             await _taskAssigner.Execute(tribe, mapTiles, notifications);
             await _humanUnitAutoTaskScheduler.Execute(tribe, notifications, currentTimeInLoop);
             _humanUnitTaskConsumer.Execute(tribe, mapTiles, currentTimeInLoop, notifications);
-
-            //todo end of relocation?
-
-
+            _tribeRelocationService.EndRelocationProcess(tribe);
         }
     }
 }
