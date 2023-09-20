@@ -15,10 +15,10 @@ namespace GameModule.Logic.GameLooperLogic
     internal class SecundExecutor : ISecundExecutor
     {
         readonly ITaskAssigner _taskAssigner;
-        readonly IHumanUnitTaskConsumer _humanUnitTaskConsumer;
+        readonly ITaskConsumer _humanUnitTaskConsumer;
         readonly IHumanUnitAutoTaskScheduler _humanUnitAutoTaskScheduler;
         public SecundExecutor(ITaskAssigner taskAssigner,
-            IHumanUnitTaskConsumer humanUnitTaskConsumer,
+            ITaskConsumer humanUnitTaskConsumer,
             IHumanUnitAutoTaskScheduler humanUnitAutoTaskScheduler)
         {
             _taskAssigner = taskAssigner;
@@ -34,6 +34,9 @@ namespace GameModule.Logic.GameLooperLogic
             await _taskAssigner.Execute(tribe, mapTiles, notifications);
             await _humanUnitAutoTaskScheduler.Execute(tribe, notifications, currentTimeInLoop);
             _humanUnitTaskConsumer.Execute(tribe, mapTiles, currentTimeInLoop, notifications);
+
+            //todo end of relocation?
+
 
         }
     }

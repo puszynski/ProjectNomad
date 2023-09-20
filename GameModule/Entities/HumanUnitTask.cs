@@ -1,4 +1,5 @@
-﻿using ProjectNomad.Shared.Enums;
+﻿using GameModule.Entities.ValueObjects;
+using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces.Properties;
 
 namespace GameModule.Entities
@@ -15,7 +16,9 @@ namespace GameModule.Entities
         public EHumanUnitTaskType Type { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
-        public int? MapTileId { get; set; }
+
+        public Localization? Localization { get; set; }
+        //public int? MapTileId { get; set; }
 
     }
 }

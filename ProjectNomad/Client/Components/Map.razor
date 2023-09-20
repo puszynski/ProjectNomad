@@ -47,7 +47,10 @@
 
                 if (SelectedMapTile == mapTile)
                 {
-                    <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 30)px" class="button" @onclick="() => RelocateTribe(mapTile)"><span>relocate</span></button>
+                    @if (Tribe.RelocationStatus == ProjectNomad.Shared.Interfaces.ETribeRelocationStatus.None)
+                    {
+                        <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 30)px" class="button" @onclick="() => RelocateTribe(mapTile)"><span>relocate</span></button>
+                    }
 
                     <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 60)px" class="button" @onclick="DeselectMapTile"><span>cancel</span></button>
                 }

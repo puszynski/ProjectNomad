@@ -1,6 +1,7 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Entities.ValueObjects;
+using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
@@ -19,9 +20,12 @@ namespace GameModule.Logic.GameLooperLogic
     internal class TaskAssigner : ITaskAssigner
     {
         readonly IDateTimeProvider _dateTimeProvider;
-        public TaskAssigner(IDateTimeProvider dateTimeProvider)
+        readonly ITribeRelocationService _relocationService;
+        public TaskAssigner(IDateTimeProvider dateTimeProvider, 
+            ITribeRelocationService relocationService)
         {
             _dateTimeProvider = dateTimeProvider;
+            _relocationService = relocationService;
         }
 
         async Task ITaskAssigner.Execute(Tribe tribe,
@@ -34,39 +38,31 @@ namespace GameModule.Logic.GameLooperLogic
 
             //todo factory
             GatheringFoodTasksAssign(tribe, mapTiles, notifications);
-            TribeRelocationTasksAssign(tribe, mapTiles);
+            TribeRelocationTasksAssign(tribe);
+            _relocationService.EndRelocationProcess(tribe);
 
         }
 
-        void TribeRelocationTasksAssign(Tribe tribe, ICollection<MapTile> mapTiles)
+        void TribeRelocationTasksAssign(Tribe tribe)
         {
-            //1 w8 for some time (player can cancell if missclicked etc)
-            //2 validate resources etc
+            var taskOrderToAssign = tribe.HumanUnitTaskOrders
+                    .Where(x => x.Type == EHumanUnitTaskType.TribeRelocation)
+                    .Where(x => !x.IsInProgress)
+                    .SingleOrDefault();
 
-            var relocationTaskOrder = tribe.HumanUnitTaskOrders
-                .Where(x => x.Type == EHumanUnitTaskType.TribeRelocation)
-                .SingleOrDefault();
-
-            if (relocationTaskOrder == null)
+            if (taskOrderToAssign == null)
                 return;
 
-            var mapTile = mapTiles.Single(x => x.Id == relocationTaskOrder.MapTileId);
+            if (taskOrderToAssign.Added > _dateTimeProvider.UtcNow().AddMinutes(-1)) //time for player to cancell order
+                return;
 
-            var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
-                        tribe.Localization.Y,
-                        mapTile.Localization.X,
-                        mapTile.Localization.Y);
+            //2 validate resources etc
+            if (!_relocationService.IsValidToStartRelocationProcess()) //always false - when ready, change..
+                return;
 
-            var relocation = new TribeRelocation
-            {
-                From = _dateTimeProvider.UtcNow(),
-                To = _dateTimeProvider.UtcNow().AddMinutes(distance * GameSETTINGS.Moving.MinutesToTravelOneTileWhileTribeIsRelocating),
-                Start = new Localization { X = tribe.Localization.X, Y = tribe.Localization.Y },
-                Destiny = new Localization { X = mapTile.Localization.X, Y = mapTile.Localization.Y }, 
-            };
+            _relocationService.StartRelocationProcess(tribe);
 
-            tribe.TribeRelocation = relocation;
-            tribe.HumanUnitTaskOrders.Remove(relocationTaskOrder);
+            
         }
 
         async Task GatheringFoodTasksAssign(Tribe tribe,
@@ -91,7 +87,7 @@ namespace GameModule.Logic.GameLooperLogic
                 if (taskOrderToAssign == null)
                     return;
 
-                var destinyMapTile = mapTiles.Single(x => x.Id == taskOrderToAssign.MapTileId);
+                var destinyMapTile = mapTiles.Single(x => x.Localization == taskOrderToAssign.Localization);
 
                 if (destinyMapTile.Food.ActualPoints < GameSETTINGS.Food.MapTileFoodGathered)
                     return;
@@ -106,7 +102,7 @@ namespace GameModule.Logic.GameLooperLogic
                 {
                     From = _dateTimeProvider.UtcNow(),
                     HumanUnitId = human.Id,
-                    MapTileId = taskOrderToAssign.MapTileId,
+                    Localization = taskOrderToAssign.Localization,
                     To = CalculateTimeToEndTask(),
                     TribeId = tribe.Id,
                     Type = EHumanUnitTaskType.GatheringFood,

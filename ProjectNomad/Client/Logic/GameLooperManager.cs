@@ -25,6 +25,7 @@ namespace ProjectNomad.Client.Logic
             {
                 var response = await _httpClient.PostAsJsonAsync("api/game/triggerPlayerGameObjectRecalculation", accountId);
                 var responseContent = await response.Content.ReadFromJsonAsync<TriggerGameLooperResponse>(); 
+                //RelocationStatus is not mapping  correctly.. 
 
                 if (responseContent?.Notifications?.Any() == true)
                 {

@@ -1,35 +1,97 @@
 ﻿using GameModule.Entities;
+using GameModule.Entities.ValueObjects;
 using GameModule.Repositories;
+using ProjectNomad.Shared;
+using ProjectNomad.Shared.Enums;
+using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
 {
     internal interface ITribeRelocationService
     {
-        internal void ScheduleRelocationProcess();
+        internal ETribeRelocationStatus GetTribeRelocationStatus(Tribe tribe);
         internal bool IsValidToStartRelocationProcess();
-        internal void StartRelocationProcess();
-        internal void EndRelocationProcess();
+        internal void StartRelocationProcess(Tribe tribe);
+        internal void EndRelocationProcess(Tribe tribe);
     }
 
-    internal class TribeRelocationService //: IRelocationService
+    internal class TribeRelocationService : ITribeRelocationService
     {
         readonly ITribeRelocationRepository _tribeRelocationRepository;
-        public TribeRelocationService(ITribeRelocationRepository tribeRelocationRepository)
+        readonly IDateTimeProvider _dateTimeProvider;
+        public TribeRelocationService(ITribeRelocationRepository tribeRelocationRepository, 
+            IDateTimeProvider dateTimeProvider)
         {
             _tribeRelocationRepository = tribeRelocationRepository;
+            _dateTimeProvider = dateTimeProvider;
         }
 
-        internal async void ScheduleRelocationProcess(HumanUnitTaskOrder humanUnitTaskOrder, Tribe tribe)
+        ETribeRelocationStatus ITribeRelocationService.GetTribeRelocationStatus(Tribe tribe)
         {
-            var entity = new TribeRelocation
-            {
-                From = null,
-                To = null,
+            if (tribe.TribeRelocation != null)
+                return ETribeRelocationStatus.InProgress;
 
-                Start = new Entities.ValueObjects.Localization { X = tribe.Localization.X, Y = tribe.Localization.Y },
-                Destiny = new Entities.ValueObjects.Localization { X = task}
+            if (tribe.HumanUnitTaskOrders.Any(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.TribeRelocation))
+                return ETribeRelocationStatus.Scheduled;
+
+            return ETribeRelocationStatus.None;
+        }
+
+        bool ITribeRelocationService.IsValidToStartRelocationProcess()
+        {
+            return false;
+        }
+
+        void ITribeRelocationService.StartRelocationProcess(Tribe tribe)
+        {
+            //todo test...
+            var relocationTaskOrder = tribe.HumanUnitTaskOrders
+                .Where(x => x.Type == EHumanUnitTaskType.TribeRelocation)
+                .SingleOrDefault();
+
+            if (relocationTaskOrder == null)
+                return;
+
+            var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
+                        tribe.Localization.Y,
+                        relocationTaskOrder.Localization.X,
+                        relocationTaskOrder.Localization.Y);
+
+            var relocation = new TribeRelocation
+            {
+                From = _dateTimeProvider.UtcNow(),
+                To = _dateTimeProvider.UtcNow().AddMinutes(distance * GameSETTINGS.Moving.MinutesToTravelOneTileWhileTribeIsRelocating),
+                Start = new Localization
+                {
+                    X = tribe.Localization.X,
+                    Y = tribe.Localization.Y
+                },
+                Destiny = new Localization
+                {
+                    X = relocationTaskOrder.Localization.X,
+                    Y = relocationTaskOrder.Localization.Y
+                }
             };
-            await _tribeRelocationRepository.AddAsync(entity);
+
+            tribe.TribeRelocation = relocation;
+            tribe.HumanUnitTaskOrders.Remove(relocationTaskOrder);
+        }
+
+        void ITribeRelocationService.EndRelocationProcess(Tribe tribe)
+        {
+            if (tribe.TribeRelocation == null)
+                return;
+
+            if (tribe.TribeRelocation.To > _dateTimeProvider.UtcNow())
+                return;
+
+            tribe.Localization = new Localization 
+            { 
+                X = tribe.TribeRelocation.Destiny.X, 
+                Y = tribe.TribeRelocation.Destiny.Y 
+            };
+
+            tribe.TribeRelocation = null;
         }
     }
 }

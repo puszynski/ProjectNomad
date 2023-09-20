@@ -10,8 +10,6 @@ namespace GameModule
         public Task InitPlayerGameObjects(Guid accountId);
         public Task InitPlayerGameObjectsForExistingTribe(Guid accountId);
 
-        public Task<ITribeGameObjects> GetPlayerGameObject(Guid accountId);
-
         // CONCEPT
         // server is not running tasks in background,
         // instead its triggered by client of main player - or - other players that are coming into interaction

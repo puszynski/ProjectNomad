@@ -24,7 +24,6 @@ namespace ProjectNomad.Server.Controllers
         [HttpPost]
         public async Task<ActionResult> AddTask(AddHumanUnitTaskOrder humanUnitTaskOrder)
         {
-            //rename
             await _gameModule.AddHumanUnitTaskOrder(humanUnitTaskOrder.TribeId, 
                 humanUnitTaskOrder.Type, 
                 humanUnitTaskOrder.MapTileX, 

@@ -1,6 +1,7 @@
 ﻿using GameModule.Logic;
 using GameModule.Logic.GameLooperLogic;
 using GameModule.Logic.GameLooperLogic.HourExecutorLogic;
+using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +14,7 @@ namespace GameModule.Configurations
         /// <summary>
         /// to run migration
         ///     cd .\GameModule
-        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add TribeRelocationFromToNullableToAllowSchedule -c GameModuleDbContext
+        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add TribeRelocationFromToNotNullable -c GameModuleDbContext
         ///     
         ///  note: you are in migration and context library project and are referring to startup project
         ///  plus specify context where multiple are detected by -c Name
@@ -56,11 +57,12 @@ namespace GameModule.Configurations
             services.AddScoped<IDayExecutor, DayExecutor>();
 
             services.AddScoped<MapService>();
-            services.AddScoped<IHumanUnitTaskConsumer, HumanUnitTaskConsumer>();
+            services.AddScoped<ITaskConsumer, TaskConsumer>();
             services.AddScoped<IHumanUnitAutoTaskScheduler, HumanUnitAutoTaskScheduler>();
             services.AddScoped<ITaskAssigner, TaskAssigner>();
             services.AddScoped<IHumansDeathApplicator, HumansDeathApplicator>();
             services.AddScoped<IGameOverApplicator, GameOverApplicator>();
+            services.AddScoped<ITribeRelocationService, TribeRelocationService>();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic;
+using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Repositories;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Interfaces;
@@ -18,6 +19,7 @@ namespace GameModule.Logic
         readonly IDateTimeProvider _dateTimeProvider;
         readonly IMapTileRepository _mapTileRepository;
         readonly IGameOverApplicator _gameOverApplicator;
+        readonly ITribeRelocationService _tribeRelocationService;
         public GameLOOPER(
             IDayExecutor dayExecutor,
             IHourExecutor hourExecutor,
@@ -26,7 +28,8 @@ namespace GameModule.Logic
             ITribeRepository tribeRepository,
             IDateTimeProvider dateTimeProvider,
             IMapTileRepository mapTileRepository,
-            IGameOverApplicator gameOverApplicator)
+            IGameOverApplicator gameOverApplicator,
+            ITribeRelocationService tribeRelocationService)
         {
             _dayExecutor = dayExecutor;
             _hourExecutor = hourExecutor;
@@ -36,6 +39,7 @@ namespace GameModule.Logic
             _dateTimeProvider = dateTimeProvider;
             _mapTileRepository = mapTileRepository;
             _gameOverApplicator = gameOverApplicator;
+            _tribeRelocationService = tribeRelocationService;
         }
 
         public async Task<ITriggerGameLooperResponse>  LoopTribe(Guid accountId)
@@ -84,6 +88,7 @@ namespace GameModule.Logic
                 catch (Exception ex)
                 {
                     //todo log
+                    
                     var error = ex;
                 }
                 
@@ -102,8 +107,10 @@ namespace GameModule.Logic
                 tribe.Updated =  lastUpdated;
                 await _tribeRepository.SaveChangesAsync();
 
+                var relocationStatus = _tribeRelocationService.GetTribeRelocationStatus(tribe);
+
                 return new TriggerGameLooperResponse(
-                    new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood), 
+                    new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, relocationStatus), 
                     tribe.HumanUnits.Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage)), 
                     notifications, 
                     new List<WorldEventDto>());
@@ -112,24 +119,24 @@ namespace GameModule.Logic
 
         async Task<ICollection<MapTile>> GetMapTileToInteract(Tribe tribe)
         {
-            var mapTileIdsForTasks = tribe.HumanUnitTasks
-                .Where(x => x.MapTileId.HasValue)
-                .Select(y => y.MapTileId.Value)
-            .ToList();
-
-            var mapTileIdsForTaskOrders = tribe.HumanUnitTaskOrders
-                .Where(x => x.MapTileId.HasValue)
-                .Select(y => y.MapTileId.Value)
+            var mapTileLocalizationsForTasks = tribe.HumanUnitTasks
+                .Where(x => x.Localization != null)
+                .Select(y => y.Localization)
                 .ToList();
 
-            var allMapTileIds = mapTileIdsForTasks.Union(mapTileIdsForTaskOrders).ToList();
+            var mapTileLocalizationsForTaskOrders = tribe.HumanUnitTaskOrders
+                .Where(x => x.Localization != null)
+                .Select(y => y.Localization)
+                .ToList();
 
-            return await _mapTileRepository.GetByIds(allMapTileIds);
+            var allMapTileLocalization = mapTileLocalizationsForTasks.Union(mapTileLocalizationsForTaskOrders).ToList();
+
+            return await _mapTileRepository.GetByLocalizations(allMapTileLocalization);
         }
 
         TriggerGameLooperResponse GetGameOverResponse(Tribe tribe)
             => new(
-                new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood),
+                new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, ETribeRelocationStatus.None),
                 new List<HumanUnitDto>(),
                 new List<NotificationDto>() 
                 { 
@@ -143,7 +150,7 @@ namespace GameModule.Logic
 
         TriggerGameLooperResponse GetEmptyResponse(Tribe tribe)
             => new(
-                new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood),
+                new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, ETribeRelocationStatus.None),
                 tribe.HumanUnits.Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage)),
                 new List<NotificationDto>(), 
                 new List<WorldEventDto>());

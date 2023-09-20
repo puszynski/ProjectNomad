@@ -5,7 +5,7 @@ using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic.GameLooperLogic
 {
-    internal interface IHumanUnitTaskConsumer
+    internal interface ITaskConsumer
     {
         void Execute(Tribe tribe,
             ICollection<MapTile> mapTiles,
@@ -13,9 +13,9 @@ namespace GameModule.Logic.GameLooperLogic
             List<INotification> notifications);
     }
 
-    internal class HumanUnitTaskConsumer : IHumanUnitTaskConsumer
+    internal class TaskConsumer : ITaskConsumer
     {
-        void IHumanUnitTaskConsumer.Execute(Tribe tribe,
+        void ITaskConsumer.Execute(Tribe tribe,
             ICollection<MapTile> mapTiles,
             DateTime currentTimeInLoop,
             List<INotification> notifications)
@@ -57,7 +57,7 @@ namespace GameModule.Logic.GameLooperLogic
                 case EHumanUnitTaskType.GatheringFood:
                     const int MAX_FOOD_PONTS_GATHERED_BY_ONE_TASK = 5;
 
-                    var mapTile = mapTiles.Single(x => x.Id == humanUnitTask.MapTileId);
+                    var mapTile = mapTiles.Single(x => x.Localization == humanUnitTask.Localization);
                     var mapTileFoodPoints = mapTile.Food.ActualPoints;
 
                     var foodGatheringCoefficient = (double)humanUnit.FoodLevelPercentage / 100 * 2;

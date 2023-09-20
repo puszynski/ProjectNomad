@@ -112,6 +112,9 @@ else
         if (!result.HumanUnits.Any())
             _navigationManager.NavigateTo("gameOver"); //todo dispose that component (to stop it from calling server...)
 
+        if (result.Tribe.RelocationStatus == ETribeRelocationStatus.InProgress)
+            _navigationManager.NavigateTo($"/relocation");
+
         GameObjectsViewModel = new TribeGameObjectsViewModel
         {
             Tribe = result.Tribe,

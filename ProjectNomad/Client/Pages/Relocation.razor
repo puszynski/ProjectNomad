@@ -1,0 +1,17 @@
+﻿@page "/relocation"
+<h3>Tribe is relocating</h3>
+@if (Departure.HasValue && Arrival.HasValue)
+{
+    <p>Relocation started at @Departure and will end at @Arrival</p>
+}
+
+@code {
+    public DateTime? Departure { get; set; }
+    public DateTime? Arrival { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //todo ask server for start-end..;
+        //todo - when ended - relocate to "/game"
+    }
+}

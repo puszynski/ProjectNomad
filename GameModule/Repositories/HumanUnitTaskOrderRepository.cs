@@ -10,7 +10,7 @@ namespace GameModule.Repositories
         void Remove(HumanUnitTaskOrder task);
         Task RemoveAll(int tribeId);
         Task<List<HumanUnitTaskOrder>> Get(int tribeId);
-        Task Add(int tribeId, EHumanUnitTaskType type, int mapTileId, DateTime now);
+        Task Add(int tribeId, EHumanUnitTaskType type, int X, int Y, DateTime now);
     }
 
     internal class HumanUnitTaskOrderRepository : BaseRepository, IHumanUnitTaskOrderRepository
@@ -31,7 +31,8 @@ namespace GameModule.Repositories
 
         async Task IHumanUnitTaskOrderRepository.Add(int tribeId, 
             EHumanUnitTaskType type, 
-            int mapTileId, 
+            int X,
+            int Y,
             DateTime now)
         {
             await _gameModuleDbContext.HumanUnitTaskOrders.AddAsync(new HumanUnitTaskOrder
@@ -40,7 +41,7 @@ namespace GameModule.Repositories
                 TribeId = tribeId,
                 Type = type,
                 IsInProgress = false,
-                MapTileId = mapTileId
+                Localization = new Entities.ValueObjects.Localization { X = X, Y = Y }
             });
         }
     }

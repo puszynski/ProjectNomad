@@ -8,5 +8,13 @@
         public int Y { get; }
         public int Wood { get; }
         public int FreshFood { get; }
+        public ETribeRelocationStatus RelocationStatus { get; }
+    }
+
+    public enum ETribeRelocationStatus
+    {
+        None = 0,
+        Scheduled = 1,
+        InProgress = 2
     }
 }

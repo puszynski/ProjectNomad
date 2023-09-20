@@ -9,6 +9,7 @@ namespace ProjectNomad.Shared.Interfaces
         public DateTime Added { get; }
         public EHumanUnitTaskType Type { get; }
         public bool IsInProgress { get; }
-        public int? MapTileId { get; }
+        public int? X { get; }
+        public int? Y { get; }
     }
 }

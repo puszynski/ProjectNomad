@@ -13,7 +13,7 @@ namespace UnitTests.GameModuleTests.Logic.GameLooperLogic
         public async Task should_create_autoTask_when_tribe_has_food_and_humanUnit_needed()
         {
             //Arrange
-            var TRIBE_FOOD = GameSETTINGS.TribeFoodNeededToFill20PercentageOfHumanUnit;
+            var TRIBE_FOOD = GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit;
             var HUMAN_FOOD_LEVEL = 80;
 
             var accountId = Guid.NewGuid();
@@ -37,7 +37,7 @@ namespace UnitTests.GameModuleTests.Logic.GameLooperLogic
             tribeRepository.GetByAccountId(accountId).Returns(Task.FromResult(tribe));
 
             //Act
-            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler(humanUnitTaskRepository);
+            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler();
             await humanUnitAutoTaskScheduler.Execute(humanUnits, tribe, humanUnitTasks, new DateTime(2020, 01, 01));
 
             //Assert

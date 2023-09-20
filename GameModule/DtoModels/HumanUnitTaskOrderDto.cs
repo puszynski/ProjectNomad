@@ -8,5 +8,6 @@ namespace GameModule.DtoModels
         DateTime Added, 
         EHumanUnitTaskType Type, 
         bool IsInProgress,
-        int? MapTileId) : IHumanUnitTaskOrder;
+        int? X,
+        int? Y) : IHumanUnitTaskOrder;
 }

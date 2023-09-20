@@ -56,7 +56,7 @@ namespace GameModule.Logic.GameLooperLogic
                 TribeId = tribeId,
                 Type = EHumanUnitTaskType.ConsumeFood,
                 To = currentTimeInLoop.AddMinutes(GameSETTINGS.Food.MinutesToConsumeFoodToFill20PercentageOfFood).AddSeconds(-1),//todo remove -1 TaskRequire mechanism and change UT
-                MapTileId = null
+                Localization = null
             };
 
             tasksToConsume.Add(entity);

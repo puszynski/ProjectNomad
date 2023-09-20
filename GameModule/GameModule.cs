@@ -2,6 +2,7 @@
 using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Logic;
+using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
@@ -18,48 +19,33 @@ namespace GameModule
 
         readonly NewTribeLocalizationInitializer _newTribeLocalizationInitializer;
         readonly IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
-        readonly IDateTimeProvider _dateTimeProvider;
+        readonly ITribeRelocationService _tribeRelocationService;
         readonly IMapTileRepository _mapTileRepository;
+        readonly IDateTimeProvider _dateTimeProvider;
         readonly GameModuleDbContext _dbContext;
         readonly GameLOOPER _gameLooper;
         readonly MapService _mapService;
 
-        public GameModule(GameModuleDbContext dbContext,
+        public GameModule(
             NewTribeLocalizationInitializer newTribeLocalizationInitializer,
             IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository,
-            GameLOOPER gameLooper,
-            MapService mapService,
+            ITribeRelocationService tribeRelocationService,
+            IMapTileRepository mapTileRepository,
             IDateTimeProvider dateTimeProvider,
-            IMapTileRepository mapTileRepository)
+            GameModuleDbContext dbContext,
+            GameLOOPER gameLooper,
+            MapService mapService)
         {
-            _dbContext = dbContext;
             _newTribeLocalizationInitializer = newTribeLocalizationInitializer;
             _humanUnitTaskOrderRepository = humanUnitTaskOrderRepository;
+            _tribeRelocationService = tribeRelocationService;
+            _mapTileRepository = mapTileRepository;
+            _dateTimeProvider = dateTimeProvider;
             _gameLooper = gameLooper;
             _mapService = mapService;
-            _dateTimeProvider = dateTimeProvider;
-            _mapTileRepository = mapTileRepository;
+            _dbContext = dbContext;
         }
 
-        public async Task<ITribeGameObjects> GetPlayerGameObject(Guid accountId)
-        {
-            var tribe = await _dbContext
-                .Tribes
-                .Where(x => x.AccountId == accountId)
-                .Select(x => new { x.Name, x.Id, x.Localization.X, x.Localization.Y, x.Resources.FreshFood, x.Resources.Wood })
-                .SingleOrDefaultAsync()
-                    ?? throw new ArgumentException("No tribe founded in database with given accountId :/", nameof(accountId));
-
-            var tribeDto = new TribeDto(tribe.Id, tribe.Name, tribe.X, tribe.Y, tribe.Wood, tribe.FreshFood);
-
-            var humanUnitsTask = _dbContext
-                .HumanUnits
-                .Where(x => x.TribeId == tribe.Id)
-                .Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage))
-                .ToListAsync();
-
-            return new TribeGameObjectDto(tribeDto, await humanUnitsTask);
-        }
 
         public async Task<ITriggerGameLooperResponse> TriggerPlayerGameObjectRecalculation(Guid accountId) 
             => await _gameLooper.LoopTribe(accountId);
@@ -207,7 +193,6 @@ namespace GameModule
                 task.LocalizationEnd_Y);
 
             var humanUnit = await _dbContext.HumanUnits.SingleAsync(x => x.Id == task.HumanUnitId);
-            var mapTile = await _dbContext.MapTiles.SingleAsync(x => x.Localization.X == task.LocalizationStart_X && x.Localization.Y == task.LocalizationStart_Y);
 
             var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, humanUnit.FoodLevelPercentage) + TimeSpan.FromMinutes(GameSETTINGS.Food.MinutesToGatherFood);
 
@@ -218,7 +203,7 @@ namespace GameModule
                 TribeId = task.TribeId,
                 Type = task.Type,
                 To = _dateTimeProvider.UtcNow().Add(timeToEndTask),
-                MapTileId = mapTile.Id
+                Localization = new Entities.ValueObjects.Localization { X = task.LocalizationStart_X, Y = task.LocalizationStart_Y }
             };
 
             await _dbContext.AddAsync(entity);
@@ -231,26 +216,34 @@ namespace GameModule
                 .HumanUnitTasks
                 .Where(x => x.TribeId == tribeId)
                 .Include(b => b.HumanUnit)
-                .Select(x => new HumanUnitTaskDto(x.TribeId, x.HumanUnitId, x.HumanUnit.Name, x.Type, x.From, x.To)) //todo
+                .Select(x => new HumanUnitTaskDto(x.TribeId, x.HumanUnitId, x.HumanUnit.Name, x.Type, x.From, x.To))
                 .ToListAsync();
 
             tribeTasks ??= new List<HumanUnitTaskDto>();
             return tribeTasks;
         }
 
-
-        //TODO START MAKING SMALLER CLASSES, GAME-MODULE IS TOO BIG => IHumanUnitTaskOrder_GameModule ?
         public async Task<IEnumerable<IHumanUnitTaskOrder>> GetHumanUnitTaskOrders(int tribeId)
             => await _dbContext
             .HumanUnitTaskOrders
             .Where(x => x.TribeId == tribeId)
-            .Select(x => new HumanUnitTaskOrderDto(x.Id, x.TribeId, x.Added, x.Type, x.IsInProgress, x.MapTileId))
+            .Select(x => new HumanUnitTaskOrderDto(x.Id, x.TribeId, x.Added, x.Type, x.IsInProgress, x.Localization.X, x.Localization.Y))
             .ToListAsync();
 
-        public async Task AddHumanUnitTaskOrder(int tribeId, EHumanUnitTaskType type, int mapTileX, int mapTileY)
+        public async Task AddHumanUnitTaskOrder(int tribeId, 
+            EHumanUnitTaskType type, 
+            int mapTileX, 
+            int mapTileY)
         {
-            int mapTileId = await _mapTileRepository.GetIdByLocalization(mapTileX, mapTileY);
-            await _humanUnitTaskOrderRepository.Add(tribeId, type, mapTileId, _dateTimeProvider.UtcNow());
+            if (type == EHumanUnitTaskType.TribeRelocation)
+            {
+                var tribe = await GetTribeOrArgumentException(tribeId);
+                if (tribe.TribeRelocation != null)
+                    throw new ArgumentException($"Can not assign task order for {nameof(EHumanUnitTaskType.TribeRelocation)} when {nameof(tribe.TribeRelocation)} exists :/");
+            }
+
+            await _humanUnitTaskOrderRepository.Add(tribeId, type, mapTileX, mapTileY, _dateTimeProvider.UtcNow());
+            
             await _dbContext.SaveChangesAsync();
         }
 

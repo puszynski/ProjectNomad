@@ -7,5 +7,6 @@ namespace GameModule.DtoModels
         int X, 
         int Y,
         int Wood,
-        int FreshFood) : ITribe;
+        int FreshFood,
+        ETribeRelocationStatus RelocationStatus) : ITribe;
 }
