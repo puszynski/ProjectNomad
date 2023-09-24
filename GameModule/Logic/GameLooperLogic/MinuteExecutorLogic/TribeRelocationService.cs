@@ -10,7 +10,7 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
     internal interface ITribeRelocationService
     {
         internal ETribeRelocationStatus GetTribeRelocationStatus(Tribe tribe);
-        internal bool IsValidToStartRelocationProcess();
+        internal bool IsValidToStartRelocationProcess(Tribe tribe);
         internal void StartRelocationProcess(Tribe tribe);
         internal void EndRelocationProcess(Tribe tribe);
     }
@@ -31,15 +31,37 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
             if (tribe.TribeRelocation != null)
                 return ETribeRelocationStatus.InProgress;
 
-            if (tribe.HumanUnitTaskOrders.Any(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.TribeRelocation))
+            if (tribe.HumanUnitTaskOrders.Any(x => x.Type == EHumanUnitTaskType.TribeRelocation))
                 return ETribeRelocationStatus.Scheduled;
 
             return ETribeRelocationStatus.None;
         }
 
-        bool ITribeRelocationService.IsValidToStartRelocationProcess()
+        bool ITribeRelocationService.IsValidToStartRelocationProcess(Tribe tribe)
         {
-            return false;
+            var relocationTaskOrder = tribe.HumanUnitTaskOrders
+                .Where(x => x.Type == EHumanUnitTaskType.TribeRelocation)
+                .SingleOrDefault();
+
+            if (relocationTaskOrder == null)
+                return false;
+
+            return HasTribeEnoughResources();
+
+            bool HasTribeEnoughResources()
+            {
+                return ResourcesNeededToRelocate(tribe) < tribe.Resources.FreshFood;
+
+                int ResourcesNeededToRelocate(Tribe tribe)
+                {
+                    var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
+                                tribe.Localization.Y,
+                                relocationTaskOrder.Localization.X,
+                                relocationTaskOrder.Localization.Y);
+
+                    return distance * tribe.HumanUnits.Count * GameSETTINGS.TribeRelocation.FoodPointsNeededToTravelOneTileForOneTribeMember;
+                }
+            }
         }
 
         void ITribeRelocationService.StartRelocationProcess(Tribe tribe)
@@ -84,14 +106,26 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
 
             if (tribe.TribeRelocation.To > _dateTimeProvider.UtcNow())
                 return;
+            
+            tribe.Resources.FreshFood -= ResourcesNeededToRelocate(tribe);
 
             tribe.Localization = new Localization 
             { 
                 X = tribe.TribeRelocation.Destiny.X, 
-                Y = tribe.TribeRelocation.Destiny.Y 
+                Y = tribe.TribeRelocation.Destiny.Y
             };
 
             tribe.TribeRelocation = null;
+
+            int ResourcesNeededToRelocate(Tribe tribe)
+            {
+                var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
+                            tribe.Localization.Y,
+                            tribe.TribeRelocation.Destiny.X,
+                            tribe.TribeRelocation.Destiny.Y);
+
+                return distance * tribe.HumanUnits.Count * GameSETTINGS.TribeRelocation.FoodPointsNeededToTravelOneTileForOneTribeMember;
+            }
         }
     }
 }

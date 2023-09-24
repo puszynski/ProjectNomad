@@ -38,7 +38,7 @@
 
                 <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80)px">@mapTile.FoodPoints</p>
 
-                if (mapTile.X == 3 && mapTile.Y == 3)
+                if (mapTile.X == Tribe.X && mapTile.Y == Tribe.Y)
                 {
                     <p style="position: absolute; left: @(row * 80 + 10)px; top: @(column * 80 + 30)px">⛶</p>
 

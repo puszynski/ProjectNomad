@@ -55,8 +55,9 @@ namespace ProjectNomad.Client.ViewModels.Game
                     imgName = "112_1";
                     break;
 
+                case EMapType.Ocean:
                 default:
-                    imgName = string.Empty;
+                    imgName = "0_1";
                     break;
             }
 

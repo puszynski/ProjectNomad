@@ -94,23 +94,29 @@ namespace GameModule
 
         public async Task<IEnumerable<IMapTile>> GetMapTiles(int tribeId)
         {
+            const int MAP_SIZE_IN_TILES = 7;
+
             var tribe = await GetTribeOrArgumentException(tribeId);
 
             var x = tribe.Localization.X;
             var y = tribe.Localization.Y;
 
+            var tilesCountFromCenterToEdge = (MAP_SIZE_IN_TILES - 1) / 2;
+
             var tiles = await _dbContext.MapTiles
-                .Where(t => t.Localization.X >= x - 3 && t.Localization.X <= x + 3)
-                .Where(t => t.Localization.Y >= y - 3 && t.Localization.Y <= y + 3)
+                .Where(t => t.Localization.X >= x - tilesCountFromCenterToEdge && t.Localization.X <= x + tilesCountFromCenterToEdge)
+                .Where(t => t.Localization.Y >= y - tilesCountFromCenterToEdge && t.Localization.Y <= y + tilesCountFromCenterToEdge)
                 .OrderBy(t => t.Localization.Y)
                 .ThenBy(t => t.Localization.X)
                 .Select(t => new MapTileDto(t.Localization.X, t.Localization.Y, t.Type, t.Food.ActualPoints, t.Wood.ActualPoints))
                 .ToListAsync();
 
-            if (tiles.Count() != 7 * 7)
-                throw new NotImplementedException(); //todo assign ocean to missing ones..
+            var allTiles = FillMapWithOceanTiles(tribe.Localization.X, tribe.Localization.Y, tiles, MAP_SIZE_IN_TILES);
 
-             return tiles;
+            if (allTiles.Count() != MAP_SIZE_IN_TILES * MAP_SIZE_IN_TILES)
+                throw new NotImplementedException();
+
+             return allTiles;
         }
 
         public async Task<IEnumerable<IMapTile>> GetMapTileForMiniMap(int tribeId, int miniMapSizeInTiles = 31)
@@ -123,28 +129,39 @@ namespace GameModule
             var x = tribe.Localization.X;
             var y = tribe.Localization.Y;
 
-            var tiles_count_from_center_to_edge = (miniMapSizeInTiles - 1) / 2;
+            var tilesCountFromCenterToEdge = (miniMapSizeInTiles - 1) / 2;
 
             var tiles = await _dbContext.MapTiles
-                .Where(t => t.Localization.X >= x - tiles_count_from_center_to_edge && t.Localization.X <= x + tiles_count_from_center_to_edge)
-                .Where(t => t.Localization.Y >= y - tiles_count_from_center_to_edge && t.Localization.Y <= y + tiles_count_from_center_to_edge)
+                .Where(t => t.Localization.X >= x - tilesCountFromCenterToEdge && t.Localization.X <= x + tilesCountFromCenterToEdge)
+                .Where(t => t.Localization.Y >= y - tilesCountFromCenterToEdge && t.Localization.Y <= y + tilesCountFromCenterToEdge)
                 .OrderBy(t => t.Localization.Y)
                 .ThenBy(t => t.Localization.X)
                 .Select(t => new MapTileDto(t.Localization.X, t.Localization.Y, t.Type, t.Food.ActualPoints, t.Wood.ActualPoints))
                 .ToListAsync();
 
+            var allMapTiles = FillMapWithOceanTiles(tribe.Localization.X, tribe.Localization.Y, tiles, miniMapSizeInTiles);
+
+            if (allMapTiles.Count() != miniMapSizeInTiles * miniMapSizeInTiles)
+                throw new NotImplementedException();
+            
+            return allMapTiles;
+        }
+
+        List<IMapTile> FillMapWithOceanTiles(int tribeLocalizationX, 
+            int tribeLocalizationY, 
+            List<MapTileDto> tiles, 
+            int squareMapSizeInTiles)
+        {
+            var tilesCountFromCenterToEdge = (squareMapSizeInTiles - 1) / 2;
+
             var tilesInOrder = new List<IMapTile>();
 
-            //ocean - todo UT and separate method/class..
-            for (int X = x - tiles_count_from_center_to_edge; X <= x + tiles_count_from_center_to_edge; X++)
-                for (int Y = y - tiles_count_from_center_to_edge; Y <= y + tiles_count_from_center_to_edge; Y++)
+            for (int X = tribeLocalizationX - tilesCountFromCenterToEdge; X <= tribeLocalizationX + tilesCountFromCenterToEdge; X++)
+                for (int Y = tribeLocalizationY - tilesCountFromCenterToEdge; Y <= tribeLocalizationY + tilesCountFromCenterToEdge; Y++)
                     if (!tiles.Any(x => x.X == X && x.Y == Y))
                         tilesInOrder.Add(new MapTileDto(X, Y, EMapType.Ocean, 0, 0));
                     else
                         tilesInOrder.Add(tiles.Single(x => x.X == X && x.Y == Y));
-
-            if (tilesInOrder.Count() != miniMapSizeInTiles * miniMapSizeInTiles)//961
-                throw new NotImplementedException();
 
             return tilesInOrder;
         }

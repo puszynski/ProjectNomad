@@ -52,11 +52,10 @@ namespace GameModule.Logic.GameLooperLogic
             if (taskOrderToAssign == null)
                 return;
 
-            if (taskOrderToAssign.Added > _dateTimeProvider.UtcNow().AddMinutes(-1)) //time for player to cancell order
+            if (taskOrderToAssign.Added > _dateTimeProvider.UtcNow().AddMinutes(-1)) //time for player to cancel order
                 return;
 
-            //2 validate resources etc
-            if (!_relocationService.IsValidToStartRelocationProcess()) //always false - when ready, change..
+            if (!_relocationService.IsValidToStartRelocationProcess(tribe))
                 return;
 
             _relocationService.StartRelocationProcess(tribe);
