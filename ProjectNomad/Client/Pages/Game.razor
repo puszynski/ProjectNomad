@@ -1,9 +1,11 @@
-﻿@page "/game"
+﻿@implements IDisposable
+@page "/game"
 
 @using Blazored.LocalStorage;
 @using ProjectNomad.Client.Logic;
 @using ProjectNomad.Client.ViewModels.Game
 @using ProjectNomad.Shared.Interfaces;
+
 
 @inject HttpClient _httpClient
 @inject GameLooperManager _gameLooperManager
@@ -29,7 +31,7 @@
         <center>
             <button class="button" @onclick="DisplayMap"><span>HOME</span></button>
             <button class="button" @onclick="DisplayMiniMap"><span>MAP</span></button>
-            <button class="button"><span>TRIBE</span></button>
+            <button class="button" @onclick="NavigateToTribe"><span>TRIBE</span></button>
 
             <br/>
             <ProjectNomad.Client.Components.BasicStatsBar GameObjectsViewModel="GameObjectsViewModel" />
@@ -90,6 +92,7 @@ else
     //child-to-child communication tut https://somegenericdev.medium.com/how-to-pass-a-value-between-sibling-components-in-blazor-1b4ec805cf31
 
     private TribeGameObjectsViewModel GameObjectsViewModel;
+    private bool ShouldBreak = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -100,7 +103,12 @@ else
 
         var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         while (await timer.WaitForNextTickAsync())
+        {
+            if (ShouldBreak)
+                break;
+
             await TrigerRecalculationAndGetGameObjectsFromServer();
+        }
     }
 
     async Task TrigerRecalculationAndGetGameObjectsFromServer()
@@ -110,7 +118,7 @@ else
         var result = await _gameLooperManager.TriggerGameLooper(accountId);
 
         if (!result.HumanUnits.Any())
-            _navigationManager.NavigateTo("gameOver"); //todo dispose that component (to stop it from calling server...)
+            _navigationManager.NavigateTo("gameOver");
 
         if (result.Tribe.RelocationStatus == ETribeRelocationStatus.InProgress)
             _navigationManager.NavigateTo($"/relocation");
@@ -119,25 +127,11 @@ else
         {
             Tribe = result.Tribe,
             HumanUnits = result.HumanUnits
+            //todo tasks
+            //todo task-orders
         };
 
         StateHasChanged();
-    }
-
-    [Obsolete]
-    async Task GetDataFromServer()
-    {
-        var accountId = await GetAccountIdOr404();
-        var result = await _httpClient.GetFromJsonAsync<TribeGameObjectsViewModel>($"api/game/getGameObjects/{accountId}");
-
-        if (!result.HumanUnits.Any())
-            _navigationManager.NavigateTo("gameOver"); //todo dispose that component (to stop it from calling server...)
-
-        GameObjectsViewModel = new TribeGameObjectsViewModel
-        { 
-            Tribe = result.Tribe, 
-            HumanUnits = result.HumanUnits 
-        };
     }
 
     async Task<Guid> GetAccountIdOr404()
@@ -153,4 +147,12 @@ else
     string MainGameWindow = "Map";
     void DisplayMiniMap() => MainGameWindow = "MiniMap";
     void DisplayMap() => MainGameWindow = "Map";
+
+    void NavigateToTribe()
+        => _navigationManager.NavigateTo($"tribe");
+
+    void IDisposable.Dispose()
+    {
+        ShouldBreak = true;
+    }
 }
