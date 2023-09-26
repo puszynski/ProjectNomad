@@ -5,23 +5,37 @@
 @inject NavigationManager _navigationManager
 @inject ILocalStorageService _localStorageService 
 
-<EditForm Model="accountCreateViewModel" OnValidSubmit="accountCreateViewModel.Register">
-    <div>
-        <label for="">login:</label>
-        <InputText @bind-Value="accountCreateViewModel.Name" class="form-control"></InputText>
-    </div>
-    <div>
-        <label for="">password:</label>
-        <InputText @bind-Value="accountCreateViewModel.Password" class="form-control"></InputText>
-    </div>
-    <div>
-        <label for="">confirm password:</label>
-        <InputText @bind-Value="accountCreateViewModel.PasswordConfirmation" class="form-control"></InputText>
-    </div>
-    <div>
-        <button type="submit" class="btn btn-primary">Register and play</button>
-    </div>
-</EditForm>
+
+<div style="border: 2px dashed;
+                    border-color: Gainsboro;
+                    display: table;
+                    margin: auto;
+                    width: 400px; /*Optional*/
+                    table-layout: fixed; /*Optional*/
+                    border-spacing: 10px; /*Optional*/">
+
+    <EditForm Model="accountCreateViewModel" OnValidSubmit="accountCreateViewModel.Register">
+        <div>
+            <label for="">login:</label>
+            <InputText @bind-Value="accountCreateViewModel.Name" class="form-control"></InputText>
+        </div>
+        <div>
+            <label for="">password:</label>
+            <InputText @bind-Value="accountCreateViewModel.Password" class="form-control"></InputText>
+        </div>
+        <div>
+            <label for="">confirm password:</label>
+            <InputText @bind-Value="accountCreateViewModel.PasswordConfirmation" class="form-control"></InputText>
+        </div>
+        <div>
+            <button type="submit" class="button"><span>REGISTER AND PLAY</span></button>
+            <button class="button"><span>PLAY AS GUEST WITH NO ACCOUNT</span></button>
+        </div>
+    </EditForm>
+
+</div>
+
+
 
 @code {
     AccountCreateViewModel accountCreateViewModel;
