@@ -26,6 +26,7 @@
                 <br/>
 
                 <EditForm Model="accountViewModel" OnValidSubmit="accountViewModel.LogIn">
+                    <DataAnnotationsValidator/>
                     <div>
                         <label for="">login:</label>
                         <InputText @bind-Value="accountViewModel.Name" class="form-control"></InputText>
@@ -35,14 +36,21 @@
                         <InputText @bind-Value="accountViewModel.Password" class="form-control"></InputText>
                     </div>
                     <div>
-                        <button type="submit"  class="button"><span>PLAY</span></button>
+                        <ValidationSummary/>
+                        @if (!string.IsNullOrEmpty(accountViewModel.ErrorMessage))
+                        {
+                            <p style="color:red;">@accountViewModel.ErrorMessage</p>
+                
+                        }
+                        <button type="submit"  class="button"><span>LOG IN</span></button>
+                    </div>
+                    <div>
                     </div>
                 </EditForm>
 
                 <br/>
                 <button class="button" @onclick="CreateAccount"><span>CREATE ACCOUNT</span></button>
                 <button class="button"><span>PLAY AS GUEST</span></button>
-                <button class="button"><span>LOG AS GUEST WITH GUEST TOKEN</span></button>
     </div>
 
     

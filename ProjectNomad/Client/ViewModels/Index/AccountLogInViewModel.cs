@@ -1,20 +1,22 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
+using ProjectNomad.Client.ViewModels.Shared;
 using ProjectNomad.Shared.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Json;
 
 namespace ProjectNomad.Client.ViewModels.Index
 {
-    public class AccountLogInViewModel : IAccount
+    public class AccountLogInViewModel : BaseViewModel, IAccount
     {
         [Required]
-        [MinLength(4)]
+        [MinLength(3)]
         public string? Name { get; set; }
 
         [Required]
-        [MinLength(4)]
+        [MinLength(3)]
         public string? Password { get; set; }
+
 
         readonly HttpClient _httpClient;
         readonly NavigationManager _navigationManager;
@@ -33,9 +35,7 @@ namespace ProjectNomad.Client.ViewModels.Index
             var result = await _httpClient.PostAsJsonAsync("api/account/login", this);
 
             if (result.StatusCode != System.Net.HttpStatusCode.OK)
-                //todo
-                //_clientStateService.AddNotification("Dane logowania są błędne.", ENotificationType.Notification);
-                throw new Exception(); //todo remove
+                ErrorMessage = "Login failed. Please try again.";
             else
             {
                 //_clientStateService.AddNotification("Zgłoszenie zostało wysłane", ENotificationType.Success);
