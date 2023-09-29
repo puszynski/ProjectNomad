@@ -1,9 +1,11 @@
-﻿@using ProjectNomad.Client.Logic;
+﻿@using ProjectNomad.Client.Models.Response;
 @using ProjectNomad.Client.ViewModels.Game;
+@using ProjectNomad.Client.Logic;
 @using ProjectNomad.Shared;
+
 @inject HttpClient _httpClient
-@inject TaskOrderManager _taskOrderManager;
-@inject EventBroadcastService _eventBroadcastService;
+@inject TaskOrderManager _taskOrderManager
+@inject EventBroadcastService _eventBroadcastService
 
 <center>
     <p>Tribe is camping at (3|3). It`s warm and sunny. There is a lot of resources around.</p>
@@ -77,7 +79,7 @@
 
 @code {
     [ParameterAttribute]
-    public TribeViewModel Tribe { get; set; }
+    public Tribe Tribe { get; set; }
     MapViewModel? mapViewModel;
 
     protected override async Task OnInitializedAsync()

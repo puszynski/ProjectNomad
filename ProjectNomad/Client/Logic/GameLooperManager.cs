@@ -1,5 +1,5 @@
-﻿using ProjectNomad.Client.DtoModels;
-using ProjectNomad.Client.Logic.GameLooperManagerLogic;
+﻿using ProjectNomad.Client.Logic.GameLooperManagerLogic;
+using ProjectNomad.Client.Models.Response;
 using System.Net.Http.Json;
 
 namespace ProjectNomad.Client.Logic
@@ -19,12 +19,12 @@ namespace ProjectNomad.Client.Logic
             _httpClient = httpClient;
         }
 
-        internal async Task<TriggerGameLooperResponse> TriggerGameLooper(Guid accountId) 
+        internal async Task<TriggerGameLooper> TriggerGameLooper(Guid accountId) 
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("api/game/triggerPlayerGameObjectRecalculation", accountId);
-                var responseContent = await response.Content.ReadFromJsonAsync<TriggerGameLooperResponse>(); 
+                var responseContent = await response.Content.ReadFromJsonAsync<TriggerGameLooper>(); 
                 //RelocationStatus is not mapping  correctly.. 
 
                 if (responseContent?.Notifications?.Any() == true)

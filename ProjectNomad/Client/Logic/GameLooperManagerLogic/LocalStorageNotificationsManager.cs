@@ -1,5 +1,5 @@
 ﻿using Blazored.LocalStorage;
-using ProjectNomad.Client.DtoModels;
+using ProjectNomad.Client.Models.Response;
 using ProjectNomad.Shared.Enums;
 
 namespace ProjectNomad.Client.Logic.GameLooperManagerLogic

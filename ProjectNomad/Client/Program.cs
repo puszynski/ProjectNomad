@@ -15,6 +15,8 @@ builder.Services.AddScoped<TasksManager>();
 builder.Services.AddScoped<LocalStorageNotificationsManager>();
 builder.Services.AddScoped<GameLooperManager>();
 builder.Services.AddScoped<TaskOrderManager>();
+builder.Services.AddScoped<AccountManager>();
+
 builder.Services.AddSingleton<EventBroadcastService>();
 
 //3rd library - allow to store data in browser memory

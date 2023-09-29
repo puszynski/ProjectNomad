@@ -1,8 +1,8 @@
 ﻿using ProjectNomad.Shared.Interfaces;
 
-namespace ProjectNomad.Client.ViewModels.Game
+namespace ProjectNomad.Client.Models.Response
 {
-    public class TribeViewModel : ITribe
+    public class Tribe : ITribe
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -1,4 +1,5 @@
-﻿using ProjectNomad.Client.DtoModels;
+﻿using ProjectNomad.Client.Models.Requests;
+using ProjectNomad.Client.Models.Response;
 using System.Net.Http.Json;
 
 namespace ProjectNomad.Client.Logic
@@ -19,7 +20,7 @@ namespace ProjectNomad.Client.Logic
 
         internal async Task Add(int tribeId, ProjectNomad.Shared.Enums.EHumanUnitTaskType type, int mapTileX, int mapTileY)
         {
-            var request = new AddHumanUnitTaskOrderRequest(tribeId, type, mapTileX, mapTileY);
+            var request = new AddHumanUnitTaskOrder(tribeId, type, mapTileX, mapTileY);
             await _httpClient.PostAsJsonAsync("api/taskOrder/", request);
         }
 

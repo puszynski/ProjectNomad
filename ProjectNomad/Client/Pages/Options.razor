@@ -1,0 +1,30 @@
+﻿@page "/options"
+
+@using ProjectNomad.Client.Logic;
+@inject NavigationManager _navigationManager
+@inject AccountManager _accountManager
+
+<div style="border: 2px dashed;
+                    border-color: Gainsboro;
+                    margin: auto;
+                    width: 500px;
+                    padding: 10px;">
+
+    <center>
+        <button class="button" @onclick="NavigateToIndex"><span>Back to game</span></button>
+        <button class="button" @onclick="Logout"><span>Log out</span></button>
+    </center>
+
+</div>
+
+@code {
+    void NavigateToIndex()
+        => _navigationManager.NavigateTo("/");
+
+    async Task Logout()
+    {
+        await _accountManager.Logout();
+        _navigationManager.NavigateTo("/");
+        
+    }
+}

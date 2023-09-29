@@ -1,12 +1,12 @@
 ﻿using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 
-namespace ProjectNomad.Client.ViewModels.Tasks
+namespace ProjectNomad.Client.Models.Response
 {
-    public record HumanUnitTaskViewModel(int TribeId, 
+    public record HumanUnitTask(int TribeId,
         int HumanUnitId,
         string HumanUnitName,
-        EHumanUnitTaskType Type, 
-        DateTime From, 
+        EHumanUnitTaskType Type,
+        DateTime From,
         DateTime To) : IHumanUnitTaskDto;
 }

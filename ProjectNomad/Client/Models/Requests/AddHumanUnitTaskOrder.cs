@@ -1,10 +1,10 @@
 ﻿using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces.Response;
 
-namespace ProjectNomad.Client.DtoModels
+namespace ProjectNomad.Client.Models.Requests
 {
-    internal record AddHumanUnitTaskOrderRequest(int TribeId, 
-        EHumanUnitTaskType Type, 
+    internal record AddHumanUnitTaskOrder(int TribeId,
+        EHumanUnitTaskType Type,
         int MapTileX,
         int MapTileY) : IAddHumanUnitTaskOrderDto;
 }

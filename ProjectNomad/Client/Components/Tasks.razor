@@ -1,15 +1,14 @@
-﻿@using ProjectNomad.Client.DtoModels;
-@using ProjectNomad.Client.Logic;
-@using ProjectNomad.Client.ViewModels.Tasks;
+﻿@using ProjectNomad.Client.Logic;
 @using ProjectNomad.Shared.Enums;
 @using ProjectNomad.Shared.Interfaces;
+@using ProjectNomad.Client.Models.Response;
 
 @inject TasksManager _humanUnitTasksLocalStorageManager
 @inject HttpClient _httpClient
 @inject GameLooperManager _gameLooperManager
 @inject NavigationManager _navigationManager
 @inject EventBroadcastService _eventBroadcastService
-@inject TaskOrderManager _taskOrderManager;
+@inject TaskOrderManager _taskOrderManager
 
 @if (HumanUnitIds != null && HumanUnitTasks != null)
 {

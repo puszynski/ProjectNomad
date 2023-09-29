@@ -1,5 +1,6 @@
 ﻿@using ProjectNomad.Client.ViewModels.Game;
 @using ProjectNomad.Shared.Interfaces;
+@using ProjectNomad.Client.Models.Response;
 
 @* O N L Y   S K E T C H *@
 
@@ -28,7 +29,7 @@
     public int TribeId { get; set; }
 
     [ParameterAttribute]
-    public IEnumerable<HumanUnitViewModel> HumanUnits { get; set; }
+    public IEnumerable<HumanUnit> HumanUnits { get; set; }
 
     [ParameterAttribute]
     public int TilePositionX { get; set; }

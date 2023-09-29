@@ -1,10 +1,11 @@
 ﻿@implements IDisposable
 @page "/game"
 
+@using ProjectNomad.Client.ViewModels.Game;
 @using Blazored.LocalStorage;
 @using ProjectNomad.Client.Logic;
-@using ProjectNomad.Client.ViewModels.Game
 @using ProjectNomad.Shared.Interfaces;
+@using ProjectNomad.Client.Models.Response;
 
 
 @inject HttpClient _httpClient
@@ -32,7 +33,7 @@
             <button class="button" @onclick="DisplayMap"><span>HOME</span></button>
             <button class="button" @onclick="DisplayMiniMap"><span>MAP</span></button>
             <button class="button" @onclick="NavigateToTribe"><span>TRIBE</span></button>
-            <button class="button" @onclick="NavigateToTribe"><span>OPTIONS</span></button>
+            <button class="button" @onclick="NavigateToOptions"><span>OPTIONS</span></button>
 
 
             <br/>
@@ -156,6 +157,9 @@ else
 
     void NavigateToTribe()
         => _navigationManager.NavigateTo($"tribe");
+
+    void NavigateToOptions()
+        => _navigationManager.NavigateTo($"options");
 
     void IDisposable.Dispose()
     {

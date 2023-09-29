@@ -1,8 +1,10 @@
-﻿@using ProjectNomad.Client.Logic;
+﻿@using ProjectNomad.Client.Models.Response;
+@using ProjectNomad.Client.Logic;
 @using ProjectNomad.Client.ViewModels.Game;
 @using ProjectNomad.Shared;
+
 @inject HttpClient _httpClient
-@inject EventBroadcastService _eventBroadcastService;
+@inject EventBroadcastService _eventBroadcastService
 
 
      @* https://stackoverflow.com/questions/26342182/style-table-as-ascii-art-table-using-css *@
@@ -79,7 +81,7 @@
 
 @code {
     [ParameterAttribute]
-    public TribeViewModel Tribe { get; set; }
+    public Tribe Tribe { get; set; }
 
 
     private MapViewModel? mapViewModel;

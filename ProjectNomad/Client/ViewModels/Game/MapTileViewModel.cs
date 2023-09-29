@@ -1,5 +1,4 @@
-﻿using ProjectNomad.Shared;
-using ProjectNomad.Shared.Enums;
+﻿using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 
 namespace ProjectNomad.Client.ViewModels.Game
