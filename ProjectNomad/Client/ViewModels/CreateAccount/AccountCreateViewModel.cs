@@ -1,8 +1,6 @@
-﻿using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components;
+﻿using ProjectNomad.Client.Logic;
 using ProjectNomad.Shared.Interfaces;
 using System.ComponentModel.DataAnnotations;
-using System.Net.Http.Json;
 
 namespace ProjectNomad.Client.ViewModels.CreateAccount
 {
@@ -20,16 +18,10 @@ namespace ProjectNomad.Client.ViewModels.CreateAccount
         [MinLength(4)]        
         public string? PasswordConfirmation { get; set; }
 
-        readonly HttpClient _httpClient;
-        readonly NavigationManager _navigationManager;
-        readonly ILocalStorageService _localStorage;
-        public AccountCreateViewModel(HttpClient httpClient,
-            NavigationManager navigationManager,
-            ILocalStorageService localStorage)
+        readonly AccountManager _accountManager;
+        public AccountCreateViewModel(AccountManager accountManager)
         {
-            _httpClient = httpClient;
-            _navigationManager = navigationManager;
-            _localStorage = localStorage;
+            _accountManager = accountManager;
         }
 
         public async Task Register()
@@ -38,21 +30,7 @@ namespace ProjectNomad.Client.ViewModels.CreateAccount
                 throw new Exception();//todo
 
             IAccount sharedModel = this;
-
-            var result = await _httpClient.PostAsJsonAsync("api/account/register", sharedModel);
-
-            if (result.StatusCode != System.Net.HttpStatusCode.OK)
-                //todo
-                //_clientStateService.AddNotification("Dane logowania są błędne.", ENotificationType.Notification);
-                throw new Exception();
-            else
-            {
-                //_clientStateService.AddNotification("Zgłoszenie zostało wysłane", ENotificationType.Success);
-
-                var accountId = await result.Content.ReadFromJsonAsync<Guid>();
-                await _localStorage.SetItemAsync("id", accountId);
-                _navigationManager.NavigateTo("game");
-            }
+            _accountManager.LogIn(sharedModel);
         }
     }
 }
