@@ -61,26 +61,18 @@ else
     [ParameterAttribute]
     public IEnumerable<int> HumanUnitIds { get; set; }
 
-    IEnumerable<IHumanUnitTaskDto> HumanUnitTasks;
+    [ParameterAttribute]
+    public IEnumerable<HumanUnitTaskOrder> HumanUnitTaskOrders { get; set; }
+
+    [ParameterAttribute]
+    public IEnumerable<IHumanUnitTaskDto> HumanUnitTasks { get; set; }
+
 
     IReadOnlyList<EHumanUnitTaskType> AutoTasks = new List<EHumanUnitTaskType>() { EHumanUnitTaskType.ConsumeFood };
 
-    IEnumerable<HumanUnitTaskOrder> HumanUnitTaskOrders;
 
     protected override async Task OnInitializedAsync()
     {
-        await Reload();
-
-        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
-        while (await timer.WaitForNextTickAsync()) //todo dispose..
-            await Reload();
-    }
-
-    private async Task Reload()
-    {
-        HumanUnitTaskOrders = await _taskOrderManager.GetAll(TribeId);
-        HumanUnitTasks = await _humanUnitTasksLocalStorageManager.GetAll(TribeId);
-        StateHasChanged();
     }
 
     async Task OrderToGatherFood()

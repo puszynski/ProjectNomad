@@ -20,7 +20,7 @@
         {
             <span>@human.FoodLevelPercentage-@human.Name &nbsp; </span>
         }
-        ☀ ☁ ❄ ⛆ ⛈ ⛏ ⚶ ♂ ♀
+        ☀ ☁ ❄ ⛆ ⛈ ⛏ ⚶ ♂ ♀ 
     </p>
 
     <div style="border: 2px dashed;
@@ -32,6 +32,8 @@
             <button class="button" @onclick="DisplayMap"><span>HOME</span></button>
             <button class="button" @onclick="DisplayMiniMap"><span>MAP</span></button>
             <button class="button" @onclick="NavigateToTribe"><span>TRIBE</span></button>
+            <button class="button" @onclick="NavigateToTribe"><span>OPTIONS</span></button>
+
 
             <br/>
             <ProjectNomad.Client.Components.BasicStatsBar GameObjectsViewModel="GameObjectsViewModel" />
@@ -54,7 +56,11 @@
         <div id="tasks" style="border: 2px dashed;
                     border-color: Gainsboro;
                     display: table-cell;">     
-            <ProjectNomad.Client.Components.Tasks TribeId="GameObjectsViewModel.Tribe.Id" HumanUnitIds="GameObjectsViewModel.HumanUnits.Select(x =>x.Id).ToList()" />
+            <ProjectNomad.Client.Components.Tasks 
+            TribeId="GameObjectsViewModel.Tribe.Id" 
+            HumanUnitIds="GameObjectsViewModel.HumanUnits.Select(x =>x.Id).ToList()"
+            HumanUnitTaskOrders="GameObjectsViewModel.HumanUnitTaskOrders" 
+            HumanUnitTasks="GameObjectsViewModel.HumanUnitTasks" />
         </div>
 
         <div style="border: 2px dashed;
@@ -126,9 +132,9 @@ else
         GameObjectsViewModel = new TribeGameObjectsViewModel
         {
             Tribe = result.Tribe,
-            HumanUnits = result.HumanUnits
-            //todo tasks
-            //todo task-orders
+            HumanUnits = result.HumanUnits,
+            HumanUnitTaskOrders = result.HumanUnitTaskOrders,
+            HumanUnitTasks = result.HumanUnitTasks
         };
 
         StateHasChanged();

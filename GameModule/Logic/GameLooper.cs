@@ -44,16 +44,19 @@ namespace GameModule.Logic
 
         public async Task<ITriggerGameLooperResponse>  LoopTribe(Guid accountId)
         {
-
             var tribe = await _tribeRepository.GetAllDataMaterialized(accountId);
 
-            if (!tribe.HumanUnits.Any())
+            if (!tribe.HumanUnits.Any()) 
                 return GetGameOverResponse(tribe);
 
             var lastUpdated = tribe.Updated;
 
             if (lastUpdated > _dateTimeProvider.UtcNow().AddSeconds(-1))
-                return GetEmptyResponse(tribe);
+                return GetEmptyResponse(tribe);//UWAGA!!! JAKIE EMPTY - STĄD ZACIĄGASZ DANE DO WYŚWIETLENIA!!
+                // CO ZROBIĆ? MOŻE JAKIŚ WYJĄTEK ALBO KOD BŁĘDU I OBSŁUŻYĆ W KLIENTCIE?
+                //MOŻE NULL?? 
+                //A MOŻE JEDNAK TRZEBA POBRAĆ DANE I WYSŁAĆ?
+                //W A Ż N E
 
             var mapTiles = await GetMapTileToInteract(tribe);
             var notifications = new List<INotification>();
@@ -68,8 +71,6 @@ namespace GameModule.Logic
                         mapTiles,
                         notifications,
                         currentTimeInLoop);
-
-                    //todo - make classes for 2secundExecutor, 5sec, 10sec <- event 2s is 2x less calculation!! it`s worth it!
 
                     if (lastUpdated.Second == 0)
                         _minuteExecutor.Execute(tribe, notifications);
@@ -88,10 +89,8 @@ namespace GameModule.Logic
                 catch (Exception ex)
                 {
                     //todo log
-                    
                     var error = ex;
                 }
-                
             }
 
             if (IGameOverApplicator.IsGameOver(tribe.HumanUnits))
@@ -99,7 +98,6 @@ namespace GameModule.Logic
                 _gameOverApplicator.Execute(tribe.Id);
                 tribe.Updated = _dateTimeProvider.UtcNow();
                 await _tribeRepository.SaveChangesAsync();
-
                 return GetGameOverResponse(tribe);
             }
             else
@@ -109,9 +107,40 @@ namespace GameModule.Logic
 
                 var relocationStatus = _tribeRelocationService.GetTribeRelocationStatus(tribe);
 
+                var tribeDto = new TribeDto(tribe.Id, 
+                    tribe.Name, 
+                    tribe.Localization.X, 
+                    tribe.Localization.Y, 
+                    tribe.Resources.Wood, 
+                    tribe.Resources.FreshFood, 
+                    relocationStatus);
+
+                var humanUnitDtos = tribe.HumanUnits.Select(x => new HumanUnitDto(x.Id, 
+                    x.Name, 
+                    x.Localization.X, 
+                    x.Localization.Y, 
+                    x.FoodLevelPercentage));
+
+                var humanUnitTaskDtos = tribe.HumanUnitTasks.Select(x => new HumanUnitTaskDto(x.Id,
+                    x.HumanUnitId,
+                    x.HumanUnit.Name,
+                    x.Type,
+                    x.From,
+                    x.To));
+
+                var humanUnitTaskOrderDtos = tribe.HumanUnitTaskOrders.Select(x => new HumanUnitTaskOrderDto(x.Id, 
+                    x.TribeId, 
+                    x.Added, 
+                    x.Type, 
+                    x.IsInProgress, 
+                    x.Localization.X, 
+                    x.Localization.Y));
+
                 return new TriggerGameLooperResponse(
-                    new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, relocationStatus), 
-                    tribe.HumanUnits.Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage)), 
+                    tribeDto,
+                    humanUnitDtos,
+                    humanUnitTaskDtos,
+                    humanUnitTaskOrderDtos,
                     notifications, 
                     new List<WorldEventDto>());
             }
@@ -138,6 +167,8 @@ namespace GameModule.Logic
             => new(
                 new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, ETribeRelocationStatus.None),
                 new List<HumanUnitDto>(),
+                new List<HumanUnitTaskDto>(),
+                new List<HumanUnitTaskOrderDto>(),
                 new List<NotificationDto>() 
                 { 
                     new NotificationDto(0, 
@@ -152,6 +183,8 @@ namespace GameModule.Logic
             => new(
                 new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, ETribeRelocationStatus.None),
                 tribe.HumanUnits.Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage)),
+                new List<HumanUnitTaskDto>(),
+                new List<HumanUnitTaskOrderDto>(),
                 new List<NotificationDto>(), 
                 new List<WorldEventDto>());
     }
