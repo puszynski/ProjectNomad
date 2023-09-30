@@ -16,13 +16,9 @@
 
 @if (GameObjectsViewModel != null)
 {   
-    <p>dev info:
-        @foreach (var human in GameObjectsViewModel.HumanUnits)
-        {
-            <span>@human.FoodLevelPercentage-@human.Name &nbsp; </span>
-        }
+    @* <p>
         ☀ ☁ ❄ ⛆ ⛈ ⛏ ⚶ ♂ ♀ 
-    </p>
+    </p> *@
 
     <div style="border: 2px dashed;
                 border-color: Gainsboro;
@@ -32,7 +28,6 @@
         <center>
             <button class="button" @onclick="DisplayMap"><span>HOME</span></button>
             <button class="button" @onclick="DisplayMiniMap"><span>MAP</span></button>
-            <button class="button" @onclick="NavigateToTribe"><span>TRIBE</span></button>
             <button class="button" @onclick="NavigateToOptions"><span>OPTIONS</span></button>
 
 
@@ -118,17 +113,11 @@ else
         }
     }
 
-    async Task TrigerRecalculationAndGetGameObjectsFromServer()
+    async Task TrigerRecalculationAndGetGameObjectsFromServer() //WYNIEŚĆ DO SERWISU ŻEBY INNE PAGE TEZ MOGLY Z TEGO KORZYSTAĆ
     {
         var accountId = await GetAccountIdOr404();
 
         var result = await _gameLooperManager.TriggerGameLooper(accountId);
-
-        if (!result.HumanUnits.Any())
-            _navigationManager.NavigateTo("gameOver");
-
-        if (result.Tribe.RelocationStatus == ETribeRelocationStatus.InProgress)
-            _navigationManager.NavigateTo($"/relocation");
 
         GameObjectsViewModel = new TribeGameObjectsViewModel
         {
@@ -154,9 +143,6 @@ else
     string MainGameWindow = "Map";
     void DisplayMiniMap() => MainGameWindow = "MiniMap";
     void DisplayMap() => MainGameWindow = "Map";
-
-    void NavigateToTribe()
-        => _navigationManager.NavigateTo($"tribe");
 
     void NavigateToOptions()
         => _navigationManager.NavigateTo($"options");

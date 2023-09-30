@@ -4,6 +4,7 @@ using GameModule.Repositories;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
+using ProjectNomad.Shared.Logic;
 
 namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
 {
@@ -46,22 +47,23 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
             if (relocationTaskOrder == null)
                 return false;
 
-            return HasTribeEnoughResources();
+            return true;
+            //todo later - client must display info about requirments
+            //ALBO - NIE WYMAGAĆ TEGO - ALE - WTEDY FOOD WCHODZI W MINUS I TRZEBA GO NAJPIERW ODBÓDOWAĆ (JUŻ TAK SIĘ ZROBIŁO)
+            //return HasTribeEnoughResources();
 
-            bool HasTribeEnoughResources()
-            {
-                return ResourcesNeededToRelocate(tribe) < tribe.Resources.FreshFood;
-
-                int ResourcesNeededToRelocate(Tribe tribe)
-                {
-                    var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
-                                tribe.Localization.Y,
-                                relocationTaskOrder.Localization.X,
-                                relocationTaskOrder.Localization.Y);
-
-                    return distance * tribe.HumanUnits.Count * GameSETTINGS.TribeRelocation.FoodPointsNeededToTravelOneTileForOneTribeMember;
-                }
-            }
+            //bool HasTribeEnoughResources()
+            //{
+            //    return ResourcesNeededToRelocate(tribe) < tribe.Resources.FreshFood;
+            //    int ResourcesNeededToRelocate(Tribe tribe)
+            //    {
+            //        var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
+            //                    tribe.Localization.Y,
+            //                    relocationTaskOrder.Localization.X,
+            //                    relocationTaskOrder.Localization.Y);
+            //        return distance * tribe.HumanUnits.Count * GameSETTINGS.TribeRelocation.FoodPointsNeededToTravelOneTileForOneTribeMember;
+            //    }
+            //}
         }
 
         void ITribeRelocationService.StartRelocationProcess(Tribe tribe)
@@ -79,10 +81,12 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
                         relocationTaskOrder.Localization.X,
                         relocationTaskOrder.Localization.Y);
 
+            var taskDuration = TaskDurationCalculator.TribeRelocation(distance);
+
             var relocation = new TribeRelocation
             {
                 From = _dateTimeProvider.UtcNow(),
-                To = _dateTimeProvider.UtcNow().AddMinutes(distance * GameSETTINGS.Moving.MinutesToTravelOneTileWhileTribeIsRelocating),
+                To = _dateTimeProvider.UtcNow().Add(taskDuration),
                 Start = new Localization
                 {
                     X = tribe.Localization.X,

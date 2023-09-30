@@ -1,12 +1,10 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
-using GameModule.Entities.ValueObjects;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
-using System.Diagnostics;
 
 namespace GameModule.Logic.GameLooperLogic
 {
@@ -52,15 +50,10 @@ namespace GameModule.Logic.GameLooperLogic
             if (taskOrderToAssign == null)
                 return;
 
-            if (taskOrderToAssign.Added > _dateTimeProvider.UtcNow().AddMinutes(-1)) //time for player to cancel order
-                return;
-
             if (!_relocationService.IsValidToStartRelocationProcess(tribe))
                 return;
 
             _relocationService.StartRelocationProcess(tribe);
-
-            
         }
 
         async Task GatheringFoodTasksAssign(Tribe tribe,

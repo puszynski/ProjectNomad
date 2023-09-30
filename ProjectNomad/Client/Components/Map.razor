@@ -2,10 +2,12 @@
 @using ProjectNomad.Client.ViewModels.Game;
 @using ProjectNomad.Client.Logic;
 @using ProjectNomad.Shared;
+@using ProjectNomad.Shared.Enums;
 
 @inject HttpClient _httpClient
-@inject TaskOrderManager _taskOrderManager
+@inject NavigationManager _navigationManager
 @inject EventBroadcastService _eventBroadcastService
+
 
 <center>
     <p>Tribe is camping at (3|3). It`s warm and sunny. There is a lot of resources around.</p>
@@ -30,26 +32,38 @@
         @*SIZE FOR ONE TILE 80x80 - BUT - IMG MAP TILES => FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
         foreach (var mapTile in mapViewModel.MapTiles)
         {
-                <img src="@mapTile.GetTileImgPath()"
-                     height="100"
-                     width="100"
-                     style="position: absolute;
-                     left: @(row * 80 -10)px;
-                     top: @(column * 80 -10)px"
-                     @onclick="() => SelectMapTile(mapTile)" />
+                if (Tribe.X == mapTile.X && Tribe.Y == mapTile.Y)
+                {
+                        <img src="@mapTile.GetTileImgPath()"
+                                 height="100"
+                                 width="100"
+                                 style="position: absolute;
+                                 left: @(row * 80 -10)px;
+                                 top: @(column * 80 -10)px"
+                                 @onclick="NavigateToTribe" />
+                }
+                else
+                {
+                    <img src="@mapTile.GetTileImgPath()"
+                         height="100"
+                         width="100"
+                         style="position: absolute;
+                         left: @(row * 80 -10)px;
+                         top: @(column * 80 -10)px"
+                         @onclick="() => SelectMapTile(mapTile)" />
+                }
+                
 
                 <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80)px">@mapTile.FoodPoints</p>
 
                 if (mapTile.X == Tribe.X && mapTile.Y == Tribe.Y)
                 {
                     <p style="position: absolute; left: @(row * 80 + 10)px; top: @(column * 80 + 30)px">⛶</p>
-
-                    
                 }
 
                 if (SelectedMapTile == mapTile)
                 {
-                    @if (Tribe.RelocationStatus == ProjectNomad.Shared.Interfaces.ETribeRelocationStatus.None)
+                    @if (Tribe.RelocationStatus == ProjectNomad.Shared.Interfaces.ETribeRelocationStatus.None && !(Tribe.X == mapTile.X && Tribe.Y == mapTile.Y))
                     {
                         <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 30)px" class="button" @onclick="() => RelocateTribe(mapTile)"><span>relocate</span></button>
                     }
@@ -120,14 +134,21 @@
 
     async Task RelocateTribe(MapTileViewModel mapTile)
     {
+        var uriWithQueryParams = _navigationManager.GetUriWithQueryParameters("/taskAssign",
+             new Dictionary<string, object?>
+                 {
+                     [nameof(ProjectNomad.Client.Pages.TaskAssign.TribeId)] = Tribe.Id,
+                     [nameof(ProjectNomad.Client.Pages.TaskAssign.TaskType)] = (int)EHumanUnitTaskType.TribeRelocation,
+                     [nameof(ProjectNomad.Client.Pages.TaskAssign.StartX)] = Tribe.X,
+                     [nameof(ProjectNomad.Client.Pages.TaskAssign.StartY)] = Tribe.Y,
+                     [nameof(ProjectNomad.Client.Pages.TaskAssign.DestinyX)] = mapTile.X,
+                     [nameof(ProjectNomad.Client.Pages.TaskAssign.DestinyY)] = mapTile.Y,
+                 });
 
-        await _taskOrderManager.Add(Tribe.Id, 
-            ProjectNomad.Shared.Enums.EHumanUnitTaskType.TribeRelocation, 
-            mapTile.X, 
-            mapTile.Y);
-
-        _eventBroadcastService.AddEvent(EActionWASM.TaskEnded);
-        SelectedMapTile = null;
-        //todo assign taks order via server + bradcast event for TasksComponent
+        _navigationManager.NavigateTo(uriWithQueryParams);
+        SelectedMapTile = null; //needed??
     }
+
+    void NavigateToTribe()
+        => _navigationManager.NavigateTo("/tribe");
 }

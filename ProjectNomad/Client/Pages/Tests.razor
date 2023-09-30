@@ -1,0 +1,57 @@
+﻿@inject NavigationManager _navigationManager
+@page "/tests"
+
+<p>test for url query => /tests?filter=scifi%20stars&page=3&star=LeVar%20Burton&star=Gary%20Oldman</p>
+<p>order doesn't matter, eg. => /tests?star=LeVar%20Burton&star=Gary%20Oldman&page=3</p>
+
+
+
+<p>Filter: @Filter</p>
+
+<p>Page: @Page</p>
+
+@if (Stars is not null)
+{
+    <p>Stars:</p>
+
+    <ul>
+        @foreach (var name in Stars)
+        {
+            <li>@name</li>
+        }
+    </ul>
+}
+
+
+<p>To create url with params:</p>
+<button @onclick="Test">Click</button>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery] //https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/routing?view=aspnetcore-7.0
+    public string? Filter { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? Page { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "star")]
+    public string[]? Stars { get; set; }
+
+
+    void Test()
+    {
+        var uriWithQueryParams = _navigationManager.GetUriWithQueryParameters("/taskAssign", 
+             new Dictionary<string, object?>
+             {
+                 [nameof(TaskAssign.TaskType)] = 100,
+                 [nameof(TaskAssign.StartX)] = 3,
+                 [nameof(TaskAssign.StartY)] = 3,
+                 [nameof(TaskAssign.DestinyX)] = 12,
+                 [nameof(TaskAssign.DestinyY)] = 12,
+             });
+
+        _navigationManager.NavigateTo(uriWithQueryParams);
+    }
+}

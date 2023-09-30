@@ -1,5 +1,7 @@
-﻿using ProjectNomad.Client.Logic.GameLooperManagerLogic;
+﻿using Microsoft.AspNetCore.Components;
+using ProjectNomad.Client.Logic.GameLooperManagerLogic;
 using ProjectNomad.Client.Models.Response;
+using ProjectNomad.Shared.Interfaces;
 using System.Net.Http.Json;
 
 namespace ProjectNomad.Client.Logic
@@ -8,15 +10,18 @@ namespace ProjectNomad.Client.Logic
     {
         readonly LocalStorageNotificationsManager _notificationsManager;
         readonly EventBroadcastService _eventBroadcastService;
+        readonly NavigationManager _navigationManager;
         readonly HttpClient _httpClient;
 
         public GameLooperManager(EventBroadcastService eventBroadcastService,
             LocalStorageNotificationsManager notificationsManager,
-            HttpClient httpClient)
+            HttpClient httpClient,
+            NavigationManager navigationManager)
         {
             _eventBroadcastService = eventBroadcastService;
             _notificationsManager = notificationsManager;
             _httpClient = httpClient;
+            _navigationManager = navigationManager;
         }
 
         internal async Task<TriggerGameLooper> TriggerGameLooper(Guid accountId) 
@@ -37,6 +42,12 @@ namespace ProjectNomad.Client.Logic
 
                     _eventBroadcastService.AddEvent(EActionWASM.NotificationAdded); //chyba się jeszcze utworzyły i nie zasuskrybowały inne componenty..
                 }
+
+                if (!responseContent.HumanUnits.Any())
+                    _navigationManager.NavigateTo("gameOver");
+
+                if (responseContent.Tribe.RelocationStatus == ETribeRelocationStatus.InProgress)
+                    _navigationManager.NavigateTo($"/relocation");
 
                 return responseContent;
 

@@ -1,0 +1,96 @@
+﻿@page "/taskAssign"
+
+@using System.ComponentModel.DataAnnotations
+@using ProjectNomad.Client.Logic;
+@using ProjectNomad.Shared.Enums;
+
+@inject EventBroadcastService _eventBroadcastService
+@inject NavigationManager _navigationManager
+@inject TaskOrderManager _taskOrderManager
+
+
+<div style="border: 2px dashed;
+                    border-color: Gainsboro;
+                    margin: auto;
+                    width: 700px;
+                    padding: 10px;">
+
+    <center>
+        <h1>Assign order for action</h1>
+        <br />
+        <br />
+
+        <p>@GetDescriptionBaseOnTaskType() (@DestinyX|@DestinyY).</p>
+        <p>It gives distance of @GetDistnace() map-tiles to travel, and will take @GetDuration() to complete.</p>
+
+        <p>Validation? if relocation => All orders and task must ended</p>
+
+        <button class="button" @onclick="Submit"><span>Approve</span></button>
+        <button class="button" @onclick="NavigateToIndex"><span>Cancel</span></button>
+    </center>
+
+</div>
+
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int TribeId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int TaskType { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int StartX { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int StartY { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int DestinyX { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int DestinyY { get; set; }
+
+    string GetDescriptionBaseOnTaskType()
+    {
+        switch ((EHumanUnitTaskType)TaskType)
+        {   
+            case EHumanUnitTaskType.TribeRelocation: return "Order tribe relocation to position";
+            default: return "Ups :/";
+        }  
+    }
+
+    int GetDistnace() 
+        => ProjectNomad.Shared.MapTileDistanceCalculator.Execute(StartX, StartY, DestinyX, DestinyY);
+
+    string GetDuration()
+    {
+        switch ((EHumanUnitTaskType)TaskType)
+        {
+            case EHumanUnitTaskType.TribeRelocation: 
+                return ProjectNomad.Shared.Logic.TaskDurationCalculator.TribeRelocation(GetDistnace()).ToString();
+            default: return "Ups :/";
+        }
+    }
+
+    async Task Submit()
+    {
+        await _taskOrderManager.Add(TribeId,
+            ProjectNomad.Shared.Enums.EHumanUnitTaskType.TribeRelocation,
+            DestinyX,
+            DestinyY);
+
+        _eventBroadcastService.AddEvent(EActionWASM.TaskEnded);
+
+        _navigationManager.NavigateTo("/");
+    }
+
+    void NavigateToIndex()
+        => _navigationManager.NavigateTo("/");
+}
