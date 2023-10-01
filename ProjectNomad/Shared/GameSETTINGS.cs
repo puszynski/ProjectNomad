@@ -25,7 +25,17 @@
             public const int TribeFoodNeededToFill20PercentageOfHumanUnit = 2;
             public const int MapTileFoodGathered = 7;
         }
-        
+
+        public static class Fire
+        {
+            public const int TimeToCompleteAttemptToStartFire = 1;
+            public const double ChanceToStartFire = 0.1;
+
+            public const int WoodUsedToKeepTheCampfireBurning = 1;
+            public const int WoodUsedToKeepTheBonfireBurning = 5;
+            public const int MinutesOfFireDuration = 1; // JAKIŚ NOWY BYT - TYPU TribeItem? *to będzie paleniko, budynki..
+        }
+
         public static class MapResources
         {
             public const int FoodRegenerationPerHour = 10;

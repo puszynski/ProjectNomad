@@ -14,7 +14,7 @@ namespace GameModule.Configurations
         /// <summary>
         /// to run migration
         ///     cd .\GameModule
-        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add TribeRelocationFromToNotNullable -c GameModuleDbContext
+        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add TribeStructureTable -c GameModuleDbContext
         ///     
         ///  note: you are in migration and context library project and are referring to startup project
         ///  plus specify context where multiple are detected by -c Name
@@ -43,10 +43,11 @@ namespace GameModule.Configurations
             services.AddScoped<IMapTileRepository, MapTileRepository>();
             services.AddScoped<IHumanUnitRepository, HumanUnitRepository>();
             services.AddScoped<IHumanUnitTaskRepository,  HumanUnitTaskRepository>();
+            services.AddScoped<ITribeStructureRepository, TribeStructureRepository>();
             services.AddScoped<ITribeRelocationRepository, TribeRelocationRepository>();
             services.AddScoped<IHumanUnitTaskOrderRepository,  HumanUnitTaskOrderRepository>();
 
-            services.AddScoped<GameLOOPER>();
+            services.AddScoped<LOOPER>();
             services.AddScoped<ISecundExecutor, SecundExecutor>();
             services.AddScoped<IMinuteExecutor, MinuteExecutor>();
 

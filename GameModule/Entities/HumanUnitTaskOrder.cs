@@ -1,11 +1,11 @@
-﻿using GameModule.Entities.ValueObjects;
+﻿using GameModule.Entities.SharedInterfaces;
+using GameModule.Entities.ValueObjects;
 using ProjectNomad.Shared.Enums;
-using ProjectNomad.Shared.Interfaces.Properties;
 
 namespace GameModule.Entities
 {
     //todo name "TaskOrder" or "TribeTaskOrder"
-    internal class HumanUnitTaskOrder : IId, ITribeId
+    internal class HumanUnitTaskOrder : IId, ITribeReference
     {
         public int Id { get; set; }
         public int TribeId { get; set; }

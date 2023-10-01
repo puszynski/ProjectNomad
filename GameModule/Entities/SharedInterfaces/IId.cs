@@ -1,4 +1,4 @@
-﻿namespace ProjectNomad.Shared.Interfaces.Properties
+﻿namespace GameModule.Entities.SharedInterfaces
 {
     public interface IId
     {

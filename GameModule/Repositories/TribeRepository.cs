@@ -35,6 +35,7 @@ namespace GameModule.Repositories
                 .Include(x => x.HumanUnits)                
                 .Include(x => x.HumanUnitTasks)
                 .Include(x => x.HumanUnitTaskOrders)
+                .Include(x => x.TribeStructures)
                 .SingleOrDefaultAsync()
                 ?? throw new ArgumentException($"Ops GameModul! Given accountId {accountId} have no tribe linked :/");
         }

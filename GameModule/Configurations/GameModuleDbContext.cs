@@ -1,6 +1,5 @@
 ﻿using GameModule.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
 
 namespace GameModule.Configurations
 {
@@ -16,6 +15,7 @@ namespace GameModule.Configurations
         public DbSet<HumanUnitTask> HumanUnitTasks { get; set; }
         public DbSet<HumanUnitTaskOrder> HumanUnitTaskOrders { get; set; }
         public DbSet<TribeRelocation> TribeRelocations { get; set; }
+        public DbSet<TribeStructure> TribeStructures { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

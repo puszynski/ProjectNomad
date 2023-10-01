@@ -9,7 +9,7 @@ using ProjectNomad.Shared.Interfaces.Response;
 
 namespace GameModule.Logic
 {
-    internal class GameLOOPER
+    internal class LOOPER
     {
         readonly IDayExecutor _dayExecutor;
         readonly IHourExecutor _hourExecutor;
@@ -20,7 +20,7 @@ namespace GameModule.Logic
         readonly IMapTileRepository _mapTileRepository;
         readonly IGameOverApplicator _gameOverApplicator;
         readonly ITribeRelocationService _tribeRelocationService;
-        public GameLOOPER(
+        public LOOPER(
             IDayExecutor dayExecutor,
             IHourExecutor hourExecutor,
             ISecundExecutor secundExecutor,
@@ -136,11 +136,16 @@ namespace GameModule.Logic
                     x.Localization.X, 
                     x.Localization.Y));
 
+                var TribeStructureDtos = tribe.TribeStructures.Select(x => new TribeStructuresDto(x.Id,
+                    x.Type,
+                    x.PowerAndDurability));
+
                 return new TriggerGameLooperResponse(
                     tribeDto,
                     humanUnitDtos,
                     humanUnitTaskDtos,
                     humanUnitTaskOrderDtos,
+                    TribeStructureDtos,
                     notifications, 
                     new List<WorldEventDto>());
             }
@@ -169,6 +174,7 @@ namespace GameModule.Logic
                 new List<HumanUnitDto>(),
                 new List<HumanUnitTaskDto>(),
                 new List<HumanUnitTaskOrderDto>(),
+                new List<TribeStructuresDto>(),
                 new List<NotificationDto>() 
                 { 
                     new NotificationDto(0, 
@@ -185,6 +191,7 @@ namespace GameModule.Logic
                 tribe.HumanUnits.Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage)),
                 new List<HumanUnitTaskDto>(),
                 new List<HumanUnitTaskOrderDto>(),
+                new List<TribeStructuresDto>(),
                 new List<NotificationDto>(), 
                 new List<WorldEventDto>());
     }

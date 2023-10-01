@@ -7,6 +7,7 @@ namespace GameModule.DtoModels
         IEnumerable<IHumanUnit> HumanUnits,
         IEnumerable<IHumanUnitTaskDto> HumanUnitTasks,
         IEnumerable<IHumanUnitTaskOrder> HumanUnitTaskOrders,
+        IEnumerable<ITribeStructure> TribeStructures,
         IEnumerable<INotification> Notifications,
         IEnumerable<IWorldEvent> WorldEvents) : ITriggerGameLooperResponse;
 }

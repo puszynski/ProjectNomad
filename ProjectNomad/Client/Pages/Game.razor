@@ -53,10 +53,11 @@
                     border-color: Gainsboro;
                     display: table-cell;">     
             <ProjectNomad.Client.Components.Tasks 
-            TribeId="GameObjectsViewModel.Tribe.Id" 
+            Tribe="GameObjectsViewModel.Tribe" 
             HumanUnitIds="GameObjectsViewModel.HumanUnits.Select(x =>x.Id).ToList()"
             HumanUnitTaskOrders="GameObjectsViewModel.HumanUnitTaskOrders" 
-            HumanUnitTasks="GameObjectsViewModel.HumanUnitTasks" />
+            HumanUnitTasks="GameObjectsViewModel.HumanUnitTasks"
+            TribeStructures="GameObjectsViewModel.TribeStructures"/>
         </div>
 
         <div style="border: 2px dashed;
@@ -124,7 +125,8 @@ else
             Tribe = result.Tribe,
             HumanUnits = result.HumanUnits,
             HumanUnitTaskOrders = result.HumanUnitTaskOrders,
-            HumanUnitTasks = result.HumanUnitTasks
+            HumanUnitTasks = result.HumanUnitTasks,
+            TribeStructures = result.TribeStructures
         };
 
         StateHasChanged();

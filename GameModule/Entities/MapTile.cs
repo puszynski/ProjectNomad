@@ -1,10 +1,10 @@
-﻿using GameModule.Entities.ValueObjects;
-using ProjectNomad.Shared.Enums;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using ProjectNomad.Shared.Interfaces;
+﻿using GameModule.Entities.SharedInterfaces;
+using GameModule.Entities.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using ProjectNomad.Shared.Interfaces.Properties;
+using ProjectNomad.Shared.Enums;
+using ProjectNomad.Shared.Interfaces;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GameModule.Entities
 {

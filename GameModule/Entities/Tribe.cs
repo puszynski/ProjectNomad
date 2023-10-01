@@ -1,7 +1,7 @@
-﻿using GameModule.Entities.ValueObjects;
+﻿using GameModule.Entities.SharedInterfaces;
+using GameModule.Entities.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared.Interfaces;
-using ProjectNomad.Shared.Interfaces.Properties;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -25,6 +25,7 @@ namespace GameModule.Entities
         public ICollection<HumanUnit> HumanUnits { get; set; }
         public ICollection<HumanUnitTask> HumanUnitTasks { get; set; }
         public ICollection<HumanUnitTaskOrder> HumanUnitTaskOrders { get; set; }
+        public ICollection<TribeStructure> TribeStructures { get; set; }
     }
 
     [Owned]

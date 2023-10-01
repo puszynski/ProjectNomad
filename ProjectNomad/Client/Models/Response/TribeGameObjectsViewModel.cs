@@ -8,5 +8,6 @@ namespace ProjectNomad.Client.Models.Response
         public IEnumerable<HumanUnit> HumanUnits { get; set; }
         public IEnumerable<IHumanUnitTaskDto> HumanUnitTasks { get; set; }
         public IEnumerable<HumanUnitTaskOrder> HumanUnitTaskOrders { get; set; }
+        public IEnumerable<ITribeStructure> TribeStructures { get; set; }
     }
 }

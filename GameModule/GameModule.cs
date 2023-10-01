@@ -23,7 +23,7 @@ namespace GameModule
         readonly IMapTileRepository _mapTileRepository;
         readonly IDateTimeProvider _dateTimeProvider;
         readonly GameModuleDbContext _dbContext;
-        readonly GameLOOPER _gameLooper;
+        readonly LOOPER _gameLooper;
         readonly MapService _mapService;
 
         public GameModule(
@@ -33,7 +33,7 @@ namespace GameModule
             IMapTileRepository mapTileRepository,
             IDateTimeProvider dateTimeProvider,
             GameModuleDbContext dbContext,
-            GameLOOPER gameLooper,
+            LOOPER gameLooper,
             MapService mapService)
         {
             _newTribeLocalizationInitializer = newTribeLocalizationInitializer;
