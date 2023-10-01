@@ -11,16 +11,18 @@
             //public const int MinutesToTravelOneTileWhileTribeIsRelocating = 30;
         }
 
+        public static class Wood
+        {
+            public const int MinutesToGatherWood = 10;
+            public const int WoodAmountGatheredFromMap = 2;
+        }
+
         public static class Food
         {
             public const int MinutesToGatherFood = 10;
-
             public const int MinutesToConsumeFoodToFill20PercentageOfFood = 2;
-
             public const int FoodToGetHungryForHumanUnitEachMinute = 1;
-
             public const int TribeFoodNeededToFill20PercentageOfHumanUnit = 2;
-
             public const int MapTileFoodGathered = 7;
         }
         
@@ -34,7 +36,6 @@
         {
             public const double BreedingChancePerHumanPerHour = 0.02;
             public const double NaturalDeathChancePerHumanPerHour = 0.01;
-
         }
 
         public static class TribeRelocation

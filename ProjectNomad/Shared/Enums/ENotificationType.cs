@@ -11,6 +11,9 @@
         FoodGatheringStarted,
         FoodGatheringEnded,
 
+        WoodGatheringStarted, 
+        WoodGatheringEnded,
+
         FoodConsumptionStarted,
         FoodConsumptionEnded,
 

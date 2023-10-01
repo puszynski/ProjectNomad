@@ -95,7 +95,7 @@ namespace GameModule.Logic
 
             if (IGameOverApplicator.IsGameOver(tribe.HumanUnits))
             {
-                _gameOverApplicator.Execute(tribe.Id);
+                _gameOverApplicator.Execute(tribe);
                 tribe.Updated = _dateTimeProvider.UtcNow();
                 await _tribeRepository.SaveChangesAsync();
                 return GetGameOverResponse(tribe);

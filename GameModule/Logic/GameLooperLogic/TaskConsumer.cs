@@ -1,5 +1,6 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
+using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 
@@ -55,15 +56,13 @@ namespace GameModule.Logic.GameLooperLogic
             switch (humanUnitTask.Type)
             {
                 case EHumanUnitTaskType.GatheringFood:
-                    const int MAX_FOOD_PONTS_GATHERED_BY_ONE_TASK = 5;
-
                     var mapTile = mapTiles.Single(x => x.Localization.Equals(humanUnitTask.Localization));
                     var mapTileFoodPoints = mapTile.Food.ActualPoints;
 
                     var foodGatheringCoefficient = (double)humanUnit.FoodLevelPercentage / 100 * 2;
                     var foodPoints = foodGatheringCoefficient >= 1 
-                        ? MAX_FOOD_PONTS_GATHERED_BY_ONE_TASK
-                        : foodGatheringCoefficient * MAX_FOOD_PONTS_GATHERED_BY_ONE_TASK;
+                        ? GameSETTINGS.Food.MapTileFoodGathered
+                        : foodGatheringCoefficient * GameSETTINGS.Food.MapTileFoodGathered;
 
                     var gatheredFoodPoints = mapTileFoodPoints > foodPoints 
                         ? foodPoints 
@@ -81,6 +80,33 @@ namespace GameModule.Logic.GameLooperLogic
                     }
 
                     return new NotificationDto(humanUnit.Id, humanUnit.Name, currentTimeInLoop, ENotificationType.FoodGatheringEnded, gatheredFoodPoints.ToString());
+
+                case EHumanUnitTaskType.GatheringWood:
+                    //todo move to other class, name conflicts..
+                    mapTile = mapTiles.Single(x => x.Localization.Equals(humanUnitTask.Localization));
+                    var mapTileWoodPoints = mapTile.Wood.ActualPoints;
+
+                    var woodGatheringCoefficient = (double)humanUnit.FoodLevelPercentage / 100 * 2;
+                    var woodPoints = woodGatheringCoefficient >= 1
+                        ? GameSETTINGS.Wood.WoodAmountGatheredFromMap
+                        : woodGatheringCoefficient * GameSETTINGS.Wood.WoodAmountGatheredFromMap;
+
+                    var gatheredWoodPoints = mapTileWoodPoints > woodPoints
+                        ? woodPoints
+                        : mapTileWoodPoints;
+
+                    tribe.Resources.FreshFood += (int)gatheredWoodPoints;
+
+                    finishedHumanTaskOrder = humanUnitTaskOrders.Where(x => x.IsInProgress).OrderBy(x => x.Added).FirstOrDefault();
+
+                    if (finishedHumanTaskOrder != null)
+                        humanUnitTaskOrders.Remove(finishedHumanTaskOrder);
+                    else
+                    {
+                        //todo add logs - finishedHumanTaskOrder should always exists, if its null its due to problem - happens 2 times.. 
+                    }
+
+                    return new NotificationDto(humanUnit.Id, humanUnit.Name, currentTimeInLoop, ENotificationType.WoodGatheringEnded, gatheredWoodPoints.ToString());
 
                 case EHumanUnitTaskType.ConsumeFood:
                     //note: consumption of the food applies when task is created

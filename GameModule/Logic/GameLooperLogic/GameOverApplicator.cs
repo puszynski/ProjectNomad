@@ -9,7 +9,7 @@ namespace GameModule.Logic.GameLooperLogic
     internal interface IGameOverApplicator
     {
         static bool IsGameOver(ICollection<HumanUnit> humans) => !humans.Any();
-        INotification Execute(int tribeId);
+        INotification Execute(Tribe tribe);
     }
 
     internal class GameOverApplicator : IGameOverApplicator
@@ -26,10 +26,12 @@ namespace GameModule.Logic.GameLooperLogic
             _dateTimeProvider = dateTimeProvider;
         }
 
-        INotification IGameOverApplicator.Execute(int tribeId)
+        INotification IGameOverApplicator.Execute(Tribe tribe)
         {
-            _humanUnitTaskOrderRepository.RemoveAll(tribeId);
-            _humanUnitTaskRepository.RemoveAll(tribeId);
+            _humanUnitTaskOrderRepository.RemoveAll(tribe.Id);
+            _humanUnitTaskRepository.RemoveAll(tribe.Id);
+            tribe.Resources.FreshFood = 0;
+            tribe.Resources.Wood = 0;
             return new NotificationDto(0, "none", _dateTimeProvider.UtcNow(), ProjectNomad.Shared.Enums.ENotificationType.GameOver, null);
         }
     }

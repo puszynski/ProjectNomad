@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
+using ProjectNomad.Shared.Logic;
 
 namespace GameModule.Logic.GameLooperLogic
 {
@@ -36,6 +37,7 @@ namespace GameModule.Logic.GameLooperLogic
 
             //todo factory
             GatheringFoodTasksAssign(tribe, mapTiles, notifications);
+            GatheringWoodTaskAssign(tribe, mapTiles, notifications);
             TribeRelocationTasksAssign(tribe);
 
         }
@@ -56,6 +58,67 @@ namespace GameModule.Logic.GameLooperLogic
             _relocationService.StartRelocationProcess(tribe);
         }
 
+        async Task GatheringWoodTaskAssign(Tribe tribe,
+            ICollection<MapTile> mapTiles,
+            List<INotification> notifications)
+        {
+            var humanIDsWithTaskAssigned = tribe.HumanUnitTasks.Select(x => x.HumanUnitId);
+            var humansWithConditionToStartNewTask = tribe
+                .HumanUnits
+                .Where(x => !humanIDsWithTaskAssigned.Contains(x.Id)) //only 1 task per human unit
+                .Where(x => x.FoodLevelPercentage > 10); //too week to work..
+
+            //TODO!!! SPLIT for each type of tasks.. now y have here only food gathering started <= BUILD FACTORY
+            foreach (var human in humansWithConditionToStartNewTask)
+            {
+                var taskOrderToAssign = tribe.HumanUnitTaskOrders
+                    .Where(x => x.Type == EHumanUnitTaskType.GatheringWood)
+                    .Where(x => !x.IsInProgress)
+                    .OrderBy(x => x.Added)
+                    .FirstOrDefault();
+
+                if (taskOrderToAssign == null)
+                    return;
+
+                var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskOrderToAssign.Localization));
+
+                if (destinyMapTile.Wood.ActualPoints < GameSETTINGS.Wood.WoodAmountGatheredFromMap)
+                    return;
+
+                var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond);
+
+                if (!shouldAssign)
+                    continue;
+
+                var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
+                        tribe.Localization.Y,
+                        destinyMapTile.Localization.X,
+                        destinyMapTile.Localization.Y);
+
+                var taskToAdd = new HumanUnitTask
+                {
+                    From = _dateTimeProvider.UtcNow(),
+                    HumanUnitId = human.Id,
+                    Localization = taskOrderToAssign.Localization,
+                    To = _dateTimeProvider.UtcNow().Add(TaskDurationCalculator.WoodGathering(distance)), //CalculateTimeToEndTask(),
+                    TribeId = tribe.Id,
+                    Type = EHumanUnitTaskType.GatheringWood,
+                };
+
+                taskOrderToAssign.IsInProgress = true;
+                destinyMapTile.Food.ActualPoints -= GameSETTINGS.Wood.WoodAmountGatheredFromMap;
+
+                var notification = new NotificationDto(human.Id,
+                    human.Name,
+                    taskToAdd.From,
+                    ENotificationType.WoodGatheringStarted,
+                    taskToAdd.To.ToString());
+                notifications.Add(notification);
+
+                tribe.HumanUnitTasks.Add(taskToAdd);
+            }
+        }
+
         async Task GatheringFoodTasksAssign(Tribe tribe,
             ICollection<MapTile> mapTiles,
             List<INotification> notifications)
@@ -64,7 +127,7 @@ namespace GameModule.Logic.GameLooperLogic
             var humansWithConditionToStartNewTask = tribe
                 .HumanUnits
                 .Where(x => !humanIDsWithTaskAssigned.Contains(x.Id)) //only 1 task per human unit
-                .Where(x => x.FoodLevelPercentage > 20); //too week to work..
+                .Where(x => x.FoodLevelPercentage > 10); //too week to work..
 
             //TODO!!! SPLIT for each type of tasks.. now y have here only food gathering started <= BUILD FACTORY
             foreach (var human in humansWithConditionToStartNewTask)
