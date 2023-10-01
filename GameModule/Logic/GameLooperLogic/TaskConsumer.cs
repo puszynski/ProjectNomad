@@ -95,7 +95,7 @@ namespace GameModule.Logic.GameLooperLogic
                         ? woodPoints
                         : mapTileWoodPoints;
 
-                    tribe.Resources.FreshFood += (int)gatheredWoodPoints;
+                    tribe.Resources.Wood += (int)gatheredWoodPoints;
 
                     finishedHumanTaskOrder = humanUnitTaskOrders.Where(x => x.IsInProgress).OrderBy(x => x.Added).FirstOrDefault();
 
