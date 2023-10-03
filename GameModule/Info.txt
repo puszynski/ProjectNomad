@@ -4,3 +4,10 @@
 	- dystans granicy iterakcji plemion (gdy na jednym polu - walczymy etc, gdy różnica 1 pola - trzeba ciagle dogonić)
 	- plemie zwiadowczo widzi sąsiednie 8 pól
 - stanowić będzie symbol pojemności surowców
+
+
+
+
+Dane o plemieniach pierwotnych 
+- specialoności: gathers, hunters, gather-hunters
+- dzienie gather-hunters robili 10-18 tyś kroków (w zal od płci etc) (5-10km)

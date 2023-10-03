@@ -1,8 +1,10 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
+using GameModule.Logic.GameLooperLogic.LooperServices;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
+using System.Collections.Generic;
 
 namespace GameModule.Logic.GameLooperLogic
 {
@@ -16,6 +18,12 @@ namespace GameModule.Logic.GameLooperLogic
 
     internal class TaskConsumer : ITaskConsumer
     {
+        readonly IFirecampService _firecampService;
+        public TaskConsumer(IFirecampService firecampService)
+        {
+            _firecampService = firecampService;
+        }
+
         void ITaskConsumer.Execute(Tribe tribe,
             ICollection<MapTile> mapTiles,
             DateTime currentTimeInLoop,
@@ -97,7 +105,7 @@ namespace GameModule.Logic.GameLooperLogic
 
                     tribe.Resources.Wood += (int)gatheredWoodPoints;
 
-                    finishedHumanTaskOrder = humanUnitTaskOrders.Where(x => x.IsInProgress).OrderBy(x => x.Added).FirstOrDefault();
+                    finishedHumanTaskOrder = humanUnitTaskOrders.Where(x => x.Type == EHumanUnitTaskType.GatheringWood && x.IsInProgress).OrderBy(x => x.Added).FirstOrDefault();
 
                     if (finishedHumanTaskOrder != null)
                         humanUnitTaskOrders.Remove(finishedHumanTaskOrder);
@@ -107,6 +115,27 @@ namespace GameModule.Logic.GameLooperLogic
                     }
 
                     return new NotificationDto(humanUnit.Id, humanUnit.Name, currentTimeInLoop, ENotificationType.WoodGatheringEnded, gatheredWoodPoints.ToString());
+
+                case EHumanUnitTaskType.LightAFire:
+                    return _firecampService.LightFire_TaskEnd(humanUnit,
+                        tribe,
+                        currentTimeInLoop,
+                        humanUnitTaskOrders);                    
+
+                case EHumanUnitTaskType.KeepLowFire:
+                    return _firecampService.KeepFire_TaskEnd(false, 
+                        humanUnit,
+                        tribe,
+                        currentTimeInLoop,
+                        humanUnitTaskOrders);
+                    //service..
+
+                case EHumanUnitTaskType.KeepFireBig:
+                    return _firecampService.KeepFire_TaskEnd(true,
+                        humanUnit,
+                        tribe,
+                        currentTimeInLoop,
+                        humanUnitTaskOrders);
 
                 case EHumanUnitTaskType.ConsumeFood:
                     //note: consumption of the food applies when task is created

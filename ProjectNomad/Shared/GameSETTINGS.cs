@@ -33,6 +33,11 @@
 
             public const int WoodUsedToKeepTheCampfireBurning = 1;
             public const int WoodUsedToKeepTheBonfireBurning = 5;
+
+            public const int PowerAndDurabilityForCampfire = 20;
+            public const int PowerAndDurabilityForBonfire = 100;
+
+
             public const int MinutesOfFireDuration = 1; // JAKIŚ NOWY BYT - TYPU TribeItem? *to będzie paleniko, budynki..
         }
 

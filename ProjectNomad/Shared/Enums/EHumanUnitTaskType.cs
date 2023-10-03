@@ -7,8 +7,8 @@
 
         GatheringWood = 200,
         LightAFire = 220,
-        KeppLowFire = 201,
-        KeepBigFire = 202,
+        KeepLowFire = 201,
+        KeepFireBig = 202,
 
         TribeRelocation = 300,
     }

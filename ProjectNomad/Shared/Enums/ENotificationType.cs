@@ -13,12 +13,16 @@
 
         WoodGatheringStarted, 
         WoodGatheringEnded,
+        NoWoodToLightFire,
 
         FoodConsumptionStarted,
         FoodConsumptionEnded,
 
         Newborn,
 
+        FirecampStarted,
+        FirecampKeepingLowProceeded,
+        FirecampKeepingBigProceeded
     }
 
     public static class NotificationTypeValidator //TODO OBSOLETE DELETE

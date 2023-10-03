@@ -110,10 +110,10 @@ else
         => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.LightAFire, Tribe.X, Tribe.Y);
 
     async Task OrderToKeepLowFire()
-        => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.KeppLowFire, Tribe.X, Tribe.Y);
+        => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.KeepLowFire, Tribe.X, Tribe.Y);
 
     async Task OrderToKeepBigFire()
-        => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.KeepBigFire, Tribe.X, Tribe.Y);
+        => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.KeepFireBig, Tribe.X, Tribe.Y);
 
     async Task OrderToGatherFood()
         => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.GatheringFood, Tribe.X, Tribe.Y);

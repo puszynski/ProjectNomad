@@ -1,6 +1,7 @@
 ﻿using GameModule.Logic;
 using GameModule.Logic.GameLooperLogic;
 using GameModule.Logic.GameLooperLogic.HourExecutorLogic;
+using GameModule.Logic.GameLooperLogic.LooperServices;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +65,7 @@ namespace GameModule.Configurations
             services.AddScoped<IHumansDeathApplicator, HumansDeathApplicator>();
             services.AddScoped<IGameOverApplicator, GameOverApplicator>();
             services.AddScoped<ITribeRelocationService, TribeRelocationService>();
+            services.AddScoped<IFirecampService, FirecampService>();
         }
     }
 }

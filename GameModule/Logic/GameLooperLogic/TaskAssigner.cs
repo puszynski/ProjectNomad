@@ -1,5 +1,6 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
+using GameModule.Logic.GameLooperLogic.LooperServices;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
@@ -18,11 +19,14 @@ namespace GameModule.Logic.GameLooperLogic
 
     internal class TaskAssigner : ITaskAssigner
     {
+        readonly IFirecampService _firecampService;
         readonly IDateTimeProvider _dateTimeProvider;
         readonly ITribeRelocationService _relocationService;
-        public TaskAssigner(IDateTimeProvider dateTimeProvider, 
+        public TaskAssigner(IFirecampService firecampService,
+            IDateTimeProvider dateTimeProvider,
             ITribeRelocationService relocationService)
         {
+            _firecampService = firecampService;
             _dateTimeProvider = dateTimeProvider;
             _relocationService = relocationService;
         }
@@ -35,9 +39,13 @@ namespace GameModule.Logic.GameLooperLogic
             if (!tribe.HumanUnitTaskOrders.Where(x => !x.IsInProgress).Any())
                 return;
 
-            //todo factory
             GatheringFoodTasksAssign(tribe, mapTiles, notifications);
             GatheringWoodTaskAssign(tribe, mapTiles, notifications);
+
+            _firecampService.LightFire_TaskStart(tribe, notifications);
+            _firecampService.KeepFire_TaskStart(isBoneFire: false, tribe);
+            _firecampService.KeepFire_TaskStart(isBoneFire: true, tribe);
+
             TribeRelocationTasksAssign(tribe);
 
         }
@@ -65,7 +73,7 @@ namespace GameModule.Logic.GameLooperLogic
             var humanIDsWithTaskAssigned = tribe.HumanUnitTasks.Select(x => x.HumanUnitId);
             var humansWithConditionToStartNewTask = tribe
                 .HumanUnits
-                .Where(x => !humanIDsWithTaskAssigned.Contains(x.Id)) //only 1 task per human unit
+                .Where(x => !humanIDsWithTaskAssigned.Contains(x.Id))
                 .Where(x => x.FoodLevelPercentage > 10); //too week to work..
 
             //TODO!!! SPLIT for each type of tasks.. now y have here only food gathering started <= BUILD FACTORY
