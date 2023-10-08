@@ -65,8 +65,8 @@
 
         if (accountId.HasValue)
             _navigationManager.NavigateTo("game");
-
-        accountViewModel = new(_http, _navigationManager, _localStorageService);
+        else
+            accountViewModel = new(_http, _navigationManager, _localStorageService);
     }
 
     void CreateAccount()

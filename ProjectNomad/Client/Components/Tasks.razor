@@ -16,11 +16,12 @@
     @foreach (var humanUnitTaskOrder in HumanUnitTaskOrders)
     {
         <br />
-        string descrption = humanUnitTaskOrder.Type == EHumanUnitTaskType.GatheringFood ? "Call for food gathering" 
-            : humanUnitTaskOrder.Type == EHumanUnitTaskType.TribeRelocation ? "Preparing for relocation" 
-            : humanUnitTaskOrder.Type == EHumanUnitTaskType.GatheringWood ? "Call for wood gathering"
-            : humanUnitTaskOrder.Type == EHumanUnitTaskType.LightAFire ? "Call for light a fire"
-            :"todo name it";
+        string descrption = humanUnitTaskOrder.Type == EHumanUnitTaskType.GatheringFood ? "Zbieraj jedzenie" 
+            : humanUnitTaskOrder.Type == EHumanUnitTaskType.TribeRelocation ? "Przygotuj się do zmiany lokalizacji" 
+            : humanUnitTaskOrder.Type == EHumanUnitTaskType.GatheringWood ? "Zbieraj drewno"
+            : humanUnitTaskOrder.Type == EHumanUnitTaskType.LightAFire ? "Rozpal ognisko"
+            : humanUnitTaskOrder.Type == EHumanUnitTaskType.KeepFire ? "Utrzymuj ogień"
+            :"todo";
         <span>» @descrption (0/1)</span>
     } 
     <hr />
@@ -42,9 +43,32 @@
     <hr />
 
     <smaller>dev info - fire tasks:</smaller>
+    @if (TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp))
+    {
+        @if (TribeStructures.Single(x => x.Type == ETribeStructureType.Firecamp).PowerAndDurability == 0)
+        {
+            <p>Po ognisku został jedynie popiół</p>
+        }
+        else
+        {
+            <p>Ognisko pali się (@TribeStructures.Single(x => x.Type == ETribeStructureType.Firecamp).PowerAndDurability%)</p>            
+        }
+    }
+    else
+    {
+        <p>Brak ogniska..</p>
+    }
+
     @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.LightAFire))
     {
         <br />
+        <smaller>rozpalanie ogniska</smaller>
+        <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@Tribe.Id" />
+    }
+    @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.KeepFire))
+    {
+        <br />
+        <smaller>utrzymanie ognia</smaller>
         <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@Tribe.Id" />
     }
     <hr />
@@ -62,17 +86,19 @@
     }
     <hr />
 
-    @if (!TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 1) && !HumanUnitTaskOrders.Any(x => x.Type == EHumanUnitTaskType.LightAFire))
+    @if (!TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 0) && !HumanUnitTaskOrders.Any(x => x.Type == EHumanUnitTaskType.LightAFire))
     {
         <button class="button" @onclick="OrderToLightFire"><span>call for order to light a fire</span></button>
+        <br />
     }
-    @if (TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 1) || HumanUnitTaskOrders.Any(x => x.Type == EHumanUnitTaskType.LightAFire))
+    @if (TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 1))
     {
-        <button class="button" ><span>call to keep the fire going low</span></button>
-        <button class="button" ><span>call to keep the big fire going</span></button>        
+        <button class="button" @onclick="OrderToKeepFire"><span>call to keep the fire going low</span></button>
+        <br />
     }
 
     <button class="button" @onclick="OrderToGatherFood"><span>call to gather food near camp</span></button>
+    <br />
     <button class="button" @onclick="OrderToGatherWood"><span>call to gather wood near camp</span></button>
     <br />
 }
@@ -109,11 +135,8 @@ else
     async Task OrderToLightFire()
         => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.LightAFire, Tribe.X, Tribe.Y);
 
-    async Task OrderToKeepLowFire()
-        => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.KeepLowFire, Tribe.X, Tribe.Y);
-
-    async Task OrderToKeepBigFire()
-        => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.KeepFireBig, Tribe.X, Tribe.Y);
+    async Task OrderToKeepFire()
+        => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.KeepFire, Tribe.X, Tribe.Y);
 
     async Task OrderToGatherFood()
         => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.GatheringFood, Tribe.X, Tribe.Y);

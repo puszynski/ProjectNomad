@@ -1,14 +1,14 @@
 ﻿using ProjectNomad.Shared;
 
-namespace GameModule.Logic.TasksLogic
+namespace GameModule.Logic.TasksLogic.Helpers
 {
     internal class HumanUnitTaskEndCalculator
     {
         //todo async
-        internal DateTime Execute(int startX, 
-            int startY, 
-            int endX, 
-            int endY, 
+        internal DateTime Execute(int startX,
+            int startY,
+            int endX,
+            int endY,
             int foodPoints, //todo
             IDateTimeProvider dateTimeProvider)
         {

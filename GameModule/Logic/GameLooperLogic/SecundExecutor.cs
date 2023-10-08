@@ -1,5 +1,6 @@
 ﻿using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
+using GameModule.Logic.TasksLogic;
 using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic.GameLooperLogic
@@ -35,10 +36,16 @@ namespace GameModule.Logic.GameLooperLogic
             List<INotification> notifications,
             DateTime currentTimeInLoop)
         {
-            await _taskAssigner.Execute(tribe, mapTiles, notifications);
-            await _humanUnitAutoTaskScheduler.Execute(tribe, notifications, currentTimeInLoop);
+            await _taskAssigner.Execute(tribe, mapTiles, notifications, currentTimeInLoop);
+            //await _humanUnitAutoTaskScheduler.Execute(tribe, notifications, currentTimeInLoop); //todo remove codes
             _humanUnitTaskConsumer.Execute(tribe, mapTiles, currentTimeInLoop, notifications);
             _tribeRelocationService.EndRelocationProcess(tribe);
+
+
+            var campfire = tribe
+                .TribeStructures
+                .SingleOrDefault(x => x.Type == ProjectNomad.Shared.Enums.ETribeStructureType.Firecamp);
+            LightFire.CampfireBurning(campfire);
         }
     }
 }

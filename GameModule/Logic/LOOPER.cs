@@ -2,6 +2,7 @@
 using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
+using GameModule.Logic.TasksLogic;
 using GameModule.Repositories;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Interfaces;
@@ -45,6 +46,7 @@ namespace GameModule.Logic
         public async Task<ITriggerGameLooperResponse>  LoopTribe(Guid accountId)
         {
             var tribe = await _tribeRepository.GetAllDataMaterialized(accountId);
+            //REMOVE KEEP FIRE ORDER WHEN FIRE IS OFF???
 
             if (!tribe.HumanUnits.Any()) 
                 return GetGameOverResponse(tribe);
@@ -71,6 +73,11 @@ namespace GameModule.Logic
                         mapTiles,
                         notifications,
                         currentTimeInLoop);
+
+                    if (lastUpdated.Second % 10 == 0)
+                    {
+                        //todo each 10 sec..
+                    }
 
                     if (lastUpdated.Second == 0)
                         _minuteExecutor.Execute(tribe, notifications);

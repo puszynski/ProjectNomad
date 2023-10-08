@@ -15,13 +15,16 @@ namespace GameModule.Logic.GameLooperLogic
     internal class GameOverApplicator : IGameOverApplicator
     {
         readonly IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
+        readonly ITribeStructureRepository _tribeStructureRepository;
         readonly IHumanUnitTaskRepository _humanUnitTaskRepository;
         readonly IDateTimeProvider _dateTimeProvider;
-        public GameOverApplicator(IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository, 
+        public GameOverApplicator(IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository,
+            ITribeStructureRepository tribeStructureRepository,
             IHumanUnitTaskRepository humanUnitTaskRepository,
             IDateTimeProvider dateTimeProvider)
         {
             _humanUnitTaskOrderRepository = humanUnitTaskOrderRepository;
+            _tribeStructureRepository = tribeStructureRepository;
             _humanUnitTaskRepository = humanUnitTaskRepository;
             _dateTimeProvider = dateTimeProvider;
         }
@@ -30,6 +33,7 @@ namespace GameModule.Logic.GameLooperLogic
         {
             _humanUnitTaskOrderRepository.RemoveAll(tribe.Id);
             _humanUnitTaskRepository.RemoveAll(tribe.Id);
+            _tribeStructureRepository.RemoveAll(tribe.Id);
             tribe.Resources.FreshFood = 0;
             tribe.Resources.Wood = 0;
             return new NotificationDto(0, "none", _dateTimeProvider.UtcNow(), ProjectNomad.Shared.Enums.ENotificationType.GameOver, null);
