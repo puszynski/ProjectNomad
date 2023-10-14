@@ -17,7 +17,7 @@ namespace GameModule.Logic.TasksLogic
         {
             var human = BasicDataSelector.SelectFirstHumanWithCondition(tribe);
 
-            if (taskOrder == null)
+            if (taskOrder == null || human == null)
                 return default;
 
             var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskOrder.Localization));
@@ -65,7 +65,9 @@ namespace GameModule.Logic.TasksLogic
             var mapTile = mapTiles.Single(x => x.Localization.Equals(taskToEnd.Localization));
             var mapTileWoodPoints = mapTile.Wood.ActualPoints;
 
-            var woodGatheringCoefficient = (double)taskToEnd.HumanUnit.FoodLevelPercentage / 100 * 2;
+            var human = tribe.HumanUnits.Single(x => x.Id ==  taskToEnd.HumanUnitId);
+
+            var woodGatheringCoefficient = (double)human.FoodLevelPercentage / 100 * 2;
             var woodPoints = woodGatheringCoefficient >= 1
                 ? GameSETTINGS.Wood.WoodAmountGatheredFromMap
                 : woodGatheringCoefficient * GameSETTINGS.Wood.WoodAmountGatheredFromMap;
@@ -76,8 +78,8 @@ namespace GameModule.Logic.TasksLogic
 
             tribe.Resources.Wood += (int)gatheredWoodPoints;
 
-            return new NotificationDto(taskToEnd.HumanUnitId, 
-                taskToEnd.HumanUnit.Name, 
+            return new NotificationDto(taskToEnd.HumanUnitId,
+                human.Name, 
                 currentTimeInLoop, 
                 ENotificationType.WoodGatheringEnded, 
                 gatheredWoodPoints.ToString());

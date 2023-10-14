@@ -72,7 +72,9 @@ namespace GameModule.Logic.TasksLogic
             var mapTile = mapTiles.Single(x => x.Localization.Equals(taskToEnd.Localization));
             var mapTileFoodPoints = mapTile.Food.ActualPoints;
 
-            var foodGatheringCoefficient = (double)taskToEnd.HumanUnit.FoodLevelPercentage / 100 * 2;
+            var human = tribe.HumanUnits.Single(x => x.Id == taskToEnd.HumanUnitId);
+
+            var foodGatheringCoefficient = (double)human.FoodLevelPercentage / 100 * 2;
             var foodPoints = foodGatheringCoefficient >= 1
                 ? GameSETTINGS.Food.MapTileFoodGathered
                 : foodGatheringCoefficient * GameSETTINGS.Food.MapTileFoodGathered;
@@ -84,7 +86,7 @@ namespace GameModule.Logic.TasksLogic
             tribe.Resources.FreshFood += (int)gatheredFoodPoints;            
 
             return new NotificationDto(taskToEnd.HumanUnitId,
-                taskToEnd.HumanUnit.Name,
+                human.Name,
                 currentTimeInLoop, 
                 ENotificationType.FoodGatheringEnded, 
                 gatheredFoodPoints.ToString());

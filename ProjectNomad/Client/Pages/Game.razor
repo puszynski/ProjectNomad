@@ -16,6 +16,10 @@
 
 @if (GameObjectsViewModel != null)
 {   
+    <div class="TopRightCornerMenu">
+        ☀
+    </div>
+
     @* <p>
         ☀ ☁ ❄ ⛆ ⛈ ⛏ ⚶ ♂ ♀ 
     </p> *@
@@ -51,7 +55,9 @@
         
         <div id="tasks" style="border: 2px dashed;
                     border-color: Gainsboro;
-                    display: table-cell;">     
+                    display: table-cell;">
+          
+            
             <ProjectNomad.Client.Components.Tasks 
             Tribe="GameObjectsViewModel.Tribe" 
             HumanUnitIds="GameObjectsViewModel.HumanUnits.Select(x =>x.Id).ToList()"

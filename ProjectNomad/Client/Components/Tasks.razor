@@ -1,4 +1,5 @@
 ﻿@using ProjectNomad.Client.Logic;
+@using ProjectNomad.Client.Models.Components;
 @using ProjectNomad.Shared.Enums;
 @using ProjectNomad.Shared.Interfaces;
 @using ProjectNomad.Client.Models.Response;
@@ -12,37 +13,101 @@
 
 @if (HumanUnitIds != null && HumanUnitTasks != null)
 {
-    <smaller>dev info - task orders:</smaller>
-    @foreach (var humanUnitTaskOrder in HumanUnitTaskOrders)
+@* IN PROGRESS *@
+@* DODAJ *@
+    <button type="button" class="button_active" @onclick="OrderToGatherFood">zbierz jedzenie w okolicy</button>
+    <br />
+    <button type="button" class="button_active" @onclick="OrderToGatherWood">zbierz drewno w okolicy</button>
+    <br />
+    @if (!TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 0) && !HumanUnitTaskOrders.Any(x => x.Type == EHumanUnitTaskType.LightAFire))
     {
+        <button type="button" class="button_active" @onclick="OrderToLightFire">rozpal ognisko</button>
         <br />
-        string descrption = humanUnitTaskOrder.Type == EHumanUnitTaskType.GatheringFood ? "Zbieraj jedzenie" 
-            : humanUnitTaskOrder.Type == EHumanUnitTaskType.TribeRelocation ? "Przygotuj się do zmiany lokalizacji" 
-            : humanUnitTaskOrder.Type == EHumanUnitTaskType.GatheringWood ? "Zbieraj drewno"
-            : humanUnitTaskOrder.Type == EHumanUnitTaskType.LightAFire ? "Rozpal ognisko"
-            : humanUnitTaskOrder.Type == EHumanUnitTaskType.KeepFire ? "Utrzymuj ogień"
-            :"todo";
-        <span>» @descrption (0/1)</span>
-    } 
-    <hr />
-
-    <smaller>dev info - food gather tasks:</smaller>
-    @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.GatheringFood))
-    {
-        <br />
-        <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@Tribe.Id" />
     }
-    <hr />
-
-    <smaller>dev info - wood gather tasks:</smaller>
-    @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.GatheringWood))
+    else
     {
+        <button type="button" class="button_inactive">rozpal ognisko</button>
         <br />
-        <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@Tribe.Id" />
     }
-    <hr />
+    @if (TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 1))
+    {
+        <button type="button" class="button_active" @onclick="OrderToKeepFire">utrzymuj ogień</button>
+        <br />
+    }
+    else
+    {
+        <button type="button" class="button_inactive">utrzymuj ogień</button>
+        <br />
+    }
+    <hr/>
 
-    <smaller>dev info - fire tasks:</smaller>
+@* w TOKU *@
+@* TODO ADD AUTO TASKS FOOD CONUMING *@
+    <smaller>w toku:</smaller>
+
+    @foreach (var autoTask in HumanUnitTasks.Where(x => HumanUnitTaskTypeExtensions.GetAutoTasks().Contains(x.Type)))
+    {
+        <ProjectNomad.Client.Components.TasksComponents.ProgressButton HumanUnitTask="autoTask" />
+        <br />
+    }
+
+    <br />
+
+    var buttons = new List<ButtonTaskOrders>();
+    var notAssignedTasks = HumanUnitTasks.OrderByDescending(x => x.From).ToList();
+    @foreach (var taskOrder in HumanUnitTaskOrders.OrderBy(x => x.Added))
+    {
+        var lastButton = buttons.LastOrDefault();
+
+        IHumanUnitTaskDto matchingTask = null;
+
+        if (taskOrder.IsInProgress)
+            matchingTask = notAssignedTasks.OrderByDescending(x => x.From).FirstOrDefault(x => x.Type == taskOrder.Type);
+
+        if (lastButton == null || taskOrder.Type != lastButton.Type)
+        {
+            var buttonToAdd = new ButtonTaskOrders { Type = taskOrder.Type, AllCount = 1, InProgressCount = taskOrder.IsInProgress ? 1 : 0 };
+            if (matchingTask != null)
+            {
+                buttonToAdd.MatchedTasks.Add(matchingTask);
+                notAssignedTasks.Remove(matchingTask);
+            }
+            buttons.Add(buttonToAdd);
+        }
+        else
+        {
+            if (taskOrder.IsInProgress)
+                lastButton.InProgressCount++;
+            lastButton.AllCount++;
+
+            if (matchingTask != null)
+                lastButton.MatchedTasks.Add(matchingTask);
+        }
+    }
+    @foreach (var button in buttons)
+    {
+        var desc = HumanUnitTaskTypeExtensions.GetDescription(button.Type);
+        @if (button.InProgressCount != button.AllCount)
+        {
+            <button type="button" class="button_active">@(desc)(@button.InProgressCount/@button.AllCount)</button>
+        }
+        else
+        {
+            <button type="button" class="button_inactive">@(desc)(@button.InProgressCount/@button.AllCount)</button>
+        }
+
+        foreach (var task in button.MatchedTasks)
+        {
+            <ProjectNomad.Client.Components.TasksComponents.ProgressButton HumanUnitTask="task" />
+        }
+
+        <br/>
+    }
+
+
+    <br />
+    <br />
+    <hr />
     @if (TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp))
     {
         @if (TribeStructures.Single(x => x.Type == ETribeStructureType.Firecamp).PowerAndDurability == 0)
@@ -51,56 +116,20 @@
         }
         else
         {
-            <p>Ognisko pali się (@TribeStructures.Single(x => x.Type == ETribeStructureType.Firecamp).PowerAndDurability%)</p>            
+            <p>Ognisko pali się (@TribeStructures.Single(x => x.Type == ETribeStructureType.Firecamp).PowerAndDurability%)</p>
         }
     }
     else
     {
         <p>Brak ogniska..</p>
     }
-
-    @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.LightAFire))
-    {
-        <br />
-        <smaller>rozpalanie ogniska</smaller>
-        <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@Tribe.Id" />
-    }
-    @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.KeepFire))
-    {
-        <br />
-        <smaller>utrzymanie ognia</smaller>
-        <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@Tribe.Id" />
-    }
-    <hr />
-
-    <smaller>dev info - auto tasks:</smaller>
+    <hr/>
+    <p>dev foo:</p>
     <br />
-    @if (HumanUnitTasks.Any(x => AutoTasks.Contains(x.Type)))
-    {
-        <button class="button">Food consumingª</button>
-        @foreach (var item in HumanUnitTasks.Where(x => x.Type == ProjectNomad.Shared.Enums.EHumanUnitTaskType.ConsumeFood))
-        {
-            <br />
-            <ProjectNomad.Client.Components.TasksComponents.ProgressBar HumanUnitTask="item" TribeId="@Tribe.Id" />
-        }
-    }
-    <hr />
-
-    @if (!TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 0) && !HumanUnitTaskOrders.Any(x => x.Type == EHumanUnitTaskType.LightAFire))
-    {
-        <button class="button" @onclick="OrderToLightFire"><span>call for order to light a fire</span></button>
-        <br />
-    }
-    @if (TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 1))
-    {
-        <button class="button" @onclick="OrderToKeepFire"><span>call to keep the fire going low</span></button>
-        <br />
-    }
-
-    <button class="button" @onclick="OrderToGatherFood"><span>call to gather food near camp</span></button>
+    <button class="button-close"><span>test jp</span></button>
     <br />
-    <button class="button" @onclick="OrderToGatherWood"><span>call to gather wood near camp</span></button>
-    <br />
+    <button class="button-add"><span>test jp</span></button>
+
 }
 else
 {
