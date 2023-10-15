@@ -15,84 +15,57 @@
 
 
 @if (GameObjectsViewModel != null)
-{   
-    <div class="TopRightCornerMenu">
-        ☀
+{  
+    <div class="header">
+        <button type="button" class="button_active" @onclick="DisplayMap">home</button>
+        <button type="button" class="button_active" @onclick="DisplayMiniMap">map</button>
+        <button type="button" class="button_active" @onclick="NavigateToOptions">options</button>
+
+        <br />
+        <ProjectNomad.Client.Components.BasicStatsBar GameObjectsViewModel="GameObjectsViewModel" />
+
+        <br />
+        <ProjectNomad.Client.Components.GameTimeDisplayer />
     </div>
 
-    @* <p>
-        ☀ ☁ ❄ ⛆ ⛈ ⛏ ⚶ ♂ ♀ 
-    </p> *@
+    <div class="row">
+        <div class="column side">
+            <div style="width: 250px; float: right;">
+                <div>
+                    <ProjectNomad.Client.Components.Tasks Tribe="GameObjectsViewModel.Tribe"
+                                                          HumanUnitIds="GameObjectsViewModel.HumanUnits.Select(x =>x.Id).ToList()"
+                                                          HumanUnitTaskOrders="GameObjectsViewModel.HumanUnitTaskOrders"
+                                                          HumanUnitTasks="GameObjectsViewModel.HumanUnitTasks"
+                                                          TribeStructures="GameObjectsViewModel.TribeStructures" />
+                </div>
 
-    <div style="border: 2px dashed;
-                border-color: Gainsboro;
-                margin: auto;
-                width: 50%;
-                padding: 0px;">
-        <center>
-            <button class="button" @onclick="DisplayMap"><span>HOME</span></button>
-            <button class="button" @onclick="DisplayMiniMap"><span>MAP</span></button>
-            <button class="button" @onclick="NavigateToOptions"><span>OPTIONS</span></button>
+                <div>
+                    <ProjectNomad.Client.Components.Notifications TribeId="@GameObjectsViewModel.Tribe.Id" />
+                </div>
+            </div>
+        </div>
 
-
-            <br/>
-            <ProjectNomad.Client.Components.BasicStatsBar GameObjectsViewModel="GameObjectsViewModel" />
-
-            <br />
-            <ProjectNomad.Client.Components.GameTimeDisplayer />
-        </center>
+        <div class="column main">
+            <div style="width: 600px; float: left;">
+                @if (MainGameWindow == "Map")
+                {
+                    <ProjectNomad.Client.Components.Map Tribe="@GameObjectsViewModel.Tribe" />
+                }
+                else
+                {
+                    <ProjectNomad.Client.Components.MiniMap Tribe="@GameObjectsViewModel.Tribe" />
+                }
+            </div>
+        </div>
     </div>
 
-    <br />
-
-    <div style="border: 2px dashed;
-                border-color: Gainsboro;
-                display: table;
-                margin: auto;
-                width: 1500px; /*Optional*/
-                table-layout: fixed; /*Optional*/
-                border-spacing: 10px; /*Optional*/">
-        
-        <div id="tasks" style="border: 2px dashed;
-                    border-color: Gainsboro;
-                    display: table-cell;">
-          
-            
-            <ProjectNomad.Client.Components.Tasks 
-            Tribe="GameObjectsViewModel.Tribe" 
-            HumanUnitIds="GameObjectsViewModel.HumanUnits.Select(x =>x.Id).ToList()"
-            HumanUnitTaskOrders="GameObjectsViewModel.HumanUnitTaskOrders" 
-            HumanUnitTasks="GameObjectsViewModel.HumanUnitTasks"
-            TribeStructures="GameObjectsViewModel.TribeStructures"/>
-        </div>
-
-        <div style="border: 2px dashed;
-                    border-color: Gainsboro;
-                    width: 700px;
-                    display: table-cell;">
-
-            @if (MainGameWindow == "Map")
-            {
-                <ProjectNomad.Client.Components.Map Tribe="@GameObjectsViewModel.Tribe" />
-            }
-            else
-            {
-                <ProjectNomad.Client.Components.MiniMap Tribe="@GameObjectsViewModel.Tribe" />
-            }
-
-        </div>
-        
-        <div id="notifications" style ="border: 2px dashed;
-                     border-color: Gainsboro;
-                     display: table-cell;">
-            <ProjectNomad.Client.Components.Notifications TribeId="@GameObjectsViewModel.Tribe.Id" />
-        </div>
-        
+    <div class="footer">
+        <p>todo footer</p>
     </div>
-    
 }
 else
 {
+    @* todo - logo animation/music + some qotes - with const time - to hide loading time for run game looper *@
     <p>loading..</p>
 }
 

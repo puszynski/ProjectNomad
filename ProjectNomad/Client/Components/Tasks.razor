@@ -13,37 +13,32 @@
 
 @if (HumanUnitIds != null && HumanUnitTasks != null)
 {
-@* IN PROGRESS *@
-@* DODAJ *@
-    <button type="button" class="button_active" @onclick="OrderToGatherFood">zbierz jedzenie w okolicy</button>
+    <button type="button" class="button_active" style="width: 250px;" @onclick="OrderToGatherFood">zbierz jedzenie w okolicy</button>
     <br />
-    <button type="button" class="button_active" @onclick="OrderToGatherWood">zbierz drewno w okolicy</button>
+    <button type="button" class="button_active" style="width: 250px;" @onclick="OrderToGatherWood">zbierz drewno w okolicy</button>
     <br />
     @if (!TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 0) && !HumanUnitTaskOrders.Any(x => x.Type == EHumanUnitTaskType.LightAFire))
     {
-        <button type="button" class="button_active" @onclick="OrderToLightFire">rozpal ognisko</button>
+        <button type="button" class="button_active" style="width: 250px;" @onclick="OrderToLightFire">rozpal ognisko</button>
         <br />
     }
     else
     {
-        <button type="button" class="button_inactive">rozpal ognisko</button>
+        <button type="button" class="button_inactive" style="width: 250px;">rozpal ognisko</button>
         <br />
     }
     @if (TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 1))
     {
-        <button type="button" class="button_active" @onclick="OrderToKeepFire">utrzymuj ogień</button>
+        <button type="button" class="button_active" style="width: 250px;" @onclick="OrderToKeepFire">utrzymuj ogień</button>
         <br />
     }
     else
     {
-        <button type="button" class="button_inactive">utrzymuj ogień</button>
+        <button type="button" class="button_inactive" style="width: 250px;">utrzymuj ogień</button>
         <br />
     }
-    <hr/>
+    <br />
 
-@* w TOKU *@
-@* TODO ADD AUTO TASKS FOOD CONUMING *@
-    <smaller>w toku:</smaller>
 
     @foreach (var autoTask in HumanUnitTasks.Where(x => HumanUnitTaskTypeExtensions.GetAutoTasks().Contains(x.Type)))
     {
@@ -89,11 +84,11 @@
         var desc = HumanUnitTaskTypeExtensions.GetDescription(button.Type);
         @if (button.InProgressCount != button.AllCount)
         {
-            <button type="button" class="button_active">@(desc)(@button.InProgressCount/@button.AllCount)</button>
+            <button type="button" class="button_active" style="width: 250px;">@(desc)(@button.InProgressCount/@button.AllCount)</button>
         }
         else
         {
-            <button type="button" class="button_inactive">@(desc)(@button.InProgressCount/@button.AllCount)</button>
+            <button type="button" class="button_inactive" style="width: 250px;">@(desc)(@button.InProgressCount/@button.AllCount)</button>
         }
 
         foreach (var task in button.MatchedTasks)
@@ -123,13 +118,6 @@
     {
         <p>Brak ogniska..</p>
     }
-    <hr/>
-    <p>dev foo:</p>
-    <br />
-    <button class="button-close"><span>test jp</span></button>
-    <br />
-    <button class="button-add"><span>test jp</span></button>
-
 }
 else
 {

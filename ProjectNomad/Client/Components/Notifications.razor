@@ -8,18 +8,16 @@
 
 @if (NotificationsToDisplay is not null)
 {
-    <button class="button" ><span>Clean notifications</span></button>
-
     @if (NotificationsToDisplay.Any())
     {
         foreach (var item in NotificationsToDisplay)
         {
-            <p>@item.HumanUnitName (@item.Added) => @item.Type.ToString()</p>
+            <smaller>@item.HumanUnitName (@item.Added) => @item.Type.ToString()</smaller>
         }
     }
     else
     {
-        <p>Nothing has happend...</p>
+        <smaller>Nothing has happend...</smaller>
     }
 }
 

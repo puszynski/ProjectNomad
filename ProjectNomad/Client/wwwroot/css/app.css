@@ -7,15 +7,53 @@
 }*/
 
 :root {
-    --background: #44444C;
-    --maincolor: #D6D6D6;
-    --lightercolor: #8C8C8C;
+    --background: #222222; /*almost black*/
+    --maincolor: #FFFFFF; /*almost whie*/
+    /*--lightercolor: #EEEEEE;*/ /*a litle less white*/
+    --lightercolor: #909090; /*grey*/
+    --moremore: #4D4D4Dl; /*dark grey*/
+    --accent: #EB6222; /*orange*/
 }
 
+* {
+    box-sizing: border-box;
+}
 html, body {
     font-family: 'Courier New', monospace;
     background-color: var(--background);
     color: var(--maincolor);
+}
+.header {
+    padding: 5px;
+    text-align: center;
+    border: 1px solid var(--lightercolor); /*temp*/
+}
+
+.column {
+    float: left;
+    padding: 10px;
+    border: 1px solid var(--lightercolor); /*temp*/
+}
+.column.side {
+    width: 38%; /*38-62 golden ratio*/
+}
+.column.main {
+    width: 62%;
+}
+.row:after {
+    content: "";
+    display: table;
+    clear: both; /* Clear floats after the columns */
+}
+.footer {
+    padding: 5px;
+    text-align: center;
+    border: 1px solid var(--lightercolor); /*temp*/
+}
+@media (max-width: 600px) {
+    .column.side, .column.main {
+        width: 100%; /* Responsive layout - makes the columns stack on top of each other instead of next to each other */
+    }
 }
 
 .button_active {
@@ -23,10 +61,13 @@ html, body {
     background-color: var(--background);
     color: var(--maincolor);
     border: 1px solid var(--maincolor);
-    width: 250px;
-    padding: 0px;
+    padding: 0px 5px 0px 5px;
     margin-top: 1px;
     cursor: pointer;
+}
+.button_active:hover {
+    background-color: var(--maincolor);
+    color: var(--background);
 }
 
 .button_inactive {
@@ -34,8 +75,7 @@ html, body {
     background-color: var(--background);
     color: var(--lightercolor);
     border: 1px solid var(--lightercolor);
-    width: 250px;
-    padding: 0px;
+    padding: 0px 5px 0px 5px;
     margin-top: 1px;
     cursor: pointer;
 }
@@ -64,70 +104,6 @@ html, body {
     width: 250px;
 }
 
-
-/* button CLOSE animation START*/
-    .button-close {
-        background-color: var(--background);
-        color: var(--maincolor);
-        border: 1px solid var(--maincolor);
-        padding: 0px 3px;
-        text-align: center;
-    }
-    .button-close span {
-        cursor: pointer;
-        display: inline-block;
-        position: relative;
-        transition: 0.5s;
-    }
-    .button-close span:after {
-        content: '×';
-        position: absolute;
-        opacity: 0;
-        top: 0;
-        right: -20px;
-        transition: 0.5s;
-    }
-    .button-close:hover span {
-        padding-right: 25px;
-    }
-    .button-close:hover span:after {
-        opacity: 1;
-        right: 0;
-    }
-/* button CLOSE animation END*/
-
-
-/* button ADD class animation START*/
-    .button-add {
-        background-color: var(--background);
-        color: var(--maincolor);
-        border: 1px solid var(--maincolor);
-        padding: 0px 3px;
-        text-align: center;
-    }
-    .button-add span {
-        cursor: pointer;
-        display: inline-block;
-        position: relative;
-        transition: 0.5s;
-    }
-    .button-add span:after {
-        content: '+';
-        position: absolute;
-        opacity: 0;
-        top: 0;
-        right: -20px;
-        transition: 0.5s;
-    }
-    .button-add:hover span {
-        padding-right: 25px;
-    }
-    .button-add:hover span:after {
-        opacity: 1;
-        right: 0;
-    }
-/* button class animation END*/
-
 asciiart {
     display: inline-block;
     font-family: 'Courier New', monospace;
@@ -146,13 +122,6 @@ p.always-visible {
     font-size: 9px;
     color: white;
     text-shadow: 0.07em 0 black, 0 0.07em black, -0.07em 0 black, 0 -0.07em black;
-}
-
-.TopRightCornerMenu {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 20px;
 }
 
 

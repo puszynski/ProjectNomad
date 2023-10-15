@@ -9,18 +9,13 @@
 @inject EventBroadcastService _eventBroadcastService
 
 
-<center>
-    <p>Tribe is camping at (3|3). It`s warm and sunny. There is a lot of resources around.</p>
-    @* It`s boiling hot!
-    It`s freezing outside!
-    A storm seems to be coming that way. *@
-</center>
+
 
 <div style="position: relative;
                     border: 2px dashed;
                     border-color: Gainsboro;
-                    width:562px;
-                    height:562px;
+                    width:564px;
+                    height:564px;
                     margin: auto;">
 
 
@@ -44,6 +39,7 @@
                 }
                 else
                 {
+                    @* TODO - layers for bg img, trees, shodows etc *@
                     <img src="@mapTile.GetTileImgPath()"
                          height="100"
                          width="100"
@@ -51,8 +47,12 @@
                          left: @(row * 80 -10)px;
                          top: @(column * 80 -10)px"
                          @onclick="() => SelectMapTile(mapTile)" />
+
                 }
-                
+
+                @* <div style="width: 78px; height: 78px; background-color: #4D4D4D; margin: 1px; float: left; ">
+                    alternative way to display bg color
+                </div> *@
 
                 <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80)px">@mapTile.FoodPoints</p>
                 <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80 + 10)px">@mapTile.WoodPoints</p>
@@ -91,6 +91,11 @@
         }
     </div>
 
+<br />
+<p>Tribe is camping at (3|3). It`s warm and sunny. There is a lot of resources around.</p>
+@* It`s boiling hot!
+It`s freezing outside!
+A storm seems to be coming that way. *@
 
 
 
