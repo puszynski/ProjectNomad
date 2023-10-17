@@ -12,7 +12,7 @@ namespace GameModule.Logic.TasksLogic
         private const int FIRE_POWER_TO_ADD_WOOD = 30;
         private const int FULL_FIRE_POWER = 100;
 
-        INotification ITask.Start(HumanUnitTaskOrder taskOrder, 
+        INotification ITask.Start(HumanTaskOrder taskOrder, 
             Tribe tribeMaterializedData, 
             DateTime currentTimeInLoop, 
             IEnumerable<MapTile> mapTiles)
@@ -25,9 +25,9 @@ namespace GameModule.Logic.TasksLogic
                 || firecamp.PowerAndDurability > FIRE_POWER_TO_ADD_WOOD)
                 return default;
 
-            var taskOrderToAssign = tribeMaterializedData.HumanUnitTaskOrders
-                    .Where(x => x.Type == EHumanUnitTaskType.KeepFire)
-                    .Where(x => !x.IsInProgress)
+            var taskOrderToAssign = tribeMaterializedData.HumanTaskOrders
+                    .Where(x => x.Type == ETaskType.KeepFire)
+                    .Where(x => !x.HumanTaskId.HasValue)
                     .SingleOrDefault();
 
             if (taskOrderToAssign == null
@@ -42,17 +42,17 @@ namespace GameModule.Logic.TasksLogic
             if (humanUnitToAssign == null)
                 return default;
 
-            var taskToAdd = new HumanUnitTask
+            var taskToAdd = new HumanTask
             {
                 From = currentTimeInLoop,
-                HumanUnitId = humanUnitToAssign.Id,
+                HumanId = humanUnitToAssign.Id,
                 Localization = taskOrder.Localization,
                 To = currentTimeInLoop.AddMinutes(GameSETTINGS.Fire.MinutesToKeepTheCampfireBurning),
                 TribeId = tribeMaterializedData.Id,
-                Type = EHumanUnitTaskType.KeepFire,
+                Type = ETaskType.KeepFire,
             };
-            tribeMaterializedData.HumanUnitTasks.Add(taskToAdd);
-            taskOrder.IsInProgress = true;
+            tribeMaterializedData.HumanTasks.Add(taskToAdd);
+            taskOrder.HumanTask = taskToAdd;
             tribeMaterializedData.Resources.Wood -= GameSETTINGS.Fire.WoodUsedToKeepTheCampfireBurning;
             firecamp.PowerAndDurability = FULL_FIRE_POWER;   
 
@@ -63,7 +63,7 @@ namespace GameModule.Logic.TasksLogic
                     CustomValue: null);
         }
         
-        INotification ITask.End(HumanUnitTask taskToEnd, 
+        INotification ITask.End(HumanTask taskToEnd, 
             Tribe tribeMaterializedData,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)

@@ -1,4 +1,5 @@
-﻿using GameModule.DtoModels;
+﻿using GameModule.Configurations;
+using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
@@ -21,6 +22,8 @@ namespace GameModule.Logic
         readonly IMapTileRepository _mapTileRepository;
         readonly IGameOverApplicator _gameOverApplicator;
         readonly ITribeRelocationService _tribeRelocationService;
+
+        GameModuleDbContext gameModuleDbContext;
         public LOOPER(
             IDayExecutor dayExecutor,
             IHourExecutor hourExecutor,
@@ -30,7 +33,8 @@ namespace GameModule.Logic
             IDateTimeProvider dateTimeProvider,
             IMapTileRepository mapTileRepository,
             IGameOverApplicator gameOverApplicator,
-            ITribeRelocationService tribeRelocationService)
+            ITribeRelocationService tribeRelocationService,
+            GameModuleDbContext gameModuleDbContext)
         {
             _dayExecutor = dayExecutor;
             _hourExecutor = hourExecutor;
@@ -41,6 +45,7 @@ namespace GameModule.Logic
             _mapTileRepository = mapTileRepository;
             _gameOverApplicator = gameOverApplicator;
             _tribeRelocationService = tribeRelocationService;
+            this.gameModuleDbContext = gameModuleDbContext;
         }
 
         public async Task<ITriggerGameLooperResponse>  LoopTribe(Guid accountId)
@@ -48,7 +53,7 @@ namespace GameModule.Logic
             var tribe = await _tribeRepository.GetAllDataMaterialized(accountId);
             //REMOVE KEEP FIRE ORDER WHEN FIRE IS OFF???
 
-            if (!tribe.HumanUnits.Any()) 
+            if (!tribe.Humans.Any()) 
                 return GetGameOverResponse(tribe);
 
             var lastUpdated = tribe.Updated;
@@ -82,7 +87,7 @@ namespace GameModule.Logic
                     if (lastUpdated.Second == 0)
                         _minuteExecutor.Execute(tribe, notifications);
 
-                    if (IGameOverApplicator.IsGameOver(tribe.HumanUnits))
+                    if (IGameOverApplicator.IsGameOver(tribe.Humans))
                         break;
 
                     if (lastUpdated.Minute == 0 && lastUpdated.Second == 0)
@@ -95,12 +100,15 @@ namespace GameModule.Logic
                 }
                 catch (Exception ex)
                 {
+                    //{"The association between entity types 'Tribe' and 'HumanTask' has been severed, but the relationship is either marked as required or is implicitly required because the foreign key is not nullable. If the dependent/child entity should be deleted when a required relationship is severed, configure the relationship to use cascade deletes. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see the key values."}
+
                     //todo log
                     var error = ex;
+                    throw new Exception(ex.Message);
                 }
             }
 
-            if (IGameOverApplicator.IsGameOver(tribe.HumanUnits))
+            if (IGameOverApplicator.IsGameOver(tribe.Humans))
             {
                 _gameOverApplicator.Execute(tribe);
                 tribe.Updated = _dateTimeProvider.UtcNow();
@@ -122,24 +130,25 @@ namespace GameModule.Logic
                     tribe.Resources.FreshFood, 
                     relocationStatus);
 
-                var humanUnitDtos = tribe.HumanUnits.Select(x => new HumanUnitDto(x.Id, 
+                var humanUnitDtos = tribe.Humans.Select(x => new HumanUnitDto(x.Id, 
                     x.Name, 
                     x.Localization.X, 
                     x.Localization.Y, 
                     x.FoodLevelPercentage));
 
-                var humanUnitTaskDtos = tribe.HumanUnitTasks.Select(x => new HumanUnitTaskDto(x.Id,
-                    x.HumanUnitId,
-                    x.HumanUnit.Name,
+                var humanUnitTaskDtos = tribe.HumanTasks.Select(x => new HumanUnitTaskDto(x.Id,
+                    x.TribeId,
+                    x.HumanId,
+                    x.Human.Name,
                     x.Type,
                     x.From,
                     x.To));
 
-                var humanUnitTaskOrderDtos = tribe.HumanUnitTaskOrders.Select(x => new HumanUnitTaskOrderDto(x.Id, 
+                var humanUnitTaskOrderDtos = tribe.HumanTaskOrders.Select(x => new HumanUnitTaskOrderDto(x.Id, 
                     x.TribeId, 
                     x.Added, 
                     x.Type, 
-                    x.IsInProgress, 
+                    x.HumanTaskId, 
                     x.Localization.X, 
                     x.Localization.Y));
 
@@ -160,12 +169,12 @@ namespace GameModule.Logic
 
         async Task<ICollection<MapTile>> GetMapTileToInteract(Tribe tribe)
         {
-            var mapTileLocalizationsForTasks = tribe.HumanUnitTasks
+            var mapTileLocalizationsForTasks = tribe.HumanTasks
                 .Where(x => x.Localization != null)
                 .Select(y => y.Localization)
                 .ToList();
 
-            var mapTileLocalizationsForTaskOrders = tribe.HumanUnitTaskOrders
+            var mapTileLocalizationsForTaskOrders = tribe.HumanTaskOrders
                 .Where(x => x.Localization != null)
                 .Select(y => y.Localization)
                 .ToList();
@@ -195,7 +204,7 @@ namespace GameModule.Logic
         TriggerGameLooperResponse GetEmptyResponse(Tribe tribe)
             => new(
                 new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, ETribeRelocationStatus.None),
-                tribe.HumanUnits.Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage)),
+                tribe.Humans.Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage)),
                 new List<HumanUnitTaskDto>(),
                 new List<HumanUnitTaskOrderDto>(),
                 new List<TribeStructuresDto>(),

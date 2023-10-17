@@ -10,14 +10,14 @@ namespace GameModule.Logic.TasksLogic
     {
         private const int HUMAN_FOOD_PERCENTAGE_TO_START_CONSUME = 80;
 
-        INotification ITask.Start(HumanUnitTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification ITask.Start(HumanTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
         {
-            taskOrder = null;//not used
+            taskOrder = null;//not used in auto task
 
-            var humanUnitIdsWithTaskInProgress = tribe.HumanUnitTasks
-                .Select(x => x.HumanUnitId)
+            var humanUnitIdsWithTaskInProgress = tribe.HumanTasks
+                .Select(x => x.HumanId)
                 .ToList();
-            var human = tribe.HumanUnits
+            var human = tribe.Humans
                 .Where(x => !humanUnitIdsWithTaskInProgress.Contains(x.Id))
                 .Where(x => x.FoodLevelPercentage <= HUMAN_FOOD_PERCENTAGE_TO_START_CONSUME)
                 .FirstOrDefault();
@@ -31,17 +31,17 @@ namespace GameModule.Logic.TasksLogic
             if (!shouldAssign)
                 return default;
 
-            var entity = new HumanUnitTask
+            var entity = new Entities.HumanTask
             {
                 From = currentTimeInLoop, //.AddSeconds(-1),//todo remove -1 due to TaskRequire mechanism and change UT
-                HumanUnitId = human.Id,
+                HumanId = human.Id,
                 TribeId = tribe.Id,
-                Type = EHumanUnitTaskType.ConsumeFood,
+                Type = ETaskType.ConsumeFood,
                 To = currentTimeInLoop.AddMinutes(GameSETTINGS.Food.MinutesToConsumeFoodToFill20PercentageOfFood), //.AddSeconds(-1),//todo remove -1 TaskRequire mechanism and change UT
                 Localization = null
             };
 
-            tribe.HumanUnitTasks.Add(entity);
+            tribe.HumanTasks.Add(entity);
             tribe.Resources.FreshFood -= GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit;
             human.FoodLevelPercentage += 20;
 
@@ -53,10 +53,10 @@ namespace GameModule.Logic.TasksLogic
 
         }
 
-        INotification ITask.End(HumanUnitTask taskToEnd, Tribe tribeMaterializedData, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification ITask.End(Entities.HumanTask taskToEnd, Tribe tribeMaterializedData, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
         {
-            return new NotificationDto(taskToEnd.HumanUnitId,
-                tribeMaterializedData.HumanUnits.Single(x => x.Id == taskToEnd.HumanUnitId).Name, 
+            return new NotificationDto(taskToEnd.HumanId,
+                tribeMaterializedData.Humans.Single(x => x.Id == taskToEnd.HumanId).Name, 
                 currentTimeInLoop, 
                 ENotificationType.FoodConsumptionEnded, 
                 null);

@@ -18,14 +18,14 @@ namespace GameModule.Entities
         public Guid AccountId { get; set; }
         public DateTime Updated { get; set; }
         public string Name { get; set; }
-        public Localization Localization { get; set; } //MUSICZ BYĆ SPÓJNY - ALBO WSZĘDZIE LOCALIZATION - ALOB MAP-TILE-ID
+        public Localization Localization { get; set; }
         public Resources Resources { get; set; }
 
         public TribeRelocation? TribeRelocation { get; set; }
-        public ICollection<HumanUnit> HumanUnits { get; set; }
-        public ICollection<HumanUnitTask> HumanUnitTasks { get; set; }
-        public ICollection<HumanUnitTaskOrder> HumanUnitTaskOrders { get; set; }
-        public ICollection<TribeStructure> TribeStructures { get; set; }
+        public ICollection<Human>? Humans { get; set; } = new List<Human>();
+        public ICollection<HumanTask>? HumanTasks { get; set; } = new List<HumanTask>();
+        public ICollection<HumanTaskOrder>? HumanTaskOrders { get; set; } = new List<HumanTaskOrder>();
+        public ICollection<TribeStructure>? TribeStructures { get; set; } = new List<TribeStructure>();
     }
 
     [Owned]

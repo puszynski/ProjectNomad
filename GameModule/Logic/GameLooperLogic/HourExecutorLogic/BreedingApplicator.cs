@@ -15,7 +15,7 @@ namespace GameModule.Logic.GameLooperLogic.HourExecutorLogic
 
         internal void Execute(Tribe tribe, List<INotification> notifications)
         {
-            var humansReadyToMateCount = tribe.HumanUnits.Where(x => x.FoodLevelPercentage >= 90).Count();
+            var humansReadyToMateCount = tribe.Humans.Where(x => x.FoodLevelPercentage >= 90).Count();
 
             if (humansReadyToMateCount < 2)
                 return;
@@ -23,7 +23,7 @@ namespace GameModule.Logic.GameLooperLogic.HourExecutorLogic
             if (RandomCalculator.GetBoolWithGivenProbability(humansReadyToMateCount * GameSETTINGS.Population.BreedingChancePerHumanPerHour))
             {
                 var newborn = HumanUnitGenerator.Generate(tribe);
-                tribe.HumanUnits.Add(newborn);
+                tribe.Humans.Add(newborn);
 
                 notifications.Add(new NotificationDto(newborn.Id,
                         newborn.Name,

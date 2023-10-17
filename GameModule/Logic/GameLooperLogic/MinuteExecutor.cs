@@ -20,10 +20,10 @@ namespace GameModule.Logic.GameLooperLogic
 
         void IMinuteExecutor.Execute(Tribe tribe, List<INotification> notifications)
         {
-            foreach (var human in tribe.HumanUnits)
+            foreach (var human in tribe.Humans)
                 human.FoodLevelPercentage -= GameSETTINGS.Food.FoodToGetHungryForHumanUnitEachMinute;
 
-            var notificationsAbouStarvations = _humansDeathApplicator.StarvationDeath(tribe.HumanUnits);
+            var notificationsAbouStarvations = _humansDeathApplicator.StarvationDeath(tribe.Humans);
             notifications.AddRange(notificationsAbouStarvations);
         }
     }

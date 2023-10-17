@@ -7,10 +7,10 @@ namespace GameModule.Repositories
 {
     internal interface IHumanUnitTaskOrderRepository : IRepository
     {
-        void Remove(HumanUnitTaskOrder task);
+        void Remove(HumanTaskOrder task);
         Task RemoveAll(int tribeId);
-        Task<List<HumanUnitTaskOrder>> Get(int tribeId);
-        Task Add(int tribeId, EHumanUnitTaskType type, int X, int Y, DateTime now);
+        Task<List<HumanTaskOrder>> Get(int tribeId);
+        Task Add(int tribeId, ETaskType type, int X, int Y, DateTime now);
     }
 
     internal class HumanUnitTaskOrderRepository : BaseRepository, IHumanUnitTaskOrderRepository
@@ -19,28 +19,27 @@ namespace GameModule.Repositories
         {
         }
 
-        async Task<List<HumanUnitTaskOrder>> IHumanUnitTaskOrderRepository.Get(int tribeId)
-            => await _gameModuleDbContext.HumanUnitTaskOrders.Where(x => x.TribeId == tribeId).ToListAsync();
+        async Task<List<HumanTaskOrder>> IHumanUnitTaskOrderRepository.Get(int tribeId)
+            => await _gameModuleDbContext.HumanTaskOrders.Where(x => x.TribeId == tribeId).ToListAsync();
 
-        void IHumanUnitTaskOrderRepository.Remove(HumanUnitTaskOrder task)
-            => _gameModuleDbContext.HumanUnitTaskOrders.Remove(task);
+        void IHumanUnitTaskOrderRepository.Remove(HumanTaskOrder task)
+            => _gameModuleDbContext.HumanTaskOrders.Remove(task);
 
         async Task IHumanUnitTaskOrderRepository.RemoveAll(int tribeId) 
-            => await _gameModuleDbContext.HumanUnitTaskOrders.Where(x => x.TribeId == tribeId).ExecuteDeleteAsync();
+            => await _gameModuleDbContext.HumanTaskOrders.Where(x => x.TribeId == tribeId).ExecuteDeleteAsync();
 
 
         async Task IHumanUnitTaskOrderRepository.Add(int tribeId, 
-            EHumanUnitTaskType type, 
+            ETaskType type, 
             int X,
             int Y,
             DateTime now)
         {
-            await _gameModuleDbContext.HumanUnitTaskOrders.AddAsync(new HumanUnitTaskOrder
+            await _gameModuleDbContext.HumanTaskOrders.AddAsync(new HumanTaskOrder
             {
                 Added = now,
                 TribeId = tribeId,
                 Type = type,
-                IsInProgress = false,
                 Localization = new Entities.ValueObjects.Localization { X = X, Y = Y }
             });
         }

@@ -80,7 +80,7 @@ else
     {
         await TrigerRecalculationAndGetGameObjectsFromServer();
 
-        if (!GameObjectsViewModel.HumanUnits.Any())
+        if (GameObjectsViewModel == null || !GameObjectsViewModel.HumanUnits.Any())
             return;
 
         var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
@@ -98,6 +98,9 @@ else
         var accountId = await GetAccountIdOr404();
 
         var result = await _gameLooperManager.TriggerGameLooper(accountId);
+
+        if (result == null)
+            return;
 
         GameObjectsViewModel = new TribeGameObjectsViewModel
         {
@@ -131,5 +134,6 @@ else
     void IDisposable.Dispose()
     {
         ShouldBreak = true;
+        GameObjectsViewModel = null;
     }
 }

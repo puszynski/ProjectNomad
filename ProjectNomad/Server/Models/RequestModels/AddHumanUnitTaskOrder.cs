@@ -4,7 +4,7 @@ using ProjectNomad.Shared.Interfaces.Response;
 namespace ProjectNomad.Server.Models.RequestModels
 {
     public record AddHumanUnitTaskOrder(int TribeId,
-        EHumanUnitTaskType Type,
+        ETaskType Type,
         int MapTileX,
         int MapTileY) : IAddHumanUnitTaskOrderDto;
 }

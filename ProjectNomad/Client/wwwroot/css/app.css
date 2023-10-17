@@ -26,13 +26,13 @@ html, body {
 .header {
     padding: 5px;
     text-align: center;
-    border: 1px solid var(--lightercolor); /*temp*/
+    /*border: 1px solid var(--lightercolor);*/ /*temp*/
 }
 
 .column {
     float: left;
     padding: 10px;
-    border: 1px solid var(--lightercolor); /*temp*/
+    /*border: 1px solid var(--lightercolor);*/ /*temp*/
 }
 .column.side {
     width: 38%; /*38-62 golden ratio*/
@@ -48,7 +48,7 @@ html, body {
 .footer {
     padding: 5px;
     text-align: center;
-    border: 1px solid var(--lightercolor); /*temp*/
+    /*border: 1px solid var(--lightercolor);*/ /*temp*/
 }
 @media (max-width: 600px) {
     .column.side, .column.main {

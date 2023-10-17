@@ -9,15 +9,15 @@ namespace GameModule.Logic.TasksLogic
 {
     internal class GatheringFood : ITask
     {
-        INotification ITask.Start(HumanUnitTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification ITask.Start(HumanTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
         {
             var human = BasicDataSelector.SelectFirstHumanWithCondition(tribe);
             if (human == null)
                 return default;
 
-            var taskOrderToAssign = tribe.HumanUnitTaskOrders
-                .Where(x => x.Type == EHumanUnitTaskType.GatheringFood)
-                .Where(x => !x.IsInProgress)
+            var taskOrderToAssign = tribe.HumanTaskOrders
+                .Where(x => x.Type == ETaskType.GatheringFood)
+                .Where(x => !x.HumanTaskId.HasValue)
                 .OrderBy(x => x.Added)
                 .FirstOrDefault();
 
@@ -34,18 +34,18 @@ namespace GameModule.Logic.TasksLogic
             if (!shouldAssign)
                 return default;
 
-            var taskToAdd = new HumanUnitTask
+            var taskToAdd = new Entities.HumanTask
             {
                 From = currentTimeInLoop,
-                HumanUnitId = human.Id,
+                HumanId = human.Id,
                 Localization = taskOrderToAssign.Localization,
                 To = CalculateTimeToEndTask(),
                 TribeId = tribe.Id,
-                Type = EHumanUnitTaskType.GatheringFood,
+                Type = ETaskType.GatheringFood,
             };
-            taskOrderToAssign.IsInProgress = true;
+            taskOrderToAssign.HumanTask = taskToAdd;
             destinyMapTile.Food.ActualPoints -= GameSETTINGS.Food.MapTileFoodGathered;
-            tribe.HumanUnitTasks.Add(taskToAdd);
+            tribe.HumanTasks.Add(taskToAdd);
 
             return new NotificationDto(human.Id,
                 human.Name,
@@ -67,12 +67,12 @@ namespace GameModule.Logic.TasksLogic
 
         }
 
-        INotification ITask.End(HumanUnitTask taskToEnd, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification ITask.End(Entities.HumanTask taskToEnd, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
         {
             var mapTile = mapTiles.Single(x => x.Localization.Equals(taskToEnd.Localization));
             var mapTileFoodPoints = mapTile.Food.ActualPoints;
 
-            var human = tribe.HumanUnits.Single(x => x.Id == taskToEnd.HumanUnitId);
+            var human = tribe.Humans.Single(x => x.Id == taskToEnd.HumanId);
 
             var foodGatheringCoefficient = (double)human.FoodLevelPercentage / 100 * 2;
             var foodPoints = foodGatheringCoefficient >= 1
@@ -85,7 +85,7 @@ namespace GameModule.Logic.TasksLogic
 
             tribe.Resources.FreshFood += (int)gatheredFoodPoints;            
 
-            return new NotificationDto(taskToEnd.HumanUnitId,
+            return new NotificationDto(taskToEnd.HumanId,
                 human.Name,
                 currentTimeInLoop, 
                 ENotificationType.FoodGatheringEnded, 

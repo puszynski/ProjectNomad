@@ -6,10 +6,10 @@ namespace GameModule.Repositories
 {
     internal interface IHumanUnitTaskRepository : IRepository
     {
-        Task<List<HumanUnitTask>> GetHumanUnitTasksByTribeId(int tribeId);
-        Task AddAsync(HumanUnitTask humanUnitTask);
-        void Remove(HumanUnitTask humanUnitTask);
-        void RemoveRange(IEnumerable<HumanUnitTask> humanUnitTask);
+        Task<List<HumanTask>> GetHumanUnitTasksByTribeId(int tribeId);
+        Task AddAsync(HumanTask humanUnitTask);
+        void Remove(HumanTask humanUnitTask);
+        void RemoveRange(IEnumerable<HumanTask> humanUnitTask);
         Task RemoveAll(int tribeId);
     }
 
@@ -19,30 +19,30 @@ namespace GameModule.Repositories
         {
         }
 
-        async Task<List<HumanUnitTask>> IHumanUnitTaskRepository.GetHumanUnitTasksByTribeId(int tribeId)
+        async Task<List<HumanTask>> IHumanUnitTaskRepository.GetHumanUnitTasksByTribeId(int tribeId)
         {
             return await _gameModuleDbContext
-                .HumanUnitTasks
+                .HumanTasks
                 .Where(x => x.TribeId == tribeId)
                 .ToListAsync();
         }
 
         async Task IHumanUnitTaskRepository.RemoveAll(int tribeId)
-            => await _gameModuleDbContext.HumanUnitTasks.Where(x => x.TribeId == tribeId).ExecuteDeleteAsync();
+            => await _gameModuleDbContext.HumanTasks.Where(x => x.TribeId == tribeId).ExecuteDeleteAsync();
 
-        async Task IHumanUnitTaskRepository.AddAsync(HumanUnitTask humanUnitTask)
+        async Task IHumanUnitTaskRepository.AddAsync(HumanTask humanUnitTask)
         {
-            await _gameModuleDbContext.HumanUnitTasks.AddAsync(humanUnitTask);
+            await _gameModuleDbContext.HumanTasks.AddAsync(humanUnitTask);
         }
 
-        void IHumanUnitTaskRepository.Remove(HumanUnitTask humanUnitTask)
+        void IHumanUnitTaskRepository.Remove(HumanTask humanUnitTask)
         {
-            _gameModuleDbContext.HumanUnitTasks.Remove(humanUnitTask);
+            _gameModuleDbContext.HumanTasks.Remove(humanUnitTask);
         }
 
-        public void RemoveRange(IEnumerable<HumanUnitTask> humanUnitTask)
+        public void RemoveRange(IEnumerable<HumanTask> humanUnitTask)
         {
-            _gameModuleDbContext.HumanUnitTasks.RemoveRange(humanUnitTask);
+            _gameModuleDbContext.HumanTasks.RemoveRange(humanUnitTask);
         }
     }
 }

@@ -3,10 +3,11 @@ using ProjectNomad.Shared.Interfaces;
 
 namespace ProjectNomad.Client.Models.Response
 {
-    public record HumanUnitTask(int TribeId,
+    public record HumanUnitTask(int Id,
+        int TribeId,
         int HumanUnitId,
         string HumanUnitName,
-        EHumanUnitTaskType Type,
+        ETaskType Type,
         DateTime From,
         DateTime To) : IHumanUnitTaskDto;
 }

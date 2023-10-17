@@ -26,7 +26,7 @@ namespace GameModule.Logic.GameLooperLogic
         {
             _mapTileRegenerator.Execute(mapTiles);
             _breedingApplicator.Execute(tribe, notifications);
-            _humansDeathApplicator.DeathFromAgeOrIllness(tribe.HumanUnits, notifications);
+            _humansDeathApplicator.DeathFromAgeOrIllness(tribe.Humans, notifications);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace ProjectNomad.Client.Logic
             return response.OrderBy(x => x.Added);
         }
 
-        internal async Task Add(int tribeId, ProjectNomad.Shared.Enums.EHumanUnitTaskType type, int mapTileX, int mapTileY)
+        internal async Task Add(int tribeId, ProjectNomad.Shared.Enums.ETaskType type, int mapTileX, int mapTileY)
         {
             var request = new AddHumanUnitTaskOrder(tribeId, type, mapTileX, mapTileY);
             await _httpClient.PostAsJsonAsync("api/taskOrder/", request);

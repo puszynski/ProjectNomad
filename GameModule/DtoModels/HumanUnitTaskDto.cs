@@ -3,10 +3,11 @@ using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.DtoModels
 {
-    internal record HumanUnitTaskDto(int TribeId,
+    internal record HumanUnitTaskDto(int Id,
+        int TribeId,
         int HumanUnitId,
         string HumanUnitName,
-        EHumanUnitTaskType Type,
+        ETaskType Type,
         DateTime From,
         DateTime To) : IHumanUnitTaskDto;
 

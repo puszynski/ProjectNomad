@@ -13,11 +13,10 @@ namespace GameModule.Logic.TasksLogic
             _relocationService = relocationService;
         }
 
-        INotification ITask.Start(HumanUnitTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification ITask.Start(HumanTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
         {
-            var taskOrderToAssign = tribe.HumanUnitTaskOrders
-                    .Where(x => x.Type == EHumanUnitTaskType.TribeRelocation)
-                    .Where(x => !x.IsInProgress)
+            var taskOrderToAssign = tribe.HumanTaskOrders
+                    .Where(x => x.Type == ETaskType.TribeRelocation)
                     .SingleOrDefault();
 
             if (taskOrderToAssign == null)
@@ -30,7 +29,7 @@ namespace GameModule.Logic.TasksLogic
             return default;
         }
 
-        INotification ITask.End(HumanUnitTask taskToEnd, Tribe tribeMaterializedData, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification ITask.End(HumanTask taskToEnd, Tribe tribeMaterializedData, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
         {
             throw new NotImplementedException();
         }

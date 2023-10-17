@@ -59,10 +59,11 @@ namespace GameModule
                 AccountId = accountId,
                 Name = "Tribe with no name",
                 Localization = localization,
-                Updated = _dateTimeProvider.UtcNow()
+                Updated = _dateTimeProvider.UtcNow(),
+                Resources = new Resources() { FreshFood = GameSETTINGS.InitializeRebornTribe.FoodPoints, Wood = GameSETTINGS.InitializeRebornTribe.WoodPoints }
             };
 
-            var humanUnits = new List<HumanUnit>();
+            var humanUnits = new List<Human>();
 
             for (int i = 0; i < 4; i++)
                 humanUnits.Add(HumanUnitGenerator.Generate(tribe));
@@ -70,25 +71,48 @@ namespace GameModule
             var taskTribe = _dbContext.Tribes.AddAsync(tribe);
             await taskTribe;
 
-            var taskHumanUnits = _dbContext.HumanUnits.AddRangeAsync(humanUnits);
+            var taskHumanUnits = _dbContext.Humans.AddRangeAsync(humanUnits);
             await taskHumanUnits;
-            await _dbContext.SaveChangesAsync();
+
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                //SqlException: Cannot insert the value NULL into column 'Resources_Wood', table 'ProjectNomadV2.GameModule.Tribes'; column does not allow nulls. INSERT fails.
+
+                //todo logs
+                throw ex;
+            }
         }
 
         public async Task InitPlayerGameObjectsForExistingTribe(Guid accountId)
         {
             var tribe = await GetTribeOrArgumentException(accountId);
 
-            if (await _dbContext.HumanUnits.AnyAsync(x => x.TribeId == tribe.Id))
+            tribe.Resources.FreshFood = GameSETTINGS.InitializeRebornTribe.FoodPoints;
+            tribe.Resources.Wood = GameSETTINGS.InitializeRebornTribe.WoodPoints;
+
+            if (await _dbContext.Humans.AnyAsync(x => x.TribeId == tribe.Id))
                 throw new ArgumentException($"To init new human units, there should be no in database (tribeId:{tribe.Id}) :/");
 
-            var humanUnits = new List<HumanUnit>();
+            var humans = new List<Human>();
 
             for (int i = 0; i < 4; i++)
-                humanUnits.Add(HumanUnitGenerator.Generate(tribe));
+                humans.Add(HumanUnitGenerator.Generate(tribe));
 
-            await _dbContext.HumanUnits.AddRangeAsync(humanUnits);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.Humans.AddRangeAsync(humans);
+
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                //todo logs
+                throw ex;
+            }
         }
 
 
@@ -209,14 +233,14 @@ namespace GameModule
                 task.LocalizationEnd_X, 
                 task.LocalizationEnd_Y);
 
-            var humanUnit = await _dbContext.HumanUnits.SingleAsync(x => x.Id == task.HumanUnitId);
+            var humanUnit = await _dbContext.Humans.SingleAsync(x => x.Id == task.HumanUnitId);
 
             var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, humanUnit.FoodLevelPercentage) + TimeSpan.FromMinutes(GameSETTINGS.Food.MinutesToGatherFood);
 
-            var entity = new HumanUnitTask 
+            var entity = new HumanTask 
             {
                 From = _dateTimeProvider.UtcNow(),
-                HumanUnitId = task.HumanUnitId,
+                HumanId = task.HumanUnitId,
                 TribeId = task.TribeId,
                 Type = task.Type,
                 To = _dateTimeProvider.UtcNow().Add(timeToEndTask),
@@ -230,10 +254,10 @@ namespace GameModule
         public async Task<IEnumerable<IHumanUnitTaskDto>> GetActualTribeTasks(int tribeId)
         {
             var tribeTasks = await _dbContext
-                .HumanUnitTasks
+                .HumanTasks
                 .Where(x => x.TribeId == tribeId)
-                .Include(b => b.HumanUnit)
-                .Select(x => new HumanUnitTaskDto(x.TribeId, x.HumanUnitId, x.HumanUnit.Name, x.Type, x.From, x.To))
+                .Include(b => b.Human)
+                .Select(x => new HumanUnitTaskDto(x.Id, x.TribeId, x.HumanId, x.Human.Name, x.Type, x.From, x.To))
                 .ToListAsync();
 
             tribeTasks ??= new List<HumanUnitTaskDto>();
@@ -242,21 +266,21 @@ namespace GameModule
 
         public async Task<IEnumerable<IHumanUnitTaskOrder>> GetHumanUnitTaskOrders(int tribeId)
             => await _dbContext
-            .HumanUnitTaskOrders
+            .HumanTaskOrders
             .Where(x => x.TribeId == tribeId)
-            .Select(x => new HumanUnitTaskOrderDto(x.Id, x.TribeId, x.Added, x.Type, x.IsInProgress, x.Localization.X, x.Localization.Y))
+            .Select(x => new HumanUnitTaskOrderDto(x.Id, x.TribeId, x.Added, x.Type, x.HumanTaskId, x.Localization.X, x.Localization.Y))
             .ToListAsync();
 
         public async Task AddHumanUnitTaskOrder(int tribeId, 
-            EHumanUnitTaskType type, 
+            ETaskType type, 
             int mapTileX, 
             int mapTileY)
         {
-            if (type == EHumanUnitTaskType.TribeRelocation)
+            if (type == ETaskType.TribeRelocation)
             {
                 var tribe = await GetTribeOrArgumentException(tribeId);
                 if (tribe.TribeRelocation != null)
-                    throw new ArgumentException($"Can not assign task order for {nameof(EHumanUnitTaskType.TribeRelocation)} when {nameof(tribe.TribeRelocation)} exists :/");
+                    throw new ArgumentException($"Can not assign task order for {nameof(ETaskType.TribeRelocation)} when {nameof(tribe.TribeRelocation)} exists :/");
             }
 
             await _humanUnitTaskOrderRepository.Add(tribeId, type, mapTileX, mapTileY, _dateTimeProvider.UtcNow());

@@ -61,7 +61,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var accountId = await _localStorageService.GetItemAsync<Guid?>("id");
+        Guid? accountId = await _localStorageService.GetItemAsync<Guid?>("id");
 
         if (accountId.HasValue)
             _navigationManager.NavigateTo("game");

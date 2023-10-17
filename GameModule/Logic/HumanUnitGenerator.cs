@@ -6,9 +6,9 @@ namespace GameModule.Logic
 {
     internal static class HumanUnitGenerator
     {
-        internal static HumanUnit Generate(Tribe tribe)
+        internal static Human Generate(Tribe tribe)
         {
-            return new HumanUnit()
+            return new Human()
             {
                 Name = GetRandomString(),
                 Localization = new Localization

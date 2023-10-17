@@ -29,6 +29,15 @@ namespace ProjectNomad.Client.Logic
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("api/game/triggerPlayerGameObjectRecalculation", accountId);
+
+                if (response == null || !response.IsSuccessStatusCode)
+                {
+                    //todo log
+                    //+ co chcemy zrobić gdy coś się spypnie po stronie serwera??
+                    _navigationManager.NavigateTo("error");
+                    return null;
+                }
+
                 var responseContent = await response.Content.ReadFromJsonAsync<TriggerGameLooper>(); 
                 //RelocationStatus is not mapping  correctly.. 
 
@@ -49,7 +58,7 @@ namespace ProjectNomad.Client.Logic
                 if (responseContent.Tribe.RelocationStatus == ETribeRelocationStatus.InProgress)
                     _navigationManager.NavigateTo($"/relocation");
 
-                return responseContent;
+                return responseContent;//UWAGA - NAWET JAK UŻYJESZ URL`I WYŻEJ - TJ gameOver/relocation/error - I TAK WRÓCISZ TUTAJ DO GameModule i będzie błąd..
 
             }
             catch (Exception ex)

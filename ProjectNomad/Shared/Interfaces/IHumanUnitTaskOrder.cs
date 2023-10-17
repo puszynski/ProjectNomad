@@ -7,8 +7,8 @@ namespace ProjectNomad.Shared.Interfaces
         public int Id { get; }
         public int TribeId { get; }
         public DateTime Added { get; }
-        public EHumanUnitTaskType Type { get; }
-        public bool IsInProgress { get; }
+        public ETaskType Type { get; }
+        public int? HumanTaskId { get; }
         public int? X { get; }
         public int? Y { get; }
     }

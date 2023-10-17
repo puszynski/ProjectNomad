@@ -58,7 +58,7 @@ namespace GameModule.Repositories
 
         async Task IMapTileRepository.Remove(int taskOrderId)
         {
-            var taskOrder = await _gameModuleDbContext.HumanUnitTaskOrders.SingleAsync(x => x.Id == taskOrderId);
+            var taskOrder = await _gameModuleDbContext.HumanTaskOrders.SingleAsync(x => x.Id == taskOrderId);
             _gameModuleDbContext.Remove(taskOrder);
         }
     }

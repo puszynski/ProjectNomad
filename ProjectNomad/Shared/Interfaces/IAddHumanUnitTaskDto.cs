@@ -6,7 +6,7 @@ namespace ProjectNomad.Shared.Interfaces
     {
         public int TribeId { get; }
         public int HumanUnitId { get;}
-        public EHumanUnitTaskType Type { get; }
+        public ETaskType Type { get; }
 
         public int LocalizationStart_X { get; }
         public int LocalizationStart_Y { get;}

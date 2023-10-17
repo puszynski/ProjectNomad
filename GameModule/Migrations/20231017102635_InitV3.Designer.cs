@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameModule.Migrations
 {
     [DbContext(typeof(GameModuleDbContext))]
-    [Migration("20230911183510_RelocationOneToOne")]
-    partial class RelocationOneToOne
+    [Migration("20231017102635_InitV3")]
+    partial class InitV3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,7 +26,7 @@ namespace GameModule.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("GameModule.Entities.HumanUnit", b =>
+            modelBuilder.Entity("GameModule.Entities.Human", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,10 +48,10 @@ namespace GameModule.Migrations
 
                     b.HasIndex("TribeId");
 
-                    b.ToTable("HumanUnits", "GameModule");
+                    b.ToTable("Humans", "GameModule");
                 });
 
-            modelBuilder.Entity("GameModule.Entities.HumanUnitTask", b =>
+            modelBuilder.Entity("GameModule.Entities.HumanTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,10 +62,7 @@ namespace GameModule.Migrations
                     b.Property<DateTime>("From")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("HumanUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MapTileId")
+                    b.Property<int>("HumanId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("To")
@@ -79,14 +76,14 @@ namespace GameModule.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HumanUnitId");
+                    b.HasIndex("HumanId");
 
                     b.HasIndex("TribeId");
 
-                    b.ToTable("HumanUnitTasks", "GameModule");
+                    b.ToTable("HumanTasks", "GameModule");
                 });
 
-            modelBuilder.Entity("GameModule.Entities.HumanUnitTaskOrder", b =>
+            modelBuilder.Entity("GameModule.Entities.HumanTaskOrder", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -97,10 +94,7 @@ namespace GameModule.Migrations
                     b.Property<DateTime>("Added")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsInProgress")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("MapTileId")
+                    b.Property<int?>("HumanTaskId")
                         .HasColumnType("int");
 
                     b.Property<int>("TribeId")
@@ -111,9 +105,11 @@ namespace GameModule.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("HumanTaskId");
+
                     b.HasIndex("TribeId");
 
-                    b.ToTable("HumanUnitTaskOrders", "GameModule");
+                    b.ToTable("HumanTaskOrders", "GameModule");
                 });
 
             modelBuilder.Entity("GameModule.Entities.MapTile", b =>
@@ -180,17 +176,41 @@ namespace GameModule.Migrations
                     b.ToTable("TribeRelocations", "GameModule");
                 });
 
-            modelBuilder.Entity("GameModule.Entities.HumanUnit", b =>
+            modelBuilder.Entity("GameModule.Entities.TribeStructure", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PowerAndDurability")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TribeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TribeId");
+
+                    b.ToTable("TribeStructures", "GameModule");
+                });
+
+            modelBuilder.Entity("GameModule.Entities.Human", b =>
                 {
                     b.HasOne("GameModule.Entities.Tribe", "Tribe")
-                        .WithMany("HumanUnits")
+                        .WithMany("Humans")
                         .HasForeignKey("TribeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.OwnsOne("GameModule.Entities.ValueObjects.Localization", "Localization", b1 =>
                         {
-                            b1.Property<int>("HumanUnitId")
+                            b1.Property<int>("HumanId")
                                 .HasColumnType("int");
 
                             b1.Property<int>("X")
@@ -199,12 +219,12 @@ namespace GameModule.Migrations
                             b1.Property<int>("Y")
                                 .HasColumnType("int");
 
-                            b1.HasKey("HumanUnitId");
+                            b1.HasKey("HumanId");
 
-                            b1.ToTable("HumanUnits", "GameModule");
+                            b1.ToTable("Humans", "GameModule");
 
                             b1.WithOwner()
-                                .HasForeignKey("HumanUnitId");
+                                .HasForeignKey("HumanId");
                         });
 
                     b.Navigation("Localization")
@@ -213,29 +233,80 @@ namespace GameModule.Migrations
                     b.Navigation("Tribe");
                 });
 
-            modelBuilder.Entity("GameModule.Entities.HumanUnitTask", b =>
+            modelBuilder.Entity("GameModule.Entities.HumanTask", b =>
                 {
-                    b.HasOne("GameModule.Entities.HumanUnit", "HumanUnit")
+                    b.HasOne("GameModule.Entities.Human", "Human")
                         .WithMany("HumanUnitTasks")
-                        .HasForeignKey("HumanUnitId")
+                        .HasForeignKey("HumanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GameModule.Entities.Tribe", null)
-                        .WithMany("HumanUnitTasks")
+                    b.HasOne("GameModule.Entities.Tribe", "Tribe")
+                        .WithMany("HumanTasks")
                         .HasForeignKey("TribeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("HumanUnit");
+                    b.OwnsOne("GameModule.Entities.ValueObjects.Localization", "Localization", b1 =>
+                        {
+                            b1.Property<int>("HumanTaskId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("X")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Y")
+                                .HasColumnType("int");
+
+                            b1.HasKey("HumanTaskId");
+
+                            b1.ToTable("HumanTasks", "GameModule");
+
+                            b1.WithOwner()
+                                .HasForeignKey("HumanTaskId");
+                        });
+
+                    b.Navigation("Human");
+
+                    b.Navigation("Localization");
+
+                    b.Navigation("Tribe");
                 });
 
-            modelBuilder.Entity("GameModule.Entities.HumanUnitTaskOrder", b =>
+            modelBuilder.Entity("GameModule.Entities.HumanTaskOrder", b =>
                 {
+                    b.HasOne("GameModule.Entities.HumanTask", "HumanTask")
+                        .WithMany()
+                        .HasForeignKey("HumanTaskId");
+
                     b.HasOne("GameModule.Entities.Tribe", "Tribe")
-                        .WithMany("HumanUnitTaskOrders")
+                        .WithMany("HumanTaskOrders")
                         .HasForeignKey("TribeId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("GameModule.Entities.ValueObjects.Localization", "Localization", b1 =>
+                        {
+                            b1.Property<int>("HumanTaskOrderId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("X")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Y")
+                                .HasColumnType("int");
+
+                            b1.HasKey("HumanTaskOrderId");
+
+                            b1.ToTable("HumanTaskOrders", "GameModule");
+
+                            b1.WithOwner()
+                                .HasForeignKey("HumanTaskOrderId");
+                        });
+
+                    b.Navigation("HumanTask");
+
+                    b.Navigation("Localization")
                         .IsRequired();
 
                     b.Navigation("Tribe");
@@ -412,20 +483,33 @@ namespace GameModule.Migrations
                     b.Navigation("Tribe");
                 });
 
-            modelBuilder.Entity("GameModule.Entities.HumanUnit", b =>
+            modelBuilder.Entity("GameModule.Entities.TribeStructure", b =>
+                {
+                    b.HasOne("GameModule.Entities.Tribe", "Tribe")
+                        .WithMany("TribeStructures")
+                        .HasForeignKey("TribeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tribe");
+                });
+
+            modelBuilder.Entity("GameModule.Entities.Human", b =>
                 {
                     b.Navigation("HumanUnitTasks");
                 });
 
             modelBuilder.Entity("GameModule.Entities.Tribe", b =>
                 {
-                    b.Navigation("HumanUnitTaskOrders");
+                    b.Navigation("HumanTaskOrders");
 
-                    b.Navigation("HumanUnitTasks");
+                    b.Navigation("HumanTasks");
 
-                    b.Navigation("HumanUnits");
+                    b.Navigation("Humans");
 
                     b.Navigation("TribeRelocation");
+
+                    b.Navigation("TribeStructures");
                 });
 #pragma warning restore 612, 618
         }

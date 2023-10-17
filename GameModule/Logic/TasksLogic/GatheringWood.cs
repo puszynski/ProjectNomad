@@ -10,7 +10,7 @@ namespace GameModule.Logic.TasksLogic
 {
     internal class GatheringWood : ITask
     {
-        INotification ITask.Start(HumanUnitTaskOrder taskOrder,
+        INotification ITask.Start(HumanTaskOrder taskOrder,
             Tribe tribe,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)
@@ -35,19 +35,19 @@ namespace GameModule.Logic.TasksLogic
                     destinyMapTile.Localization.X,
                     destinyMapTile.Localization.Y);
 
-            var taskToAdd = new HumanUnitTask
+            var taskToAdd = new HumanTask
             {
                 From = currentTimeInLoop,
-                HumanUnitId = human.Id,
+                HumanId = human.Id,
                 Localization = taskOrder.Localization,
                 To = currentTimeInLoop.Add(TaskDurationCalculator.WoodGathering(distance)), //CalculateTimeToEndTask(),
                 TribeId = tribe.Id,
-                Type = EHumanUnitTaskType.GatheringWood,
+                Type = ETaskType.GatheringWood,
             };
 
-            taskOrder.IsInProgress = true;
+            taskOrder.HumanTask = taskToAdd;
             destinyMapTile.Wood.ActualPoints -= GameSETTINGS.Wood.WoodAmountGatheredFromMap;
-            tribe.HumanUnitTasks.Add(taskToAdd);
+            tribe.HumanTasks.Add(taskToAdd);
             
             return new NotificationDto(human.Id,
                human.Name,
@@ -57,7 +57,7 @@ namespace GameModule.Logic.TasksLogic
         }
 
 
-        INotification ITask.End(HumanUnitTask taskToEnd,
+        INotification ITask.End(Entities.HumanTask taskToEnd,
             Tribe tribe,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)
@@ -65,7 +65,7 @@ namespace GameModule.Logic.TasksLogic
             var mapTile = mapTiles.Single(x => x.Localization.Equals(taskToEnd.Localization));
             var mapTileWoodPoints = mapTile.Wood.ActualPoints;
 
-            var human = tribe.HumanUnits.Single(x => x.Id ==  taskToEnd.HumanUnitId);
+            var human = tribe.Humans.Single(x => x.Id ==  taskToEnd.HumanId);
 
             var woodGatheringCoefficient = (double)human.FoodLevelPercentage / 100 * 2;
             var woodPoints = woodGatheringCoefficient >= 1
@@ -78,7 +78,7 @@ namespace GameModule.Logic.TasksLogic
 
             tribe.Resources.Wood += (int)gatheredWoodPoints;
 
-            return new NotificationDto(taskToEnd.HumanUnitId,
+            return new NotificationDto(taskToEnd.HumanId,
                 human.Name, 
                 currentTimeInLoop, 
                 ENotificationType.WoodGatheringEnded, 

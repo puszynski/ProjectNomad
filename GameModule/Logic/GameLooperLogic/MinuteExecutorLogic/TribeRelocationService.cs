@@ -32,7 +32,7 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
             if (tribe.TribeRelocation != null)
                 return ETribeRelocationStatus.InProgress;
 
-            if (tribe.HumanUnitTaskOrders.Any(x => x.Type == EHumanUnitTaskType.TribeRelocation))
+            if (tribe.HumanTaskOrders.Any(x => x.Type == ETaskType.TribeRelocation))
                 return ETribeRelocationStatus.Scheduled;
 
             return ETribeRelocationStatus.None;
@@ -40,8 +40,8 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
 
         bool ITribeRelocationService.IsValidToStartRelocationProcess(Tribe tribe)
         {
-            var relocationTaskOrder = tribe.HumanUnitTaskOrders
-                .Where(x => x.Type == EHumanUnitTaskType.TribeRelocation)
+            var relocationTaskOrder = tribe.HumanTaskOrders
+                .Where(x => x.Type == ETaskType.TribeRelocation)
                 .SingleOrDefault();
 
             if (relocationTaskOrder == null)
@@ -69,8 +69,8 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
         void ITribeRelocationService.StartRelocationProcess(Tribe tribe)
         {
             //todo test...
-            var relocationTaskOrder = tribe.HumanUnitTaskOrders
-                .Where(x => x.Type == EHumanUnitTaskType.TribeRelocation)
+            var relocationTaskOrder = tribe.HumanTaskOrders
+                .Where(x => x.Type == ETaskType.TribeRelocation)
                 .SingleOrDefault();
 
             if (relocationTaskOrder == null)
@@ -100,7 +100,7 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
             };
 
             tribe.TribeRelocation = relocation;
-            tribe.HumanUnitTaskOrders.Remove(relocationTaskOrder);
+            tribe.HumanTaskOrders.Remove(relocationTaskOrder);
         }
 
         void ITribeRelocationService.EndRelocationProcess(Tribe tribe)
@@ -128,7 +128,7 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
                             tribe.TribeRelocation.Destiny.X,
                             tribe.TribeRelocation.Destiny.Y);
 
-                return distance * tribe.HumanUnits.Count * GameSETTINGS.TribeRelocation.FoodPointsNeededToTravelOneTileForOneTribeMember;
+                return distance * tribe.Humans.Count * GameSETTINGS.TribeRelocation.FoodPointsNeededToTravelOneTileForOneTribeMember;
             }
         }
     }

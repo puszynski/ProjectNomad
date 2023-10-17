@@ -3,7 +3,7 @@ using GameModule.Entities.ValueObjects;
 
 namespace GameModule.Entities
 {
-    internal class HumanUnit : IId, ITribeReference
+    internal class Human : IId, ITribeReference
     {
         public int Id { get; set; }
 
@@ -15,6 +15,6 @@ namespace GameModule.Entities
         //1-100
         public int FoodLevelPercentage { get; set; }
 
-        public ICollection<HumanUnitTask> HumanUnitTasks { get; set; }
+        public ICollection<HumanTask> HumanUnitTasks { get; set; }
     }
 }

@@ -59,10 +59,10 @@
 
     string GetDescriptionBaseOnTaskType()
     {
-        switch ((EHumanUnitTaskType)TaskType)
+        switch ((ETaskType)TaskType)
         {   
-            case EHumanUnitTaskType.TribeRelocation: return "Order tribe relocation to position";
-            case EHumanUnitTaskType.GatheringWood: return "Order tribe to gather wood from position";
+            case ETaskType.TribeRelocation: return "Order tribe relocation to position";
+            case ETaskType.GatheringWood: return "Order tribe to gather wood from position";
             default: return "Ups :/";
         }  
     }
@@ -72,11 +72,11 @@
 
     string GetDuration()
     {
-        switch ((EHumanUnitTaskType)TaskType)
+        switch ((ETaskType)TaskType)
         {
-            case EHumanUnitTaskType.TribeRelocation: 
+            case ETaskType.TribeRelocation: 
                 return ProjectNomad.Shared.Logic.TaskDurationCalculator.TribeRelocation(GetDistnace()).ToString();
-            case EHumanUnitTaskType.GatheringWood:
+            case ETaskType.GatheringWood:
                 return ProjectNomad.Shared.Logic.TaskDurationCalculator.WoodGathering(GetDistnace()).ToString();
             default: return "Ups :/";
         }
@@ -85,7 +85,7 @@
     async Task Submit()
     {
         await _taskOrderManager.Add(TribeId,
-            (ProjectNomad.Shared.Enums.EHumanUnitTaskType)TaskType,
+            (ProjectNomad.Shared.Enums.ETaskType)TaskType,
             DestinyX,
             DestinyY);
 

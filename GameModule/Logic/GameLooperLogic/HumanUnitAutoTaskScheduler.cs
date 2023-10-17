@@ -8,22 +8,22 @@ namespace GameModule.Logic.GameLooperLogic
 {
     internal interface IHumanUnitAutoTaskScheduler
     {
-        Task Execute(Tribe tribe,
+        System.Threading.Tasks.Task Execute(Tribe tribe,
             List<INotification> notifications,
             DateTime currentTimeInLoop);
     }
 
     internal class HumanUnitAutoTaskScheduler : IHumanUnitAutoTaskScheduler
     {
-        public async Task Execute(Tribe tribe,
+        public async System.Threading.Tasks.Task Execute(Tribe tribe,
             List<INotification> notifications,
             DateTime currentTimeInLoop)
         {
-            var humanUnitIdsWithTaskInProgress = tribe.HumanUnitTasks
-                .Select(x => x.HumanUnitId)
+            var humanUnitIdsWithTaskInProgress = tribe.HumanTasks
+                .Select(x => x.HumanId)
                 .ToList();
 
-            var humanUnitWithNoTasksInProgressAndFoodLevelLessThen80 = tribe.HumanUnits
+            var humanUnitWithNoTasksInProgressAndFoodLevelLessThen80 = tribe.Humans
                 .Where(x => !humanUnitIdsWithTaskInProgress.Contains(x.Id))
                 .Where(x => x.FoodLevelPercentage <= 80)
                 .ToList();
@@ -34,7 +34,7 @@ namespace GameModule.Logic.GameLooperLogic
                 {
                     var notification = await CreateTask(humanUnit, 
                         tribe.Id, 
-                        tribe.HumanUnitTasks, 
+                        tribe.HumanTasks, 
                         currentTimeInLoop);
 
                     tribe.Resources.FreshFood -= GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit;
@@ -44,17 +44,17 @@ namespace GameModule.Logic.GameLooperLogic
             }
         }
 
-        async Task<INotification> CreateTask(HumanUnit humanUnit, 
+        async Task<INotification> CreateTask(Human humanUnit, 
             int tribeId, 
-            ICollection<HumanUnitTask> tasksToConsume,
+            ICollection<Entities.HumanTask> tasksToConsume,
             DateTime currentTimeInLoop)
         {
-            var entity = new HumanUnitTask
+            var entity = new Entities.HumanTask
             {
                 From = currentTimeInLoop.AddSeconds(-1),//todo remove -1 due to TaskRequire mechanism and change UT
-                HumanUnitId = humanUnit.Id,
+                HumanId = humanUnit.Id,
                 TribeId = tribeId,
-                Type = EHumanUnitTaskType.ConsumeFood,
+                Type = ETaskType.ConsumeFood,
                 To = currentTimeInLoop.AddMinutes(GameSETTINGS.Food.MinutesToConsumeFoodToFill20PercentageOfFood).AddSeconds(-1),//todo remove -1 TaskRequire mechanism and change UT
                 Localization = null
             };

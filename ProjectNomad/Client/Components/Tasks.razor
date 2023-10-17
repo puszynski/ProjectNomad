@@ -17,7 +17,7 @@
     <br />
     <button type="button" class="button_active" style="width: 250px;" @onclick="OrderToGatherWood">zbierz drewno w okolicy</button>
     <br />
-    @if (!TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 0) && !HumanUnitTaskOrders.Any(x => x.Type == EHumanUnitTaskType.LightAFire))
+    @if (!TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 0) && !HumanUnitTaskOrders.Any(x => x.Type == ETaskType.LightAFire))
     {
         <button type="button" class="button_active" style="width: 250px;" @onclick="OrderToLightFire">rozpal ognisko</button>
         <br />
@@ -49,29 +49,27 @@
     <br />
 
     var buttons = new List<ButtonTaskOrders>();
-    var notAssignedTasks = HumanUnitTasks.OrderByDescending(x => x.From).ToList();
     @foreach (var taskOrder in HumanUnitTaskOrders.OrderBy(x => x.Added))
     {
         var lastButton = buttons.LastOrDefault();
 
         IHumanUnitTaskDto matchingTask = null;
 
-        if (taskOrder.IsInProgress)
-            matchingTask = notAssignedTasks.OrderByDescending(x => x.From).FirstOrDefault(x => x.Type == taskOrder.Type);
+        if (taskOrder.HumanTaskId.HasValue)
+            matchingTask = HumanUnitTasks.Single(x => x.Id == taskOrder.HumanTaskId);
 
         if (lastButton == null || taskOrder.Type != lastButton.Type)
         {
-            var buttonToAdd = new ButtonTaskOrders { Type = taskOrder.Type, AllCount = 1, InProgressCount = taskOrder.IsInProgress ? 1 : 0 };
+            var buttonToAdd = new ButtonTaskOrders { Type = taskOrder.Type, AllCount = 1, InProgressCount = taskOrder.HumanTaskId.HasValue ? 1 : 0 };
             if (matchingTask != null)
             {
                 buttonToAdd.MatchedTasks.Add(matchingTask);
-                notAssignedTasks.Remove(matchingTask);
             }
             buttons.Add(buttonToAdd);
         }
         else
         {
-            if (taskOrder.IsInProgress)
+            if (taskOrder.HumanTaskId.HasValue)
                 lastButton.InProgressCount++;
             lastButton.AllCount++;
 
@@ -142,7 +140,7 @@ else
     public IEnumerable<ITribeStructure> TribeStructures { get; set; }
 
 
-    IReadOnlyList<EHumanUnitTaskType> AutoTasks = new List<EHumanUnitTaskType>() { EHumanUnitTaskType.ConsumeFood };
+    IReadOnlyList<ETaskType> AutoTasks = new List<ETaskType>() { ETaskType.ConsumeFood };
 
 
     protected override async Task OnInitializedAsync()
@@ -150,14 +148,14 @@ else
     }
 
     async Task OrderToLightFire()
-        => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.LightAFire, Tribe.X, Tribe.Y);
+        => _taskOrderManager.Add(Tribe.Id, ETaskType.LightAFire, Tribe.X, Tribe.Y);
 
     async Task OrderToKeepFire()
-        => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.KeepFire, Tribe.X, Tribe.Y);
+        => _taskOrderManager.Add(Tribe.Id, ETaskType.KeepFire, Tribe.X, Tribe.Y);
 
     async Task OrderToGatherFood()
-        => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.GatheringFood, Tribe.X, Tribe.Y);
+        => _taskOrderManager.Add(Tribe.Id, ETaskType.GatheringFood, Tribe.X, Tribe.Y);
 
     async Task OrderToGatherWood()
-        => _taskOrderManager.Add(Tribe.Id, EHumanUnitTaskType.GatheringWood, Tribe.X, Tribe.Y);
+        => _taskOrderManager.Add(Tribe.Id, ETaskType.GatheringWood, Tribe.X, Tribe.Y);
 }

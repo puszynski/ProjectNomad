@@ -28,16 +28,23 @@ namespace GameModule.Repositories
 
         async Task<Tribe> ITribeRepository.GetAllDataMaterialized(Guid accountId)
         {
-            return await _gameModuleDbContext
+            var data = await _gameModuleDbContext
                 .Tribes
                 .Where(x => x.AccountId == accountId)
                 .Include(x => x.TribeRelocation)
-                .Include(x => x.HumanUnits)                
-                .Include(x => x.HumanUnitTasks)
-                .Include(x => x.HumanUnitTaskOrders)
+                .Include(x => x.Humans)
+                .Include(x => x.HumanTasks)
+                .Include(x => x.HumanTaskOrders)
                 .Include(x => x.TribeStructures)
-                .SingleOrDefaultAsync()
-                ?? throw new ArgumentException($"Ops GameModul! Given accountId {accountId} have no tribe linked :/");
+                .SingleOrDefaultAsync();
+
+            if (data == null)
+            {
+                //co zrobić? jest opcja że usuwamy konto a browser je pamieta i wtedy wpadamy tu i nic nie znajdujemy..
+                throw new ArgumentException($"Ops GameModul! Given accountId {accountId} have no tribe linked :/");
+            }
+
+            return data;
         }
     }
 }

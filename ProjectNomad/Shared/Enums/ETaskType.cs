@@ -2,7 +2,7 @@
 
 namespace ProjectNomad.Shared.Enums
 {
-    public enum EHumanUnitTaskType
+    public enum ETaskType
     {
         GatheringFood = 100,
 
@@ -19,30 +19,30 @@ namespace ProjectNomad.Shared.Enums
 
     public static class HumanUnitTaskTypeExtensions
     {
-        public static string GetDescription(this EHumanUnitTaskType type)
+        public static string GetDescription(this ETaskType type)
         {
             switch (type)
             {
-                case EHumanUnitTaskType.GatheringFood:
+                case ETaskType.GatheringFood:
                     return "gromadź jedzenie";
-                case EHumanUnitTaskType.GatheringWood:
+                case ETaskType.GatheringWood:
                     return "gromadź drewno";
-                case EHumanUnitTaskType.LightAFire:
+                case ETaskType.LightAFire:
                     return "rozpal ogień";
-                case EHumanUnitTaskType.KeepFire:
+                case ETaskType.KeepFire:
                     return "utrzymuj ogień";
-                case EHumanUnitTaskType.TribeRelocation:
+                case ETaskType.TribeRelocation:
                     return "zmień lokalizację";
-                case EHumanUnitTaskType.ConsumeFood:
+                case ETaskType.ConsumeFood:
                     return "konsumuj jedzenie";
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        public static List<EHumanUnitTaskType> GetAutoTasks()
+        public static List<ETaskType> GetAutoTasks()
         {
-            return new List<EHumanUnitTaskType>() { EHumanUnitTaskType.ConsumeFood };
+            return new List<ETaskType>() { ETaskType.ConsumeFood };
         }
     }
 }

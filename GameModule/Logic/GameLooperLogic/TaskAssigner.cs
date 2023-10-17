@@ -38,7 +38,7 @@ namespace GameModule.Logic.GameLooperLogic
 
                     switch (autoTasks)
                     {
-                        case EHumanUnitTaskType.ConsumeFood:
+                        case ETaskType.ConsumeFood:
                             assigner = new ConsumeFood();
                             break;
                     }
@@ -51,26 +51,26 @@ namespace GameModule.Logic.GameLooperLogic
 
             void OrderTaskAssign()
             {
-                var taskOrdersToAssign = tribe.HumanUnitTaskOrders.Where(x => !x.IsInProgress);
+                var taskOrdersToAssign = tribe.HumanTaskOrders.Where(x => !x.HumanTaskId.HasValue);
                 foreach (var taskOrder in taskOrdersToAssign)
                 {
                     ITask? assigner = null;
 
                     switch (taskOrder.Type)
                     {
-                        case EHumanUnitTaskType.GatheringFood:
+                        case ETaskType.GatheringFood:
                             assigner = new GatheringFood();
                             break;
-                        case EHumanUnitTaskType.GatheringWood:
+                        case ETaskType.GatheringWood:
                             assigner = new GatheringWood();
                             break;
-                        case EHumanUnitTaskType.LightAFire:
+                        case ETaskType.LightAFire:
                             assigner = new LightFire();
                             break;
-                        case EHumanUnitTaskType.KeepFire:
+                        case ETaskType.KeepFire:
                             assigner = new KeepFire();
                             break;
-                        case EHumanUnitTaskType.TribeRelocation:
+                        case ETaskType.TribeRelocation:
                             TribeRelocationTasksAssign(tribe);
                             break;
                     }
@@ -87,9 +87,9 @@ namespace GameModule.Logic.GameLooperLogic
 
         void TribeRelocationTasksAssign(Tribe tribe)
         {
-            var taskOrderToAssign = tribe.HumanUnitTaskOrders
-                    .Where(x => x.Type == EHumanUnitTaskType.TribeRelocation)
-                    .Where(x => !x.IsInProgress)
+            var taskOrderToAssign = tribe.HumanTaskOrders
+                    .Where(x => x.Type == ETaskType.TribeRelocation)
+                    .Where(x => !x.HumanTaskId.HasValue)
                     .SingleOrDefault();
 
             if (taskOrderToAssign == null)

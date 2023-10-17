@@ -21,7 +21,7 @@ namespace GameModule.Logic.TasksLogic
             tribeStructure.PowerAndDurability -= 1;
         }
 
-        INotification ITask.Start(HumanUnitTaskOrder taskOrder, 
+        INotification ITask.Start(HumanTaskOrder taskOrder, 
             Tribe tribe, 
             DateTime looperNow,
             IEnumerable<MapTile> mapTiles)
@@ -43,18 +43,18 @@ namespace GameModule.Logic.TasksLogic
                     CustomValue: null);
             }
 
-            var taskToAdd = new HumanUnitTask
+            var taskToAdd = new HumanTask
             {
                 From = looperNow,
-                HumanUnitId = humanWithConditionToStartNewTask.Id,
+                HumanId = humanWithConditionToStartNewTask.Id,
                 Localization = taskOrder.Localization,
                 To = looperNow.AddMinutes(GameSETTINGS.Fire.TimeToCompleteAttemptToStartFire),
                 TribeId = tribe.Id,
-                Type = EHumanUnitTaskType.LightAFire,
+                Type = ETaskType.LightAFire,
             };
 
-            tribe.HumanUnitTasks.Add(taskToAdd);
-            taskOrder.IsInProgress = true;
+            tribe.HumanTasks.Add(taskToAdd);
+            taskOrder.HumanTask = taskToAdd;
             tribe.Resources.Wood -= GameSETTINGS.Fire.WoodUsedToKeepTheCampfireBurning;
 
             return new NotificationDto(humanWithConditionToStartNewTask.Id,
@@ -64,23 +64,23 @@ namespace GameModule.Logic.TasksLogic
                     CustomValue: null);
         }
 
-        INotification ITask.End(HumanUnitTask taskToEnd, 
+        INotification ITask.End(HumanTask taskToEnd, 
             Tribe tribe, 
             DateTime looperNow,
             IEnumerable<MapTile> mapTiles)
         {
-            var taskOrder = tribe.HumanUnitTaskOrders
-                .Where(x => x.Type == EHumanUnitTaskType.LightAFire && x.IsInProgress)
+            var taskOrder = tribe.HumanTaskOrders
+                .Where(x => x.Id == taskToEnd.Id)
                 .OrderBy(x => x.Added)
                 .FirstOrDefault(); 
 
             if (!RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.Fire.ChanceToStartFire))
             {
                 if (taskOrder != null)
-                    taskOrder.IsInProgress = false;
+                    taskOrder.HumanTask = null;
 
-                return new NotificationDto(taskToEnd.HumanUnitId,
-                    tribe.HumanUnits.Single(x => x.Id == taskToEnd.HumanUnitId).Name,
+                return new NotificationDto(taskToEnd.HumanId,
+                    tribe.Humans.Single(x => x.Id == taskToEnd.HumanId).Name,
                     looperNow,
                     ENotificationType.AttemptToStartFireFailed,
                     CustomValue: null);
@@ -102,8 +102,8 @@ namespace GameModule.Logic.TasksLogic
                 tribe.TribeStructures.Add(fire);
             }
 
-            return new NotificationDto(taskToEnd.HumanUnitId,
-                tribe.HumanUnits.Single(x => x.Id == taskToEnd.HumanUnitId).Name,
+            return new NotificationDto(taskToEnd.HumanId,
+                tribe.Humans.Single(x => x.Id == taskToEnd.HumanId).Name,
                 looperNow,
                 ENotificationType.FireStarted,
                 CustomValue: null);

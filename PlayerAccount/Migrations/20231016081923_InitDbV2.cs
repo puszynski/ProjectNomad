@@ -6,18 +6,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AccountModule.Migrations
 {
     /// <inheritdoc />
-    public partial class TemporaryDropTableAccount : Migration
+    public partial class InitDbV2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "Accounts",
-                schema: "AccountModule");
-        }
-
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "AccountModule");
@@ -28,9 +20,8 @@ namespace AccountModule.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GuestAccount_LastLoginDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    GuestAccount_Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     GuestAccount_ReLoginToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GuestAccount_LastLoginDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     RegisteredAccount_Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RegisteredAccount_Password = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -38,6 +29,14 @@ namespace AccountModule.Migrations
                 {
                     table.PrimaryKey("PK_Accounts", x => x.Id);
                 });
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "Accounts",
+                schema: "AccountModule");
         }
     }
 }

@@ -6,8 +6,8 @@ namespace ProjectNomad.Client.Models.Response
     public record HumanUnitTaskOrder(int Id,
         int TribeId,
         DateTime Added,
-        EHumanUnitTaskType Type,
-        bool IsInProgress,
+        ETaskType Type,
+        int? HumanTaskId,
         int? X,
         int? Y) : IHumanUnitTaskOrder;
 }

@@ -5,7 +5,7 @@ namespace ProjectNomad.Server.Models.RequestModels
 {
     public record AddHumanUnitTask(int TribeId,
         int HumanUnitId,
-        EHumanUnitTaskType Type,
+        ETaskType Type,
         int LocalizationStart_X,
         int LocalizationStart_Y,
         int LocalizationEnd_X,

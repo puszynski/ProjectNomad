@@ -30,7 +30,7 @@ namespace GameModule
 
 
         public Task<IEnumerable<IHumanUnitTaskOrder>> GetHumanUnitTaskOrders(int tribeId);
-        public Task AddHumanUnitTaskOrder(int tribeId, EHumanUnitTaskType type, int mapTileX, int mapTileY);
+        public Task AddHumanUnitTaskOrder(int tribeId, ETaskType type, int mapTileX, int mapTileY);
         public Task DeleteHumanUnitTaskOrder(int id);
     }
 }

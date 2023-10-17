@@ -7,7 +7,7 @@ namespace ProjectNomad.Client.Models.Components
     {
         public int InProgressCount { get; set; }
         public int AllCount { get; set; }
-        public EHumanUnitTaskType Type { get; set; }
+        public ETaskType Type { get; set; }
         public List<IHumanUnitTaskDto> MatchedTasks = new List<IHumanUnitTaskDto>();
     };
 }

@@ -20,12 +20,12 @@ namespace GameModule.Logic.GameLooperLogic
             DateTime currentTimeInLoop,
             List<INotification> notifications)
         {
-            var humanUnitIds = tribe.HumanUnits
+            var humanUnitIds = tribe.Humans
                 .Select(x => x.Id)
                 .ToList();
 
-            var tasksToConsume = tribe.HumanUnitTasks
-                .Where(x => humanUnitIds.Contains(x.HumanUnitId))
+            var tasksToConsume = tribe.HumanTasks
+                .Where(x => humanUnitIds.Contains(x.HumanId))
                 .Where(x => x.To <= currentTimeInLoop)
                 .ToList();
 
@@ -39,18 +39,18 @@ namespace GameModule.Logic.GameLooperLogic
                 if (notification != null)
                     notifications.Add(notification);
 
-                tribe.HumanUnitTasks.Remove(task);
+                tribe.HumanTasks.Remove(task);//CHYAB TUTAJ LECI BŁĄD
 
-                var finishedHumanTaskOrder = tribe.HumanUnitTaskOrders
-                    .Where(x => x.IsInProgress && x.Type == task.Type)
-                    .OrderBy(x => x.Added).FirstOrDefault();
-                if (finishedHumanTaskOrder != null)
-                    tribe.HumanUnitTaskOrders.Remove(finishedHumanTaskOrder);
-                else { /*todo log - finishedHumanTaskOrder should always exists, if its null its due to problem - happens 2 times..*/  }
+                //todo only nullable when automatic tasks
+                var finishedHumanTaskOrder = tribe.HumanTaskOrders
+                    .SingleOrDefault(x => x.HumanTaskId.HasValue && x.HumanTaskId == task.Id);
+
+                if (finishedHumanTaskOrder != null) //ps nieudana próba rozpalenia ognia powinna null`ować referencje i nie powinno się znaleźć pasujacego taskOrderu
+                    tribe.HumanTaskOrders.Remove(finishedHumanTaskOrder);
             }
         }
 
-        INotification? ConsumeTask(HumanUnitTask humanUnitTask,
+        INotification? ConsumeTask(Entities.HumanTask humanUnitTask,
             Tribe tribe,
             ICollection<MapTile> mapTiles,
             DateTime currentTimeInLoop)
@@ -59,19 +59,19 @@ namespace GameModule.Logic.GameLooperLogic
 
             switch (humanUnitTask.Type)
             {
-                case EHumanUnitTaskType.GatheringFood:
+                case ETaskType.GatheringFood:
                     consumer = new GatheringFood();
                     break;
-                case EHumanUnitTaskType.GatheringWood:
+                case ETaskType.GatheringWood:
                     consumer = new GatheringWood();
                     break;
-                case EHumanUnitTaskType.LightAFire:
-                    consumer = new LightFire();//GDY TASK TRWA TO MUSI TU WPADAC, NIE USTAWIA NA IsInProg = false and removing task order... KURDE NIE POWINNO TU WEJSC POKI TASK SIE NIE KONCZY, TO CZEMU WSKOCZYŁO W TRAKCIE??
+                case ETaskType.LightAFire:
+                    consumer = new LightFire();
                     break;
-                case EHumanUnitTaskType.KeepFire:
+                case ETaskType.KeepFire:
                     consumer = new KeepFire();
                     break;
-                case EHumanUnitTaskType.ConsumeFood:
+                case ETaskType.ConsumeFood:
                     consumer = new ConsumeFood();
                     break;
 

@@ -5,12 +5,12 @@ namespace GameModule.Logic.TasksLogic
 {
     internal interface ITask
     {
-        internal INotification Start(HumanUnitTaskOrder taskOrder, 
+        internal INotification Start(HumanTaskOrder taskOrder, 
             Tribe tribeMaterializedData,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles); 
 
-        internal INotification End(HumanUnitTask taskToEnd, 
+        internal INotification End(HumanTask taskToEnd, 
             Tribe tribeMaterializedData,
             DateTime currentTimeInLoop, 
             IEnumerable<MapTile> mapTiles);

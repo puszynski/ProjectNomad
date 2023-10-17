@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AccountModule.Migrations
 {
     [DbContext(typeof(AccountModuleDbContext))]
-    [Migration("20230626200749_Add_LastLoginDate_ToGuestAccount")]
-    partial class Add_LastLoginDate_ToGuestAccount
+    [Migration("20231017103224_InitDbV3")]
+    partial class InitDbV3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,11 +28,9 @@ namespace AccountModule.Migrations
 
             modelBuilder.Entity("AccountModule.Entities.Account", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -43,15 +41,11 @@ namespace AccountModule.Migrations
                 {
                     b.OwnsOne("AccountModule.Entities.ValueObject.GuestAccount", "GuestAccount", b1 =>
                         {
-                            b1.Property<int>("AccountId")
-                                .HasColumnType("int");
+                            b1.Property<Guid>("AccountId")
+                                .HasColumnType("uniqueidentifier");
 
-                            b1.Property<DateTime>("LastLogin")
+                            b1.Property<DateTime>("LastLoginDate")
                                 .HasColumnType("datetime2");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("ReLoginToken")
                                 .IsRequired()
@@ -67,8 +61,8 @@ namespace AccountModule.Migrations
 
                     b.OwnsOne("AccountModule.Entities.ValueObject.RegisteredAccount", "RegisteredAccount", b1 =>
                         {
-                            b1.Property<int>("AccountId")
-                                .HasColumnType("int");
+                            b1.Property<Guid>("AccountId")
+                                .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("Name")
                                 .IsRequired()

@@ -6,8 +6,8 @@ namespace GameModule.Repositories
 {
     internal interface IHumanUnitRepository : IRepository
     {
-        Task<List<HumanUnit>> GetHumanUnitsByTribeId(int tribeId);
-        void RemoveRange(IEnumerable<HumanUnit> humanUnits);
+        Task<List<Human>> GetHumanUnitsByTribeId(int tribeId);
+        void RemoveRange(IEnumerable<Human> humanUnits);
     }
 
     internal class HumanUnitRepository : BaseRepository, IHumanUnitRepository
@@ -16,15 +16,15 @@ namespace GameModule.Repositories
         {
         }
 
-        async Task<List<HumanUnit>> IHumanUnitRepository.GetHumanUnitsByTribeId(int tribeId)
+        async Task<List<Human>> IHumanUnitRepository.GetHumanUnitsByTribeId(int tribeId)
         {
             return await _gameModuleDbContext
-                .HumanUnits
+                .Humans
                 .Where(x => x.TribeId == tribeId)
                 .ToListAsync();
         }
 
-        void IHumanUnitRepository.RemoveRange(IEnumerable<HumanUnit> humanUnits)
+        void IHumanUnitRepository.RemoveRange(IEnumerable<Human> humanUnits)
         {
             _gameModuleDbContext.RemoveRange(humanUnits);
         }

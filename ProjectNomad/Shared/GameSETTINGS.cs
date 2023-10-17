@@ -4,6 +4,12 @@
     {
         public const double BasicProbabilityToAssignToTaskOrderPerSecond = 0.05;
 
+        public static class InitializeRebornTribe
+        {
+            public const int FoodPoints = 20;
+            public const int WoodPoints = 20;
+        }
+
         public static class Moving
         {
             public const int MinutesToTravelOneTile = 10;
