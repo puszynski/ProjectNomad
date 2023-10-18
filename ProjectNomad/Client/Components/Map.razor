@@ -12,8 +12,6 @@
 
 
 <div style="position: relative;
-                    border: 2px dashed;
-                    border-color: Gainsboro;
                     width:564px;
                     height:564px;
                     margin: auto;">
@@ -27,68 +25,72 @@
         @*SIZE FOR ONE TILE 80x80 - BUT - IMG MAP TILES => FILE SIZE 100x100, COVERING MARGIN 10x, INNER MARGIN 2px => COLOUR TILE 76x76px *@
         foreach (var mapTile in mapViewModel.MapTiles)
         {
-                if (Tribe.X == mapTile.X && Tribe.Y == mapTile.Y)
-                {
-                        <img src="@mapTile.GetTileImgPath()"
-                                 height="100"
-                                 width="100"
-                                 style="position: absolute;
-                                 left: @(row * 80 -10)px;
-                                 top: @(column * 80 -10)px"
-                                 @onclick="NavigateToTribe" />
-                }
-                else
-                {
-                    @* TODO - layers for bg img, trees, shodows etc *@
+            @* bacground tile *@
+            var opacity = (double)1 - ((double)mapTile.WoodPoints / 300);
+            <div style="width: 78px; height: 78px; background-color: #C8C7C2; margin: 1px; float: left; opacity: @opacity;">
+            </div>
+
+            if (Tribe.X == mapTile.X && Tribe.Y == mapTile.Y)
+            {
                     <img src="@mapTile.GetTileImgPath()"
-                         height="100"
-                         width="100"
-                         style="position: absolute;
-                         left: @(row * 80 -10)px;
-                         top: @(column * 80 -10)px"
-                         @onclick="() => SelectMapTile(mapTile)" />
+                             height="100"
+                             width="100"
+                             style="position: absolute;
+                             left: @(row * 80 -10)px;
+                             top: @(column * 80 -10)px"
+                             @onclick="NavigateToTribe" />
+            }
+            else
+            {
+                @* TODO - layers for bg img, trees, shodows etc *@
+                <img src="@mapTile.GetTileImgPath()"
+                     height="100"
+                     width="100"
+                     style="position: absolute;
+                     left: @(row * 80 -10)px;
+                     top: @(column * 80 -10)px;
+                     opacity: 0.5;"
+                     @onclick="() => SelectMapTile(mapTile)" />
 
-                }
+            }
 
-                @* <div style="width: 78px; height: 78px; background-color: #4D4D4D; margin: 1px; float: left; ">
-                    alternative way to display bg color
-                </div> *@
+            
 
-                <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80)px">@mapTile.FoodPoints</p>
-                <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80 + 10)px">@mapTile.WoodPoints</p>
+            <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80)px">@mapTile.FoodPoints</p>
+            <p class="always-visible" style="position: absolute; left: @(row * 80)px; top: @(column * 80 + 10)px">@mapTile.WoodPoints</p>
 
 
-                if (mapTile.X == Tribe.X && mapTile.Y == Tribe.Y)
+            if (mapTile.X == Tribe.X && mapTile.Y == Tribe.Y)
+            {
+                <p style="position: absolute; left: @(row * 80 + 10)px; top: @(column * 80 + 30)px">⛶</p>
+            }
+
+            if (SelectedMapTile == mapTile)
+            {
+                @if (Tribe.RelocationStatus == ProjectNomad.Shared.Interfaces.ETribeRelocationStatus.None && !(Tribe.X == mapTile.X && Tribe.Y == mapTile.Y))
                 {
-                    <p style="position: absolute; left: @(row * 80 + 10)px; top: @(column * 80 + 30)px">⛶</p>
+                    <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 30)px" class="button" @onclick="() =>RelocateTribe(mapTile)"><span>relocate</span></button>
                 }
+            <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 45)px" class="button" @onclick="() => GatherWood(mapTile)"><span>gather wood</span></button>
 
-                if (SelectedMapTile == mapTile)
-                {
-                    @if (Tribe.RelocationStatus == ProjectNomad.Shared.Interfaces.ETribeRelocationStatus.None && !(Tribe.X == mapTile.X && Tribe.Y == mapTile.Y))
-                    {
-                        <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 30)px" class="button" @onclick="() => RelocateTribe(mapTile)"><span>relocate</span></button>
-                    }
-                <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 45)px" class="button" @onclick="() => GatherWood(mapTile)"><span>gather wood</span></button>
+                <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 60)px" class="button"@onclick="DeselectMapTile"><span>cancel</span></button>
+            }
 
-                    <button style="position: absolute; z-index: 1; left: @(row * 80 + 40)px; top: @(column * 80 + 60)px" class="button" @onclick="DeselectMapTile"><span>cancel</span></button>
-                }
-
-                @if (row == 6)
-                {
-                    row = 0;
-                    ++column;
-                }
-                else
-                {
-                    ++row;
-                }
+            @if (row == 6)
+            {
+                row = 0;
+                ++column;
+            }
+            else
+            {
+                ++row;
             }
         }
-        else
-        {
-            <p>loading..</p>
-        }
+    }
+    else
+    {
+        <p>loading..</p>
+    }
     </div>
 
 <br />

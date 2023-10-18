@@ -6,13 +6,26 @@
     --lightercolor: dimgray;
 }*/
 
+
+
+/*paleta - szarość z wybrana-paleta.jpg
+body najciemnieszych do najjasniejszych
+
+    #393631 - tło + ciemne elementy na rysunku np drzewa/postaci
+    #4B4843
+    #686560
+    #75726D
+    #ACA9A4 - woda
+    #C8C7C2 - najjaśniejsze - ziemia/trawa
+    #FFFFFF - biały, akcent - okna z dialogiem, śnieg na szczytach etc
+*/
 :root {
-    --background: #222222; /*almost black*/
-    --maincolor: #FFFFFF; /*almost whie*/
-    /*--lightercolor: #EEEEEE;*/ /*a litle less white*/
-    --lightercolor: #909090; /*grey*/
+    --background: #393631; /*tło + rysowanie głównych elementów tj postaci, drzew*/
+    --maincolor: #C8C7C2; /*trawa, ziemia*/
+    --lightercolor: #75746F; /*darker grey*/
+    /*--lightercolor: #4D4A45;*/ /*more darker*/
     --moremore: #4D4D4Dl; /*dark grey*/
-    --accent: #EB6222; /*orange*/
+    --accent: #FFFFFF; /*orange*/
 }
 
 * {
