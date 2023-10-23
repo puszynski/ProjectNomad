@@ -1,16 +1,7 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
-/*:root {
-    --background: lightgrey;
-    --maincolor: black;
-    --lightercolor: dimgray;
-}*/
-
-
-
-/*paleta - szarość z wybrana-paleta.jpg
-body najciemnieszych do najjasniejszych
-
+/*paleta - szarość w lekką brąz, paleta z wybrana-paleta.jpg
+od najciemnieszych do najjasniejszych:
     #393631 - tło + ciemne elementy na rysunku np drzewa/postaci
     #4B4843
     #686560
@@ -20,12 +11,16 @@ body najciemnieszych do najjasniejszych
     #FFFFFF - biały, akcent - okna z dialogiem, śnieg na szczytach etc
 */
 :root {
+    /*change name to level1, velev2..*/
     --background: #393631; /*tło + rysowanie głównych elementów tj postaci, drzew*/
-    --maincolor: #C8C7C2; /*trawa, ziemia*/
+    --level2: #4B4843;
+    --level3: #686560;
+    --level4: #75726D;
     --lightercolor: #75746F; /*darker grey*/
     /*--lightercolor: #4D4A45;*/ /*more darker*/
     --moremore: #4D4D4Dl; /*dark grey*/
-    --accent: #FFFFFF; /*orange*/
+    --maincolor: #C8C7C2; /*trawa, ziemia*/
+    --accent: #FFFFFF; /*biały*/
 }
 
 * {
@@ -148,6 +143,15 @@ html, body {
     align-items: center;
 }
 
+.minimap-character-color-veryverydark {
+    color: var(--level2)
+}
+.minimap-character-color-verydark {
+    color: var(--level3)
+}
+.minimap-character-color-littledark {
+    color: var(--maincolor)
+}
 
 
 

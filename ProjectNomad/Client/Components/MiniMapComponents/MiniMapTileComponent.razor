@@ -1,15 +1,38 @@
 ﻿<div>
-    @for (int z = 0; z < 3; z++)
+    @if (MapType == ProjectNomad.Shared.Enums.EMapType.Ocean)
     {
         <div class="minimap-tile-row-container">
-            @for (int y = 0; y < 3; y++)
-            {
-                <div class="minimap-tile-row-content">
-                    @MapTaileSymbol
-                </div>
-            }
+            <div class="minimap-tile-row-content minimap-character-color-veryverydark" style="font-size:10px;">𝀈</div>
+            <div class="minimap-tile-row-content"></div>
+            <div class="minimap-tile-row-content minimap-character-color-veryverydark">𝀈</div>
         </div>
+        <div class="minimap-tile-row-container">
+            <div class="minimap-tile-row-content"></div>
+            <div class="minimap-tile-row-content minimap-character-color-veryverydark">𝀈</div>
+            <div class="minimap-tile-row-content"></div>
+        </div>
+        <div class="minimap-tile-row-container">
+            <div class="minimap-tile-row-content minimap-character-color-veryverydark">𝀈</div>
+            <div class="minimap-tile-row-content"></div>
+            <div class="minimap-tile-row-content minimap-character-color-veryverydark" style="font-size:12px;">𝀈</div>
+        </div>
+    }    
+    else
+    {
+        @for (int z = 0; z < 3; z++)
+        {
+            <div class="minimap-tile-row-container">
+                @for (int y = 0; y < 3; y++)
+                {
+                    <div class="minimap-tile-row-content minimap-character-color-verydark">
+                        @MapTaileSymbol
+                    </div>
+                }
+            </div>
+        }
     }
+
+    
 </div>
 
 @code {
@@ -23,13 +46,13 @@
             var characterToDisplay = "";
             @switch (MapType)
             {
-                case ProjectNomad.Shared.Enums.EMapType.DenseConiferousForest: characterToDisplay = "⚹"; break;
-                case ProjectNomad.Shared.Enums.EMapType.MediumConiferousForest: characterToDisplay = "⤫"; break;
-                case ProjectNomad.Shared.Enums.EMapType.RareConiferousForest: characterToDisplay = "𝈏"; break; // simmilar to \
+                case ProjectNomad.Shared.Enums.EMapType.DenseConiferousForest: characterToDisplay = "▲"; break;
+                case ProjectNomad.Shared.Enums.EMapType.MediumConiferousForest: characterToDisplay = "✕"; break;
+                case ProjectNomad.Shared.Enums.EMapType.RareConiferousForest: characterToDisplay = "⟍"; break; // simmilar to \
                 case ProjectNomad.Shared.Enums.EMapType.HighMountains: characterToDisplay = "▲"; break;
 
 
-                default: characterToDisplay = "-"; break; @*emtpy  means ocean*@
+                default: characterToDisplay = "⏖"; break; @*emtpy  means ocean*@
             }
 
             return characterToDisplay;
