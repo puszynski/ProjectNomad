@@ -9,7 +9,7 @@ namespace ProjectNomad.Client.ViewModels.Game
         MapTileViewModel? SelectedMapTile { get; set; }
     }
 
-    internal class MapTileViewModel : IMapTile
+    public class MapTileViewModel : IMapTile
     {
         public int X { get; set; }
         public int Y { get; set; }
@@ -24,34 +24,8 @@ namespace ProjectNomad.Client.ViewModels.Game
 
             switch (Type)
             {
-                case EMapType.RareConiferousForest:
-                    imgName = "110_1c";
-                    break;
-
-                    //random option now is disabled
-                    //var randomValue = RandomCalculator.GetRandomInt(1, 3);
-                    //if (randomValue == 3)
-                    //{
-                    //    imgName = "110_1";
-                    //    break;
-                    //}
-                    //else if (randomValue == 2)
-                    //{
-                    //    imgName = "110_2";
-                    //    break;
-                    //}
-                    //else
-                    //{
-                    //    imgName = "110_3";
-                    //    break;
-                    //}
-
-                case EMapType.MediumConiferousForest:
-                    imgName = "111b";
-                    break;
-
-                case EMapType.DenseConiferousForest:
-                    imgName = "112b";
+                case EMapType.Forest:
+                    imgName = WoodPoints < 33 ? "110_1c" : WoodPoints < 66 ? "111b" : "112b";
                     break;
 
                 case EMapType.Ocean:

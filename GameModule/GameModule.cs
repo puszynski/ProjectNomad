@@ -14,12 +14,9 @@ namespace GameModule
 {
     internal class GameModule : IGameModule
     {
-        const int TILE_MAX_FOOD_POINTS_LIMIT = 100;
-        const int TILE_MAX_WOOD_POINTS_LIMIT = 100;
 
         readonly NewTribeLocalizationInitializer _newTribeLocalizationInitializer;
         readonly IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
-        readonly ITribeRelocationService _tribeRelocationService;
         readonly IMapTileRepository _mapTileRepository;
         readonly IDateTimeProvider _dateTimeProvider;
         readonly GameModuleDbContext _dbContext;
@@ -29,7 +26,6 @@ namespace GameModule
         public GameModule(
             NewTribeLocalizationInitializer newTribeLocalizationInitializer,
             IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository,
-            ITribeRelocationService tribeRelocationService,
             IMapTileRepository mapTileRepository,
             IDateTimeProvider dateTimeProvider,
             GameModuleDbContext dbContext,
@@ -38,7 +34,6 @@ namespace GameModule
         {
             _newTribeLocalizationInitializer = newTribeLocalizationInitializer;
             _humanUnitTaskOrderRepository = humanUnitTaskOrderRepository;
-            _tribeRelocationService = tribeRelocationService;
             _mapTileRepository = mapTileRepository;
             _dateTimeProvider = dateTimeProvider;
             _gameLooper = gameLooper;
@@ -194,9 +189,7 @@ namespace GameModule
         {
             //todo check if not exists, or override?
             var tiles = await _mapService.GenerateMapTiles(x_start, 
-                y_start,
-                TILE_MAX_FOOD_POINTS_LIMIT, 
-                TILE_MAX_WOOD_POINTS_LIMIT);
+                y_start);
 
             await _dbContext.MapTiles.AddRangeAsync(tiles);
             await _dbContext.SaveChangesAsync();

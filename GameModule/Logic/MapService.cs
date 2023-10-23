@@ -15,33 +15,22 @@ namespace GameModule.Logic
 
             switch (randomNumber)
             {
-                case >= 10: return EMapType.DenseConiferousForest;
-                case >= 6: return EMapType.MediumConiferousForest;
-                default: return EMapType.RareConiferousForest;
+                case >= 10: return EMapType.Mountains;
+                default: return EMapType.Forest;
             }
         }
 
-        internal async Task<TileRecourse> GetRandomValuesForWoodTileResource(EMapType type, int tileWoodPointsMaxLimit)
+        internal async Task<TileRecourse> GetRandomValuesForWoodTileResource(EMapType type)
         {
-            if (type is not EMapType.DenseConiferousForest and not EMapType.MediumConiferousForest and not EMapType.RareConiferousForest)
+            if (type is not EMapType.Forest)
                 return new TileRecourse { ActualPoints = 0, MaxLimitPoints = 0 };
 
-            var maxWoodPoints = 0;
-
-            if (type is EMapType.DenseConiferousForest)
-                maxWoodPoints = RandomCalculator.GetRandomInt(tileWoodPointsMaxLimit / 3 * 2, tileWoodPointsMaxLimit);
-            else if (type is EMapType.MediumConiferousForest)
-                maxWoodPoints = RandomCalculator.GetRandomInt(tileWoodPointsMaxLimit / 3, tileWoodPointsMaxLimit / 3 * 2);
-            else
-                maxWoodPoints = RandomCalculator.GetRandomInt(tileWoodPointsMaxLimit / 4, tileWoodPointsMaxLimit / 3);
-
+            var maxWoodPoints = RandomCalculator.GetRandomIntWithHigherProbabilityOfLowerValues();
             return new TileRecourse { ActualPoints = maxWoodPoints, MaxLimitPoints = maxWoodPoints };
         }
 
         internal async Task<IEnumerable<MapTile>> GenerateMapTiles(int x_start, 
-            int y_start, 
-            int TILE_MAX_FOOD_POINTS_LIMIT, 
-            int TILE_MAX_WOOD_POINTS_LIMIT)
+            int y_start)
         {
             if (x_start % 100 != 0 || y_start % 100 != 0)
                 throw new ArgumentOutOfRangeException("X and Y should point to the stating position of the map(right-top corner) :/");
@@ -55,11 +44,12 @@ namespace GameModule.Logic
                 {
                     var localization = new Localization { X = x, Y = y };
 
-                    var maxFoodPoints = RandomCalculator.GetRandomInt(0, TILE_MAX_FOOD_POINTS_LIMIT);
+                    var type = await GetRandomMapTile();
+
+                    var maxFoodPoints = RandomCalculator.GetRandomIntWithHigherProbabilityOfLowerValues();
                     var food = new TileRecourse { ActualPoints = maxFoodPoints, MaxLimitPoints = maxFoodPoints };
 
-                    var type = await GetRandomMapTile();
-                    var wood = await GetRandomValuesForWoodTileResource(type, TILE_MAX_WOOD_POINTS_LIMIT);
+                    var wood = await GetRandomValuesForWoodTileResource(type);
 
                     var tile = new MapTile()
                     {

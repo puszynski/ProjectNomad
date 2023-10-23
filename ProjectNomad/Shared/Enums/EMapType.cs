@@ -3,11 +3,12 @@
     public enum EMapType
     {
         Ocean = 0,
-        HighMountains = 1,
+        Mountains = 1,
+        Forest = 2,
 
-        DenseConiferousForest = 110,
-        MediumConiferousForest = 111,
-        RareConiferousForest = 112,
+        //DenseConiferousForest = 110,
+        //MediumConiferousForest = 111,
+        //RareConiferousForest = 112,
 
         RiverDeepWide = 201,
         //RiverDeepNarrow = 202,

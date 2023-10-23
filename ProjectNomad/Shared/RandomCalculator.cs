@@ -1,4 +1,6 @@
-﻿namespace ProjectNomad.Shared
+﻿using System;
+
+namespace ProjectNomad.Shared
 {
     public static class RandomCalculator
     {
@@ -14,6 +16,11 @@
         {
             var random = new Random();
             return random.Next(min, max + 1);
+        }
+
+        public static int GetRandomIntWithHigherProbabilityOfLowerValues(int min = 1, int max = 100)
+        {
+            return Math.Min(GetRandomInt(min, max), GetRandomInt(min, max));
         }
     }
 }
