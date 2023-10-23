@@ -81,7 +81,11 @@ namespace GameModule.Logic
 
                     if (lastUpdated.Second % 10 == 0)
                     {
-                        //todo each 10 sec..
+
+                        var campfire = tribe
+                            .TribeStructures
+                            .SingleOrDefault(x => x.Type == ProjectNomad.Shared.Enums.ETribeStructureType.Firecamp);
+                        LightFire.CampfireBurning(campfire);
                     }
 
                     if (lastUpdated.Second == 0)
@@ -100,11 +104,8 @@ namespace GameModule.Logic
                 }
                 catch (Exception ex)
                 {
-                    //{"The association between entity types 'Tribe' and 'HumanTask' has been severed, but the relationship is either marked as required or is implicitly required because the foreign key is not nullable. If the dependent/child entity should be deleted when a required relationship is severed, configure the relationship to use cascade deletes. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see the key values."}
-
-                    //todo log
                     var error = ex;
-                    throw new Exception(ex.Message);
+                    throw new Exception(ex.Message + "STACK TRACE: " + ex.StackTrace);
                 }
             }
 

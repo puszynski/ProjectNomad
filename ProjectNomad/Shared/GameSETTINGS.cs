@@ -38,7 +38,7 @@
             public const double ChanceToStartFire = 0.2;
 
             public const int WoodUsedToKeepTheCampfireBurning = 1;
-            public const int MinutesToKeepTheCampfireBurning = 1;
+            public const int BurningCampFireEch10Seconds = 1;
         }
 
         public static class MapResources

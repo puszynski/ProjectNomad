@@ -12,7 +12,7 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
     {
         internal ETribeRelocationStatus GetTribeRelocationStatus(Tribe tribe);
         internal bool IsValidToStartRelocationProcess(Tribe tribe);
-        internal void StartRelocationProcess(Tribe tribe);
+        internal void StartRelocationProcess(HumanTaskOrder taskOrder, Tribe tribe);
         internal void EndRelocationProcess(Tribe tribe);
     }
 
@@ -66,20 +66,12 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
             //}
         }
 
-        void ITribeRelocationService.StartRelocationProcess(Tribe tribe)
+        void ITribeRelocationService.StartRelocationProcess(HumanTaskOrder taskOrder, Tribe tribe)
         {
-            //todo test...
-            var relocationTaskOrder = tribe.HumanTaskOrders
-                .Where(x => x.Type == ETaskType.TribeRelocation)
-                .SingleOrDefault();
-
-            if (relocationTaskOrder == null)
-                return;
-
             var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
                         tribe.Localization.Y,
-                        relocationTaskOrder.Localization.X,
-                        relocationTaskOrder.Localization.Y);
+                        taskOrder.Localization.X,
+                        taskOrder.Localization.Y);
 
             var taskDuration = TaskDurationCalculator.TribeRelocation(distance);
 
@@ -94,13 +86,13 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
                 },
                 Destiny = new Localization
                 {
-                    X = relocationTaskOrder.Localization.X,
-                    Y = relocationTaskOrder.Localization.Y
+                    X = taskOrder.Localization.X,
+                    Y = taskOrder.Localization.Y
                 }
             };
 
             tribe.TribeRelocation = relocation;
-            tribe.HumanTaskOrders.Remove(relocationTaskOrder);
+            tribe.HumanTaskOrders.Remove(taskOrder);
         }
 
         void ITribeRelocationService.EndRelocationProcess(Tribe tribe)

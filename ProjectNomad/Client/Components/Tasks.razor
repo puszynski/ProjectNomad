@@ -43,7 +43,6 @@
     @foreach (var autoTask in HumanUnitTasks.Where(x => HumanUnitTaskTypeExtensions.GetAutoTasks().Contains(x.Type)))
     {
         <ProjectNomad.Client.Components.TasksComponents.ProgressButton HumanUnitTask="autoTask" />
-        <br />
     }
 
     <br />

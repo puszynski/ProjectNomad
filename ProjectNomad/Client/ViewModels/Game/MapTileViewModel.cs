@@ -25,7 +25,7 @@ namespace ProjectNomad.Client.ViewModels.Game
             switch (Type)
             {
                 case EMapType.RareConiferousForest:
-                    imgName = "110_1";
+                    imgName = "110_1c";
                     break;
 
                     //random option now is disabled
@@ -47,11 +47,11 @@ namespace ProjectNomad.Client.ViewModels.Game
                     //}
 
                 case EMapType.MediumConiferousForest:
-                    imgName = "111_1";
+                    imgName = "111b";
                     break;
 
                 case EMapType.DenseConiferousForest:
-                    imgName = "112_1";
+                    imgName = "112b";
                     break;
 
                 case EMapType.Ocean:

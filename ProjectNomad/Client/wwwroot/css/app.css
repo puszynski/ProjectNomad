@@ -117,15 +117,40 @@ html, body {
     width: 250px;
 }
 
-asciiart {
-    display: inline-block;
-    font-family: 'Courier New', monospace;
-    /*font-family: "Lucida Console", Monaco, monospace;*/
-    /*letter-spacing: 0.1em;*/    
-    line-height: 0.6em;
-    text-shadow: 0 0 5px rgba(0,0,0,0.5);
-    white-space: pre;
+
+
+/* minimap ascii style */
+.minimap-row-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
+.minimap-row-content {
+    width: 24px;
+    height: 24px;
+    /* display content in middle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.minimap-tile-row-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.minimap-tile-row-content {
+    width: 8px;
+    height: 8px;
+    font-size: 9px;
+    /* display content in middle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+
 
 smaller {
     font-size: 0.7em;

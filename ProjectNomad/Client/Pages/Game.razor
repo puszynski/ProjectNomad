@@ -46,7 +46,7 @@
         </div>
 
         <div class="column main">
-            <div style="width: 600px; float: left;">
+            <div style="width: 800px; float: left;">
                 @if (MainGameWindow == "Map")
                 {
                     <ProjectNomad.Client.Components.Map Tribe="@GameObjectsViewModel.Tribe" />
@@ -124,7 +124,7 @@ else
         return accountId.Value;
     }
 
-    string MainGameWindow = "Map";
+    string MainGameWindow = "MiniMap";
     void DisplayMiniMap() => MainGameWindow = "MiniMap";
     void DisplayMap() => MainGameWindow = "Map";
 

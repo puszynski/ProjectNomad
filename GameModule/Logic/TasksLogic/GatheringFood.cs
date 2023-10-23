@@ -38,11 +38,16 @@ namespace GameModule.Logic.TasksLogic
             {
                 From = currentTimeInLoop,
                 HumanId = human.Id,
-                Localization = taskOrderToAssign.Localization,
+                Localization = destinyMapTile.Localization,
                 To = CalculateTimeToEndTask(),
                 TribeId = tribe.Id,
                 Type = ETaskType.GatheringFood,
             };
+
+            //temp check
+            if (taskToAdd.Localization == null)
+                throw new NullReferenceException("Localization cant be null!");
+
             taskOrderToAssign.HumanTask = taskToAdd;
             destinyMapTile.Food.ActualPoints -= GameSETTINGS.Food.MapTileFoodGathered;
             tribe.HumanTasks.Add(taskToAdd);
@@ -67,9 +72,12 @@ namespace GameModule.Logic.TasksLogic
 
         }
 
-        INotification ITask.End(Entities.HumanTask taskToEnd, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification ITask.End(HumanTask taskToEnd, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
         {
-            var mapTile = mapTiles.Single(x => x.Localization.Equals(taskToEnd.Localization));
+            var mapTile = mapTiles.SingleOrDefault(x => x.Localization.Equals(taskToEnd.Localization));//wkradł się task który nie ma lokalizacji.. jak? taskToEnd nie ma lokalizacji
+            if (mapTile == null)//temp - after fir change to Single()
+                throw new NullReferenceException("MapTile can not be a null. GatheringFood.End()");
+
             var mapTileFoodPoints = mapTile.Food.ActualPoints;
 
             var human = tribe.Humans.Single(x => x.Id == taskToEnd.HumanId);

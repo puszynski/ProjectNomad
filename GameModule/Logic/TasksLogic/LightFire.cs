@@ -18,7 +18,7 @@ namespace GameModule.Logic.TasksLogic
             if (tribeStructure.PowerAndDurability == 0)
                 return;
 
-            tribeStructure.PowerAndDurability -= 1;
+            tribeStructure.PowerAndDurability -= GameSETTINGS.Fire.BurningCampFireEch10Seconds;
         }
 
         INotification ITask.Start(HumanTaskOrder taskOrder, 

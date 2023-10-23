@@ -8,63 +8,26 @@
 
 
      @* https://stackoverflow.com/questions/26342182/style-table-as-ascii-art-table-using-css *@
+        
 
-    <div style="position: relative;
-                        border: 2px dashed;
-                        border-color: Gainsboro;
-                        width:562px;
-                        height:562px;
-                        margin: auto;">
-        <center>
-        <asciiart>
-            @if (mapViewModel != null)
+<center>
+    <div>
+        @if (mapViewModel != null)
+        {
+            @foreach (var mapTilesInRow in mapViewModel.MapTiles.Chunk(31))
             {
-                var row = 0;
-                var column = 0;
-
-                @* map tiles: ⚺ ⛼ ≈   ❆ ❄  ⩓  ∷   ◉ ↟↑⥾↿⥣↾⇈  *@
-
-                foreach (var mapTile in mapViewModel.MapTiles)
-                {
-                    var characterToDisplay = string.Empty;
-
-                    @switch (mapTile.Type)
+                <div class="minimap-row-wrapper">
+                    @foreach (var mapTile in mapTilesInRow)
                     {
-                        case ProjectNomad.Shared.Enums.EMapType.DenseConiferousForest: characterToDisplay = "∷"; break;
-                        case ProjectNomad.Shared.Enums.EMapType.MediumConiferousForest: characterToDisplay = "∵"; break;
-                        case ProjectNomad.Shared.Enums.EMapType.RareConiferousForest: characterToDisplay = "·"; break;
-                        case ProjectNomad.Shared.Enums.EMapType.HighMountains: characterToDisplay = "▲"; break;
-
-
-                        default: characterToDisplay = "≈"; break; @*emtpy  means ocean*@
-                    }   
-
-                    @if (mapTile.X == Tribe.X && mapTile.Y == Tribe.Y)
-                    {
-                        characterToDisplay = "◉"; //should be dependent from population..  like in maps..
+                        <div class="minimap-row-content">
+                            <ProjectNomad.Client.Components.MiniMapComponents.MiniMapTileComponent MapType=mapTile.Type />
+                        </div>
                     }
-
-<span>@characterToDisplay</span>
-
-                    @if (row == 30) @* width of the map minus one tile *@
-                    {
-                        <br/>
-                        row = 0;
-                        ++column;
-                    }
-                    else
-                    {
-                        ++row;
-                    }
-                }
+                </div>
             }
-            else
-            {
-                <p>loading..</p>
-            }
-        </asciiart>
-        </center>
+        }
     </div>
+</center>
 
 
 @* <div>
@@ -74,7 +37,7 @@
     <p>storage =>	⛼ ⛶</p>
     <p>fire => 	❍ ※ ⋇ ❊ ❋ ❉</p>
     <p>behaviour => ☮ ☯ ♆ ⚔</p>
-    <p>others => 🕶 </p>
+    <p>others => 🕶 ⚺ ⛼ ≈   ❆ ❄  ⩓  ∷   ◉ ↟↑⥾↿⥣↾⇈ </p>
 </div> *@
 
 

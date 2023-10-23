@@ -51,7 +51,10 @@ namespace GameModule.Logic.GameLooperLogic
 
             void OrderTaskAssign()
             {
-                var taskOrdersToAssign = tribe.HumanTaskOrders.Where(x => !x.HumanTaskId.HasValue);
+                var taskOrdersToAssign = tribe.HumanTaskOrders
+                    .Where(x => !x.HumanTaskId.HasValue)
+                    .ToList();
+
                 foreach (var taskOrder in taskOrdersToAssign)
                 {
                     ITask? assigner = null;
@@ -71,7 +74,7 @@ namespace GameModule.Logic.GameLooperLogic
                             assigner = new KeepFire();
                             break;
                         case ETaskType.TribeRelocation:
-                            TribeRelocationTasksAssign(tribe);
+                            TribeRelocationTasksAssign(taskOrder, tribe);
                             break;
                     }
 
@@ -79,26 +82,18 @@ namespace GameModule.Logic.GameLooperLogic
 
                     if (notification != null)
                         notifications.Add(notification);
-                }
+                }                
             }
         }
 
         
 
-        void TribeRelocationTasksAssign(Tribe tribe)
+        void TribeRelocationTasksAssign(HumanTaskOrder taskOrder, Tribe tribe)
         {
-            var taskOrderToAssign = tribe.HumanTaskOrders
-                    .Where(x => x.Type == ETaskType.TribeRelocation)
-                    .Where(x => !x.HumanTaskId.HasValue)
-                    .SingleOrDefault();
-
-            if (taskOrderToAssign == null)
-                return;
-
             if (!_relocationService.IsValidToStartRelocationProcess(tribe))
                 return;
 
-            _relocationService.StartRelocationProcess(tribe);
+            _relocationService.StartRelocationProcess(taskOrder, tribe);
         }
     }
 }

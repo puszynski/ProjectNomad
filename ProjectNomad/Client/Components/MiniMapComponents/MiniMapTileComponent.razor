@@ -1,0 +1,38 @@
+﻿<div>
+    @for (int z = 0; z < 3; z++)
+    {
+        <div class="minimap-tile-row-container">
+            @for (int y = 0; y < 3; y++)
+            {
+                <div class="minimap-tile-row-content">
+                    @MapTaileSymbol
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [ParameterAttribute]
+    public ProjectNomad.Shared.Enums.EMapType MapType { get; set; }
+
+    private string MapTaileSymbol
+    {
+        get
+        {
+            var characterToDisplay = "";
+            @switch (MapType)
+            {
+                case ProjectNomad.Shared.Enums.EMapType.DenseConiferousForest: characterToDisplay = "⚹"; break;
+                case ProjectNomad.Shared.Enums.EMapType.MediumConiferousForest: characterToDisplay = "⤫"; break;
+                case ProjectNomad.Shared.Enums.EMapType.RareConiferousForest: characterToDisplay = "𝈏"; break; // simmilar to \
+                case ProjectNomad.Shared.Enums.EMapType.HighMountains: characterToDisplay = "▲"; break;
+
+
+                default: characterToDisplay = "-"; break; @*emtpy  means ocean*@
+            }
+
+            return characterToDisplay;
+        }
+    }
+}

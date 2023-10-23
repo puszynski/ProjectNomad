@@ -39,13 +39,13 @@ namespace GameModule.Logic.GameLooperLogic
                 if (notification != null)
                     notifications.Add(notification);
 
-                tribe.HumanTasks.Remove(task);//CHYAB TUTAJ LECI BŁĄD
+                tribe.HumanTasks.Remove(task);
 
-                //todo only nullable when automatic tasks
                 var finishedHumanTaskOrder = tribe.HumanTaskOrders
-                    .SingleOrDefault(x => x.HumanTaskId.HasValue && x.HumanTaskId == task.Id);
+                    .SingleOrDefault(x => HumanUnitTaskTypeExtensions.GetAutoTasks().Contains(x.Type) 
+                        && x.HumanTaskId.HasValue && x.HumanTaskId == task.Id);
 
-                if (finishedHumanTaskOrder != null) //ps nieudana próba rozpalenia ognia powinna null`ować referencje i nie powinno się znaleźć pasujacego taskOrderu
+                if (finishedHumanTaskOrder != null)
                     tribe.HumanTaskOrders.Remove(finishedHumanTaskOrder);
             }
         }

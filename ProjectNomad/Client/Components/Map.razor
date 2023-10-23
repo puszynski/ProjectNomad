@@ -42,14 +42,12 @@
             }
             else
             {
-                @* TODO - layers for bg img, trees, shodows etc *@
                 <img src="@mapTile.GetTileImgPath()"
                      height="100"
                      width="100"
                      style="position: absolute;
                      left: @(row * 80 -10)px;
-                     top: @(column * 80 -10)px;
-                     opacity: 0.5;"
+                     top: @(column * 80 -10)px;"
                      @onclick="() => SelectMapTile(mapTile)" />
 
             }

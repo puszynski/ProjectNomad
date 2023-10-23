@@ -47,7 +47,7 @@ namespace GameModule.Logic.TasksLogic
                 From = currentTimeInLoop,
                 HumanId = humanUnitToAssign.Id,
                 Localization = taskOrder.Localization,
-                To = currentTimeInLoop.AddMinutes(GameSETTINGS.Fire.MinutesToKeepTheCampfireBurning),
+                To = currentTimeInLoop.AddMinutes(GameSETTINGS.Fire.BurningCampFireEch10Seconds),
                 TribeId = tribeMaterializedData.Id,
                 Type = ETaskType.KeepFire,
             };
