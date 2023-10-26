@@ -12,7 +12,13 @@
     {
         foreach (var item in NotificationsToDisplay)
         {
-            <smaller>@item.HumanUnitName (@item.Added) => @item.Type.ToString()</smaller>
+            var desc = @item.GetDescription();
+
+            if (!string.IsNullOrEmpty(desc))
+            {
+                <smaller>@desc</smaller>
+                <br/>                
+            }
         }
     }
     else

@@ -58,10 +58,7 @@ namespace GameModule
                 Resources = new Resources() { FreshFood = GameSETTINGS.InitializeRebornTribe.FoodPoints, Wood = GameSETTINGS.InitializeRebornTribe.WoodPoints }
             };
 
-            var humanUnits = new List<Human>();
-
-            for (int i = 0; i < 4; i++)
-                humanUnits.Add(HumanUnitGenerator.Generate(tribe));
+            var humanUnits = HumanUnitGenerator.GenerateForNewTribe(tribe, humansToGenerate: 4);
                         
             var taskTribe = _dbContext.Tribes.AddAsync(tribe);
             await taskTribe;
@@ -92,10 +89,7 @@ namespace GameModule
             if (await _dbContext.Humans.AnyAsync(x => x.TribeId == tribe.Id))
                 throw new ArgumentException($"To init new human units, there should be no in database (tribeId:{tribe.Id}) :/");
 
-            var humans = new List<Human>();
-
-            for (int i = 0; i < 4; i++)
-                humans.Add(HumanUnitGenerator.Generate(tribe));
+            var humans = HumanUnitGenerator.GenerateForNewTribe(tribe, humansToGenerate: 4);
 
             await _dbContext.Humans.AddRangeAsync(humans);
 

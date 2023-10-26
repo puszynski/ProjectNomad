@@ -115,6 +115,9 @@ html, body {
 
 
 /* minimap ascii style */
+.minimap-container {
+    background-color: var(--maincolor);
+}
 .minimap-row-wrapper {
     display: flex;
     flex-direction: row;

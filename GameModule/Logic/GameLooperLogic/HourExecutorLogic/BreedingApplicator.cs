@@ -22,7 +22,7 @@ namespace GameModule.Logic.GameLooperLogic.HourExecutorLogic
 
             if (RandomCalculator.GetBoolWithGivenProbability(humansReadyToMateCount * GameSETTINGS.Population.BreedingChancePerHumanPerHour))
             {
-                var newborn = HumanUnitGenerator.Generate(tribe);
+                var newborn = HumanUnitGenerator.Generate(tribe, tribe.Humans.Select(x => x.Name));
                 tribe.Humans.Add(newborn);
 
                 notifications.Add(new NotificationDto(newborn.Id,

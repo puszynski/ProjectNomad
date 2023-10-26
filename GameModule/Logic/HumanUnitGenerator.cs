@@ -6,11 +6,35 @@ namespace GameModule.Logic
 {
     internal static class HumanUnitGenerator
     {
-        internal static Human Generate(Tribe tribe)
+        internal static List<Human> GenerateForNewTribe(Tribe tribe, int humansToGenerate)
+        {
+            List<Human> result = new List<Human>();
+
+            for (int i = 0; i < humansToGenerate; i++)
+            {
+                var human = new Human()
+                {
+                    Name = GetRandomString(result.Select(x => x.Name)),//COŚ SIĘ TU ZPITLOLIŁO PO ZMIANIE, SPR
+                    Localization = new Localization
+                    {
+                        X = tribe.Localization.X,
+                        Y = tribe.Localization.Y
+                    },
+                    Tribe = tribe,
+                    FoodLevelPercentage = RandomCalculator.GetRandomInt(50, 100)
+                };
+
+                result.Add(human);
+            }
+
+            return result;
+        }
+
+        internal static Human Generate(Tribe tribe, IEnumerable<string> existingNames)
         {
             return new Human()
             {
-                Name = GetRandomString(),
+                Name = GetRandomString(existingNames),
                 Localization = new Localization
                 {
                     X = tribe.Localization.X,
@@ -21,7 +45,7 @@ namespace GameModule.Logic
             };
         }
 
-        static string GetRandomString()
+        static string GetRandomString(IEnumerable<string> existingNames)
         {
             var names = new List<string>() 
             { 
@@ -29,8 +53,15 @@ namespace GameModule.Logic
             };
 
             var random = new Random();
-            int randomIndex = random.Next(names.Count);
-            return names[randomIndex];
+            string name;
+
+            do
+            {
+                int randomIndex = random.Next(names.Count);
+                name = names[randomIndex];
+            } while (existingNames.Contains(name));
+
+            return name;
         }
     }
 }

@@ -45,7 +45,7 @@ namespace ProjectNomad.Client.Logic
                 {
                     foreach (var notificationToAdd in responseContent.Notifications)
                         await _notificationsManager.Add(notificationToAdd.HumanUnitId, 
-                            notificationToAdd.HumanUnitName, 
+                            notificationToAdd.HumanName, 
                             notificationToAdd.Type, 
                             notificationToAdd.CustomValue);
 

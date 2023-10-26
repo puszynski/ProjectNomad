@@ -50,7 +50,7 @@ namespace GameModule.Logic.TasksLogic
 
             taskOrderToAssign.HumanTask = taskToAdd;
             destinyMapTile.Food.ActualPoints -= GameSETTINGS.Food.MapTileFoodGathered;
-            tribe.HumanTasks.Add(taskToAdd);
+            //tribe.HumanTasks.Add(taskToAdd); zbędne?
 
             return new NotificationDto(human.Id,
                 human.Name,
