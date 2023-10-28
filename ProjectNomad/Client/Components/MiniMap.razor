@@ -61,6 +61,8 @@
         if (mapTiles == null)
             throw new NullReferenceException("MapTileViewModels null. No data was returned from server.");
 
+        mapTiles.Single(x => x.X == Tribe.X && x.Y == Tribe.Y).MapObjects = EMapObjects.PlayerCamp;
+
         mapViewModel = new MapViewModel { MapTiles = mapTiles };
         StateHasChanged();
     }

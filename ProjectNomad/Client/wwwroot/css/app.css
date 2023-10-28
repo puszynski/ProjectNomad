@@ -117,6 +117,7 @@ html, body {
 /* minimap ascii style */
 .minimap-container {
     background-color: var(--maincolor);
+    padding: 15px;
 }
 .minimap-row-wrapper {
     display: flex;
@@ -124,8 +125,8 @@ html, body {
     flex-wrap: wrap;
 }
 .minimap-row-content {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     /* display content in middle */
     display: flex;
     justify-content: center;
@@ -137,8 +138,8 @@ html, body {
     flex-wrap: wrap;
 }
 .minimap-tile-row-content {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     font-size: 9px;
     /* display content in middle */
     display: flex;
@@ -155,7 +156,6 @@ html, body {
 .minimap-character-color-littledark {
     color: var(--maincolor)
 }
-
 
 
 

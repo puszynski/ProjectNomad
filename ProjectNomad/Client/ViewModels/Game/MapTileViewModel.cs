@@ -17,7 +17,10 @@ namespace ProjectNomad.Client.ViewModels.Game
         public int FoodPoints { get; set; }
         public int WoodPoints { get; set; }
 
+        public EMapObjects MapObjects { get; set; }
 
+
+        //remove - it will be used also for 
         internal string GetTileImgPath()
         {
             string imgName;
@@ -36,5 +39,13 @@ namespace ProjectNomad.Client.ViewModels.Game
 
             return $"/images/game/map/{imgName}.png";
         }
+    }
+
+    [Flags]
+    public enum EMapObjects
+    {
+        None = 0,
+        PlayerCamp = 2,
+        OtherPlayerCamp = 4,
     }
 }

@@ -13,20 +13,20 @@ namespace ProjectNomad.Client.Models.Response
         {
             switch (Type)
             {
-                case ENotificationType.Starvation: return $"{HumanName} głoduje";
-                case ENotificationType.DeathFromStarvation: return $"{HumanName} odczuwa głód";
-                case ENotificationType.DeathFromAgeOrIllness: return $"{HumanName} nie żyje. Nikt nie zna przyczyny";
-                case ENotificationType.Newborn: return $"{HumanName} otwiera oczy po raz pierwszy";
-                case ENotificationType.FoodGatheringStarted: return $"{HumanName} poszukuje jedzenia";
-                case ENotificationType.FoodGatheringEnded: return $"{HumanName} zdobył {CustomValue}` jedzenia";//bezpółciowo
-                case ENotificationType.WoodGatheringStarted: return $"{HumanName} poszukuje drewno";
-                case ENotificationType.WoodGatheringEnded: return $"{HumanName} przyniósł {CustomValue}` drewna";//bezpółciowo
-                case ENotificationType.NoWoodToLightFire: return $"{HumanName} nie może rozpalić ognia, zabrakło drewna";
-                case ENotificationType.AttemptToStartFireStarted: return $"{HumanName} rozpala ogień";
-                case ENotificationType.AttemptToStartFireFailed: return $"{HumanName} widzi tylko dym";
-                case ENotificationType.FireStarted: return $"{HumanName} widzi buchające płomienie";
-                case ENotificationType.KeepFireProceeded: return $"{HumanName} dorzuca do ognia, ogień bucha";
-                case ENotificationType.FoodConsumptionStarted: return $"{HumanName} je";
+                case ENotificationType.Starvation: return $"{HumanName} śmierć głód";
+                case ENotificationType.DeathFromStarvation: return $"{HumanName} głód";
+                case ENotificationType.DeathFromAgeOrIllness: return $"{HumanName} śmierć. Tajemnica";
+                case ENotificationType.Newborn: return $"{HumanName} nowy człowiek";
+                case ENotificationType.FoodGatheringStarted: return $"{HumanName} szukać jedzenie";
+                case ENotificationType.FoodGatheringEnded: return $"{HumanName} przynieść {CustomValue}' jedzenie";
+                case ENotificationType.WoodGatheringStarted: return $"{HumanName} szukać drewno";
+                case ENotificationType.WoodGatheringEnded: return $"{HumanName} przynieść {CustomValue}` drewno";
+                case ENotificationType.NoWoodToLightFire: return $"{HumanName} drewno brak ogień nie";
+                case ENotificationType.AttemptToStartFireStarted: return $"{HumanName} ogień próbować";
+                case ENotificationType.AttemptToStartFireFailed: return $"{HumanName} ogień nie";
+                case ENotificationType.FireStarted: return $"{HumanName} ogień duży ciepło";
+                case ENotificationType.KeepFireProceeded: return $"{HumanName} ogień duży ciepło";
+                case ENotificationType.FoodConsumptionStarted: return $"{HumanName} jeść";
                 default: return string.Empty;
             }
         }
