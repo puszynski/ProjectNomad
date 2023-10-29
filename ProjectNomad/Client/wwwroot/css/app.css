@@ -115,8 +115,10 @@ html, body {
 
 
 /* minimap ascii style */
-.minimap-container {
+div.minimap-container {
     background-color: var(--maincolor);
+    width: 588px;
+    height: 588px;
     padding: 15px;
 }
 .minimap-row-wrapper {

@@ -19,6 +19,7 @@
     <div class="header">
         <button type="button" class="button_active" @onclick="DisplayMap">home</button>
         <button type="button" class="button_active" @onclick="DisplayMiniMap">map</button>
+        <button type="button" class="button_active" @onclick="DisplayCamp">camp</button>
         <button type="button" class="button_active" @onclick="NavigateToOptions">options</button>
 
         <br />
@@ -50,6 +51,10 @@
                 @if (MainGameWindow == "Map")
                 {
                     <ProjectNomad.Client.Components.Map Tribe="@GameObjectsViewModel.Tribe" />
+                }
+                else if (MainGameWindow == "Camp")
+                {
+                    <ProjectNomad.Client.Components.Camp />
                 }
                 else
                 {
@@ -126,6 +131,7 @@ else
 
     string MainGameWindow = "MiniMap";
     void DisplayMiniMap() => MainGameWindow = "MiniMap";
+    void DisplayCamp() => MainGameWindow = "Camp";
     void DisplayMap() => MainGameWindow = "Map";
 
     void NavigateToOptions()
