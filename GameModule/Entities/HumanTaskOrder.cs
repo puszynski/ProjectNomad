@@ -7,7 +7,7 @@ namespace GameModule.Entities
     /// <summary>
     /// Rules: 
     /// 
-    /// HumanTaskOrders are keeping orders for HumanTasks to be assigned each hour.
+    /// HumanTaskOrders are scheduling HumanTasks to be assigned each hour.
     /// 
     /// After ending, HumanTask is not deleted
     /// It wait until even hour - then all done HumanTask are cleared 
