@@ -1,5 +1,6 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
+using GameModule.Logic.TasksLogic.Helpers;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
@@ -10,20 +11,13 @@ namespace GameModule.Logic.TasksLogic
     {
         private const int HUMAN_FOOD_PERCENTAGE_TO_START_CONSUME = 80;
 
-        INotification ITask.Start(HumanTaskOrder taskOrder, 
+        INotification ITask.Start(
+            HumanTaskOrder taskOrder,//not used in auto task 
             Tribe tribe, 
             DateTime currentTimeInLoop, 
             IEnumerable<MapTile> mapTiles)
         {
-            taskOrder = null;//not used in auto task
-
-            var humanUnitIdsWithTaskInProgress = tribe.HumanTasks
-                .Select(x => x.HumanId)
-                .ToList();
-            var human = tribe.Humans
-                .Where(x => !humanUnitIdsWithTaskInProgress.Contains(x.Id))
-                .Where(x => x.FoodLevelPercentage <= HUMAN_FOOD_PERCENTAGE_TO_START_CONSUME)
-                .FirstOrDefault();
+            var human = BasicDataSelector.SelectFirstHumanWithCondition(tribe);
             if (human == null)
                 return default;
 
