@@ -63,7 +63,7 @@ namespace GameModule.Logic
                 // CO ZROBIĆ? MOŻE JAKIŚ WYJĄTEK ALBO KOD BŁĘDU I OBSŁUŻYĆ W KLIENTCIE?
                 //MOŻE NULL?? 
                 //A MOŻE JEDNAK TRZEBA POBRAĆ DANE I WYSŁAĆ?
-                //W A Ż N E
+                //W A Ż N E       => POMYSŁ - ZWRÓĆ NULL, NA WIDOKU - JAK NULL - NIE PODMIENIAJ VM
 
             var mapTiles = await GetMapTileToInteract(tribe);
             var notifications = new List<INotification>();
@@ -80,13 +80,13 @@ namespace GameModule.Logic
                         currentTimeInLoop);
 
                     if (lastUpdated.Second % 10 == 0)
-                    {
-
-                        var campfire = tribe
-                            .TribeStructures
-                            .SingleOrDefault(x => x.Type == ProjectNomad.Shared.Enums.ETribeStructureType.Firecamp);
-                        LightFire.CampfireBurning(campfire);
-                    }
+                        if (tribe.TribeStructures != null)
+                        {
+                            var campfire = tribe
+                                .TribeStructures
+                                .SingleOrDefault(x => x.Type == ProjectNomad.Shared.Enums.ETribeStructureType.Firecamp);
+                            LightFire.CampfireBurning(campfire);
+                        }
 
                     if (lastUpdated.Second == 0)
                         _minuteExecutor.Execute(tribe, notifications);
@@ -137,13 +137,15 @@ namespace GameModule.Logic
                     x.Localization.Y, 
                     x.FoodLevelPercentage));
 
-                var humanUnitTaskDtos = tribe.HumanTasks.Select(x => new HumanUnitTaskDto(x.Id,
+                var humanUnitTaskDtos = tribe.HumanTasks
+                    .Select(x => new HumanUnitTaskDto(x.Id,
                     x.TribeId,
                     x.HumanId,
                     x.Human.Name,
                     x.Type,
                     x.From,
-                    x.To));
+                    x.To,
+                    x.IsCompleted));
 
                 var humanUnitTaskOrderDtos = tribe.HumanTaskOrders.Select(x => new HumanUnitTaskOrderDto(x.Id, 
                     x.TribeId, 

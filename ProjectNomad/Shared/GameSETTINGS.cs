@@ -19,8 +19,8 @@
 
         public static class Wood
         {
-            public const int MinutesToGatherWood = 3;
-            public const int WoodAmountGatheredFromMap = 2;
+            public const int MinutesToGatherWood = 2;
+            public const int WoodAmountGatheredFromMap = 1;
         }
 
         public static class Food
@@ -29,7 +29,7 @@
             public const int MinutesToConsumeFoodToFill20PercentageOfFood = 1;
             public const int FoodToGetHungryForHumanUnitEachMinute = 1;
             public const int TribeFoodNeededToFill20PercentageOfHumanUnit = 2;
-            public const int MapTileFoodGathered = 5;
+            public const int MapTileFoodGathered = 2;
         }
 
         public static class Fire

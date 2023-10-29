@@ -9,5 +9,6 @@ namespace ProjectNomad.Client.Models.Response
         string HumanUnitName,
         ETaskType Type,
         DateTime From,
-        DateTime To) : IHumanUnitTaskDto;
+        DateTime To,
+        bool IsCompleted) : IHumanUnitTaskDto;
 }

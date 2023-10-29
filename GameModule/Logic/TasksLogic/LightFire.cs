@@ -51,6 +51,7 @@ namespace GameModule.Logic.TasksLogic
                 To = looperNow.AddMinutes(GameSETTINGS.Fire.TimeToCompleteAttemptToStartFire),
                 TribeId = tribe.Id,
                 Type = ETaskType.LightAFire,
+                IsCompleted = false,
             };
 
             tribe.HumanTasks.Add(taskToAdd);
@@ -101,6 +102,8 @@ namespace GameModule.Logic.TasksLogic
                 };
                 tribe.TribeStructures.Add(fire);
             }
+
+            taskToEnd.IsCompleted = true;
 
             return new NotificationDto(taskToEnd.HumanId,
                 tribe.Humans.Single(x => x.Id == taskToEnd.HumanId).Name,

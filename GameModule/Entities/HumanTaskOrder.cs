@@ -4,7 +4,17 @@ using ProjectNomad.Shared.Enums;
 
 namespace GameModule.Entities
 {
-    internal class HumanTaskOrder : IId, ITribeReference
+    /// <summary>
+    /// Rules: 
+    /// 
+    /// HumanTaskOrders are keeping orders for HumanTasks to be assigned each hour.
+    /// 
+    /// After ending, HumanTask is not deleted
+    /// It wait until even hour - then all done HumanTask are cleared 
+    /// Clearing makes room for next batch of HumanTasks for next hour
+    /// 
+    /// </summary>
+    internal class HumanTaskOrder : IId, ITribeReference, IAdded
     {
         public int Id { get; set; }
 

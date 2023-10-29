@@ -2,11 +2,14 @@
 @using ProjectNomad.Shared.Enums;
 @inject EventBroadcastService _eventBroadcastService
 
-<br/>
-<button type="button" class="progress_button">
-    <div class="progress_button_progress" style="width: @ReversePercentage%;"></div>
-    <div class="progress_button_text">@description (@HumanUnitTask.HumanUnitName @RemainingTimeToDisplay)</div>
-</button>
+@if (!HumanUnitTask.IsCompleted)
+{
+    <br/>
+    <button type="button" class="progress_button">
+        <div class="progress_button_progress" style="width: @ReversePercentage%;"></div>
+        <div class="progress_button_text">@description (@HumanUnitTask.HumanUnitName @RemainingTimeToDisplay)</div>
+    </button>
+}
 
 
 
@@ -17,7 +20,6 @@
     int ReversePercentage = 100;
     string RemainingTimeToDisplay = string.Empty;
     string description = string.Empty;
-    //TODO ZBIERAJ DREWNO - Z TYPU + DECORATOR.. 
 
     protected override async Task OnInitializedAsync()
     {

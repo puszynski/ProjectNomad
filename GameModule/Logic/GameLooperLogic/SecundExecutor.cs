@@ -18,17 +18,14 @@ namespace GameModule.Logic.GameLooperLogic
         readonly ITaskAssigner _taskAssigner;
         readonly ITaskConsumer _humanUnitTaskConsumer;
         readonly ITribeRelocationService _tribeRelocationService;
-        readonly IHumanUnitAutoTaskScheduler _humanUnitAutoTaskScheduler;
         public SecundExecutor(
             ITaskAssigner taskAssigner,
             ITaskConsumer humanUnitTaskConsumer,
-            ITribeRelocationService tribeRelocationService,
-            IHumanUnitAutoTaskScheduler humanUnitAutoTaskScheduler)
+            ITribeRelocationService tribeRelocationService)
         {
             _taskAssigner = taskAssigner;
             _humanUnitTaskConsumer = humanUnitTaskConsumer;
             _tribeRelocationService = tribeRelocationService;
-            _humanUnitAutoTaskScheduler = humanUnitAutoTaskScheduler;
         }
 
         async Task ISecundExecutor.Execute(Tribe tribe,

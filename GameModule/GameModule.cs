@@ -244,7 +244,7 @@ namespace GameModule
                 .HumanTasks
                 .Where(x => x.TribeId == tribeId)
                 .Include(b => b.Human)
-                .Select(x => new HumanUnitTaskDto(x.Id, x.TribeId, x.HumanId, x.Human.Name, x.Type, x.From, x.To))
+                .Select(x => new HumanUnitTaskDto(x.Id, x.TribeId, x.HumanId, x.Human.Name, x.Type, x.From, x.To, x.IsCompleted))
                 .ToListAsync();
 
             tribeTasks ??= new List<HumanUnitTaskDto>();

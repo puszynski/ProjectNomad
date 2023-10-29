@@ -17,6 +17,7 @@ namespace GameModule.Entities
         public ETaskType Type { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
+        public bool IsCompleted { get; set; }
 
         public Localization? Localization { get; set; }
     }

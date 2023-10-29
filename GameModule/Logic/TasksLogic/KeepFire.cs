@@ -17,12 +17,12 @@ namespace GameModule.Logic.TasksLogic
             DateTime currentTimeInLoop, 
             IEnumerable<MapTile> mapTiles)
         {
-            var firecamp = tribeMaterializedData
+            var fire = tribeMaterializedData
                 .TribeStructures
                 .SingleOrDefault(x => x.Type == ETribeStructureType.Firecamp);
 
-            if (firecamp == null
-                || firecamp.PowerAndDurability > FIRE_POWER_TO_ADD_WOOD)
+            if (fire == null
+                || fire.PowerAndDurability > FIRE_POWER_TO_ADD_WOOD)
                 return default;
 
             var taskOrderToAssign = tribeMaterializedData.HumanTaskOrders
@@ -50,11 +50,12 @@ namespace GameModule.Logic.TasksLogic
                 To = currentTimeInLoop.AddMinutes(GameSETTINGS.Fire.BurningCampFireEch10Seconds),
                 TribeId = tribeMaterializedData.Id,
                 Type = ETaskType.KeepFire,
+                IsCompleted = false,
             };
             tribeMaterializedData.HumanTasks.Add(taskToAdd);
             taskOrder.HumanTask = taskToAdd;
             tribeMaterializedData.Resources.Wood -= GameSETTINGS.Fire.WoodUsedToKeepTheCampfireBurning;
-            firecamp.PowerAndDurability = FULL_FIRE_POWER;   
+            fire.PowerAndDurability = FULL_FIRE_POWER;   
 
             return new NotificationDto(humanUnitToAssign.Id,
                     humanUnitToAssign.Name,
@@ -68,6 +69,7 @@ namespace GameModule.Logic.TasksLogic
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)
         {
+            taskToEnd.IsCompleted = true;//przemyśl flow - LightFire i KepFire w nowym flow
             return default;
         }
 

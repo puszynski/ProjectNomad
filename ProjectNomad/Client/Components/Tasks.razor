@@ -76,16 +76,17 @@
                 lastButton.MatchedTasks.Add(matchingTask);
         }
     }
+    @* ⏵⏸ *@
     @foreach (var button in buttons)
     {
         var desc = HumanUnitTaskTypeExtensions.GetDescription(button.Type);
         @if (button.InProgressCount != button.AllCount)
         {
-            <button type="button" class="button_active" style="width: 250px;">@(desc)(@button.InProgressCount/@button.AllCount)</button>
+            <button type="button" class="button_active" style="width: 250px;">@(desc)(@button.InProgressCount/@button.AllCount◴)</button>
         }
         else
         {
-            <button type="button" class="button_inactive" style="width: 250px;">@(desc)(@button.InProgressCount/@button.AllCount)</button>
+            <button type="button" class="button_inactive" style="width: 250px;">@(desc)(@button.InProgressCount/@button.AllCount◴)</button>
         }
 
         foreach (var task in button.MatchedTasks)

@@ -10,7 +10,10 @@ namespace GameModule.Logic.TasksLogic
     {
         private const int HUMAN_FOOD_PERCENTAGE_TO_START_CONSUME = 80;
 
-        INotification ITask.Start(HumanTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification ITask.Start(HumanTaskOrder taskOrder, 
+            Tribe tribe, 
+            DateTime currentTimeInLoop, 
+            IEnumerable<MapTile> mapTiles)
         {
             taskOrder = null;//not used in auto task
 
@@ -31,14 +34,15 @@ namespace GameModule.Logic.TasksLogic
             if (!shouldAssign)
                 return default;
 
-            var entity = new Entities.HumanTask
+            var entity = new HumanTask
             {
-                From = currentTimeInLoop, //.AddSeconds(-1),//todo remove -1 due to TaskRequire mechanism and change UT
+                From = currentTimeInLoop,
                 HumanId = human.Id,
                 TribeId = tribe.Id,
                 Type = ETaskType.ConsumeFood,
-                To = currentTimeInLoop.AddMinutes(GameSETTINGS.Food.MinutesToConsumeFoodToFill20PercentageOfFood), //.AddSeconds(-1),//todo remove -1 TaskRequire mechanism and change UT
-                Localization = null
+                To = currentTimeInLoop.AddMinutes(GameSETTINGS.Food.MinutesToConsumeFoodToFill20PercentageOfFood),
+                Localization = null,
+                IsCompleted = false,
             };
 
             tribe.HumanTasks.Add(entity);
@@ -53,10 +57,15 @@ namespace GameModule.Logic.TasksLogic
 
         }
 
-        INotification ITask.End(Entities.HumanTask taskToEnd, Tribe tribeMaterializedData, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification ITask.End(HumanTask taskToEnd, 
+            Tribe tribe, 
+            DateTime currentTimeInLoop, 
+            IEnumerable<MapTile> mapTiles)
         {
+            tribe.HumanTasks.Remove(taskToEnd);
+
             return new NotificationDto(taskToEnd.HumanId,
-                tribeMaterializedData.Humans.Single(x => x.Id == taskToEnd.HumanId).Name, 
+                tribe.Humans.Single(x => x.Id == taskToEnd.HumanId).Name, 
                 currentTimeInLoop, 
                 ENotificationType.FoodConsumptionEnded, 
                 null);

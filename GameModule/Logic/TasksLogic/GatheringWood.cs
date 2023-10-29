@@ -43,6 +43,7 @@ namespace GameModule.Logic.TasksLogic
                 To = currentTimeInLoop.Add(TaskDurationCalculator.WoodGathering(distance)), //CalculateTimeToEndTask(),
                 TribeId = tribe.Id,
                 Type = ETaskType.GatheringWood,
+                IsCompleted = false,
             };
 
             taskOrder.HumanTask = taskToAdd;
@@ -57,7 +58,7 @@ namespace GameModule.Logic.TasksLogic
         }
 
 
-        INotification ITask.End(Entities.HumanTask taskToEnd,
+        INotification ITask.End(HumanTask taskToEnd,
             Tribe tribe,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)
@@ -77,6 +78,7 @@ namespace GameModule.Logic.TasksLogic
                 : mapTileWoodPoints;
 
             tribe.Resources.Wood += (int)gatheredWoodPoints;
+            taskToEnd.IsCompleted = true;
 
             return new NotificationDto(taskToEnd.HumanId,
                 human.Name, 

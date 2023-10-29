@@ -11,5 +11,6 @@ namespace ProjectNomad.Shared.Interfaces
         public ETaskType Type { get; }
         public DateTime From { get; }
         public DateTime To { get; }
+        bool IsCompleted { get; }
     }
 }

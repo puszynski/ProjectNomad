@@ -9,6 +9,7 @@ namespace GameModule.DtoModels
         string HumanUnitName,
         ETaskType Type,
         DateTime From,
-        DateTime To) : IHumanUnitTaskDto;
+        DateTime To,
+        bool IsCompleted) : IHumanUnitTaskDto;
 
 }

@@ -1,5 +1,4 @@
 ﻿using GameModule.Entities;
-using ProjectNomad.Shared.Enums;
 
 namespace GameModule.Logic.TasksLogic.Helpers
 {
@@ -7,7 +6,7 @@ namespace GameModule.Logic.TasksLogic.Helpers
     {
         internal static Human? SelectFirstHumanWithCondition(Tribe tribe)
         {
-            var humanIDsWithTaskAssigned = tribe.HumanTasks.Select(x => x.HumanId);
+            var humanIDsWithTaskAssigned = tribe.HumanTasks.Where(x => !x.IsCompleted).Select(x => x.HumanId);
 
             var humanWithConditionToStartNewTask = tribe
                 .Humans

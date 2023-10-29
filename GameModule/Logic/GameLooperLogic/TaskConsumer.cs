@@ -26,7 +26,7 @@ namespace GameModule.Logic.GameLooperLogic
 
             var tasksToConsume = tribe.HumanTasks
                 .Where(x => humanUnitIds.Contains(x.HumanId))
-                .Where(x => x.To <= currentTimeInLoop)
+                .Where(x => x.To <= currentTimeInLoop && !x.IsCompleted)
                 .ToList();
 
             foreach (var task in tasksToConsume) 
@@ -38,19 +38,10 @@ namespace GameModule.Logic.GameLooperLogic
 
                 if (notification != null)
                     notifications.Add(notification);
-
-                tribe.HumanTasks.Remove(task);
-
-                var finishedHumanTaskOrder = tribe.HumanTaskOrders
-                    .SingleOrDefault(x => HumanUnitTaskTypeExtensions.GetAutoTasks().Contains(x.Type) 
-                        && x.HumanTaskId.HasValue && x.HumanTaskId == task.Id);
-
-                if (finishedHumanTaskOrder != null)
-                    tribe.HumanTaskOrders.Remove(finishedHumanTaskOrder);
             }
         }
 
-        INotification? ConsumeTask(Entities.HumanTask humanUnitTask,
+        INotification? ConsumeTask(HumanTask humanUnitTask,
             Tribe tribe,
             ICollection<MapTile> mapTiles,
             DateTime currentTimeInLoop)

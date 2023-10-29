@@ -43,7 +43,8 @@ namespace GameModule.Logic.GameLooperLogic
                             break;
                     }
 
-                    var notification = assigner?.Start(null, tribe, currentTimeInLoop, mapTiles); //todo separate IAutoTask vs IOrderTask
+                    var notification = assigner?.Start(null, tribe, currentTimeInLoop, mapTiles); 
+
                     if (notification != null)
                         notifications.Add(notification);
                 }

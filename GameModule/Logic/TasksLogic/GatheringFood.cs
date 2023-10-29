@@ -34,7 +34,7 @@ namespace GameModule.Logic.TasksLogic
             if (!shouldAssign)
                 return default;
 
-            var taskToAdd = new Entities.HumanTask
+            var taskToAdd = new HumanTask
             {
                 From = currentTimeInLoop,
                 HumanId = human.Id,
@@ -42,6 +42,7 @@ namespace GameModule.Logic.TasksLogic
                 To = CalculateTimeToEndTask(),
                 TribeId = tribe.Id,
                 Type = ETaskType.GatheringFood,
+                IsCompleted = false,
             };
 
             //temp check
@@ -91,7 +92,8 @@ namespace GameModule.Logic.TasksLogic
                 ? foodPoints
                 : mapTileFoodPoints;
 
-            tribe.Resources.FreshFood += (int)gatheredFoodPoints;            
+            tribe.Resources.FreshFood += (int)gatheredFoodPoints;    
+            taskToEnd.IsCompleted = true;
 
             return new NotificationDto(taskToEnd.HumanId,
                 human.Name,
