@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using ProjectNomad.Client;
 using ProjectNomad.Client.Logic;
 using ProjectNomad.Client.Logic.GameLooperManagerLogic;
+using ProjectNomad.Shared;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -16,6 +17,7 @@ builder.Services.AddScoped<LocalStorageNotificationsManager>();
 builder.Services.AddScoped<GameLooperManager>();
 builder.Services.AddScoped<TaskOrderManager>();
 builder.Services.AddScoped<AccountManager>();
+builder.Services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
 builder.Services.AddSingleton<EventBroadcastService>();
 

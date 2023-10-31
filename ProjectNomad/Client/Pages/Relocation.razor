@@ -1,17 +1,42 @@
-﻿@page "/relocation"
-<h3>Tribe is relocating</h3>
-@if (Departure.HasValue && Arrival.HasValue)
-{
-    <p>Relocation started at @Departure and will end at @Arrival</p>
-}
+﻿@page "/relocation/{arrival:datetime}"
+@using ProjectNomad.Shared;
+
+@implements IDisposable
+@inject NavigationManager _navigationManager
+@inject IDateTimeProvider _dateTimeProvider
+
+<center>
+    <h3>Tribe is relocating</h3>
+
+
+    @if (Arrival.HasValue)
+    {
+        <p>Relocation will end at @Arrival</p>
+    }
+    <br />
+    <ProjectNomad.Client.Components.GameTimeDisplayer />
+</center>
 
 @code {
-    public DateTime? Departure { get; set; }
+    [Parameter]
     public DateTime? Arrival { get; set; }
 
+    bool ShouldBreak = false;
     protected override async Task OnInitializedAsync()
     {
-        //todo ask server for start-end..;
-        //todo - when ended - relocate to "/game"
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        while (await timer.WaitForNextTickAsync())
+        {
+            if (ShouldBreak)
+                break;
+
+            if (Arrival.HasValue && Arrival <= _dateTimeProvider.UtcNow()) 
+                _navigationManager.NavigateTo($"/game");
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        ShouldBreak = true;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using ProjectNomad.Client.Logic.GameLooperManagerLogic;
 using ProjectNomad.Client.Models.Response;
+using ProjectNomad.Shared;
 using ProjectNomad.Shared.Interfaces;
 using System.Net.Http.Json;
 
@@ -11,17 +12,20 @@ namespace ProjectNomad.Client.Logic
         readonly LocalStorageNotificationsManager _notificationsManager;
         readonly EventBroadcastService _eventBroadcastService;
         readonly NavigationManager _navigationManager;
+        readonly IDateTimeProvider _dateTimeProvider;
         readonly HttpClient _httpClient;
 
         public GameLooperManager(EventBroadcastService eventBroadcastService,
             LocalStorageNotificationsManager notificationsManager,
             HttpClient httpClient,
+            IDateTimeProvider dateTimeProvider,
             NavigationManager navigationManager)
         {
             _eventBroadcastService = eventBroadcastService;
             _notificationsManager = notificationsManager;
             _httpClient = httpClient;
             _navigationManager = navigationManager;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         internal async Task<TriggerGameLooper> TriggerGameLooper(Guid accountId) 
@@ -56,7 +60,7 @@ namespace ProjectNomad.Client.Logic
                     _navigationManager.NavigateTo("gameOver");
 
                 if (responseContent.Tribe.RelocationStatus == ETribeRelocationStatus.InProgress)
-                    _navigationManager.NavigateTo($"/relocation");
+                    _navigationManager.NavigateTo($"/relocation/" + _dateTimeProvider.UtcNow().ToString("s", System.Globalization.CultureInfo.InvariantCulture));
 
                 return responseContent;//UWAGA - NAWET JAK UŻYJESZ URL`I WYŻEJ - TJ gameOver/relocation/error - I TAK WRÓCISZ TUTAJ DO GameModule i będzie błąd..
 
