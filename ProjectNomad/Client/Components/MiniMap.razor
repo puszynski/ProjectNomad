@@ -20,7 +20,9 @@
                     @foreach (var mapTile in mapTilesInRow)
                     {
                         <div class="minimap-row-content">
-                            <ProjectNomad.Client.Components.MiniMapComponents.MiniMapTileComponent MapTile=mapTile />
+                            <ProjectNomad.Client.Components.MiniMapComponents.MiniMapTileComponent 
+                            MapTile=mapTile 
+                            IsCamp=@IsCamp(mapTile.X, mapTile.Y) />
                         </div>
                     }
                 </div>
@@ -67,4 +69,6 @@
         StateHasChanged();
     }
 
+    bool IsCamp(int x, int y) 
+        => Tribe.X == x && Tribe.Y == y;
 }

@@ -147,6 +147,9 @@ div.minimap-container {
     align-items: center;
 }
 
+.minimap-character-color-darkerer {
+    color: var(--background)
+}
 .minimap-character-color-veryverydark {
     color: var(--level2)
 }

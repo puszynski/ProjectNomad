@@ -1,4 +1,5 @@
-﻿@using ProjectNomad.Client.ViewModels.Game;
+﻿@using ProjectNomad.Client.Models.Response;
+@using ProjectNomad.Client.ViewModels.Game;
 @using ProjectNomad.Shared;
 <div>
     @if (MapTile.Type is ProjectNomad.Shared.Enums.EMapType.Ocean)
@@ -23,21 +24,31 @@
     }  
     else if (MapTile.Type is ProjectNomad.Shared.Enums.EMapType.Forest)
     {
-        @for (int z = 0; z < 3; z++)
+        @for (int y = 0; y < 3; y++)
         {
             var riverside = ".";//todo
-            var noForestSumbol = "-";
-            var forestSymbol = "+";
-            @* var noForestSumbol = "𝈻";
-            var forestSymbol = "✕"; *@
+            var noForest = "-";
+            var forest = "+";
+            var camp = "◉";
+            @* var noForest = "𝈻";
+            var forest = "✕"; *@
 
             <div class="minimap-tile-row-container">
-                @for (int y = 0; y < 3; y++)
+                @for (int x = 0; x < 3; x++)
                 {
-                    <div class="minimap-tile-row-content minimap-character-color-verydark thicker">
-                        @((MapTile.WoodPoints / 10) > z + 1 * y + 1 ? forestSymbol : noForestSumbol)
-                        @* ✕ ⤫ + -*@
-                    </div>
+                    @if (IsCamp && x == 1 && y == 1)
+                    {
+                        <div class="minimap-tile-row-content minimap-character-color-darkerer thicker" style="font-size:14px;">
+                            @camp
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="minimap-tile-row-content minimap-character-color-verydark thicker">
+                            @((MapTile.WoodPoints / 10) > y + 1 * x + 1 ? forest : noForest)
+                            @* ✕ ⤫ + -*@
+                        </div>
+                    }
                 }
             </div>
         }
@@ -65,4 +76,7 @@
 @code {
     [ParameterAttribute]
     public MapTileViewModel MapTile { get; set; }
+
+    [ParameterAttribute]
+    public bool IsCamp { get; set; }
 }
