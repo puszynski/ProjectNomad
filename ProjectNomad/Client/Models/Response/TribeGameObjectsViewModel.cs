@@ -1,4 +1,5 @@
-﻿using ProjectNomad.Shared.Interfaces;
+﻿using ProjectNomad.Shared.DTOs.ServerToWasm;
+using ProjectNomad.Shared.Interfaces;
 
 namespace ProjectNomad.Client.Models.Response
 {
@@ -9,5 +10,6 @@ namespace ProjectNomad.Client.Models.Response
         public IEnumerable<IHumanUnitTaskDto> HumanUnitTasks { get; set; }
         public IEnumerable<HumanUnitTaskOrder> HumanUnitTaskOrders { get; set; }
         public IEnumerable<ITribeStructure> TribeStructures { get; set; }
+        public WorldParametersDto WorldParameters { get; set; }
     }
 }

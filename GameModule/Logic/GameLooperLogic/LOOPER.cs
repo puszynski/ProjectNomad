@@ -4,6 +4,7 @@ using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
 using GameModule.Repositories;
 using ProjectNomad.Shared;
+using ProjectNomad.Shared.DTOs.ServerToWasm;
 using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Interfaces.Response;
 
@@ -157,7 +158,7 @@ namespace GameModule.Logic.GameLooperLogic
                     x.Localization.X,
                     x.Localization.Y));
 
-                var TribeStructureDtos = tribe.TribeStructures.Select(x => new TribeStructuresDto(x.Id,
+                var tribeStructureDtos = tribe.TribeStructures.Select(x => new TribeStructuresDto(x.Id,
                     x.Type,
                     x.PowerAndDurability));
 
@@ -166,9 +167,9 @@ namespace GameModule.Logic.GameLooperLogic
                     humanUnitDtos,
                     humanUnitTaskDtos,
                     humanUnitTaskOrderDtos,
-                    TribeStructureDtos,
+                    tribeStructureDtos,
                     notifications,
-                    new List<WorldEventDto>());
+                    worldZoneParameters);
             }
         }
 
@@ -204,7 +205,7 @@ namespace GameModule.Logic.GameLooperLogic
                         ProjectNomad.Shared.Enums.ENotificationType.GameOver,
                         null)
                 },
-                new List<WorldEventDto>());
+                new WorldParametersDto(50, false, false, false, false));
 
         TriggerGameLooperResponse GetEmptyResponse(Tribe tribe)
             => new(
@@ -219,6 +220,6 @@ namespace GameModule.Logic.GameLooperLogic
                 new List<HumanUnitTaskOrderDto>(),
                 new List<TribeStructuresDto>(),
                 new List<NotificationDto>(),
-                new List<WorldEventDto>());
+                new WorldParametersDto(50, false, false, false, false));
     }
 }

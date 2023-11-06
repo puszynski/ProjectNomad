@@ -9,6 +9,7 @@
     <smaller>position </smaller>    <b> @GameObjectsViewModel.Tribe.X|@GameObjectsViewModel.Tribe.Y</b>
     <smaller>fresh food</smaller>   <b> @GameObjectsViewModel.Tribe.FreshFood</b><smaller>(-6)</smaller>
     <smaller>wood </smaller>        <b> @GameObjectsViewModel.Tribe.Wood</b>
+    <b> @GameObjectsViewModel.WorldParameters.AverageTemperature°C </b>
 }
 else
 {
@@ -18,7 +19,7 @@ else
 
 @code {
     [Parameter]
-    public TribeGameObjectsViewModel GameObjectsViewModel { get; set; }
+    public TribeGameObjectsViewModel GameObjectsViewModel { get; set; } //TODO WORLD PARAMETERS SIĘ NIE MAPUJE..
 
     protected override async Task OnInitializedAsync()
     {

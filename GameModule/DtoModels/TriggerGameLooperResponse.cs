@@ -1,4 +1,5 @@
-﻿using ProjectNomad.Shared.Interfaces;
+﻿using ProjectNomad.Shared.DTOs.ServerToWasm;
+using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Interfaces.Response;
 
 namespace GameModule.DtoModels
@@ -9,5 +10,5 @@ namespace GameModule.DtoModels
         IEnumerable<IHumanUnitTaskOrder> HumanUnitTaskOrders,
         IEnumerable<ITribeStructure> TribeStructures,
         IEnumerable<INotification> Notifications,
-        IEnumerable<IWorldEvent> WorldEvents) : ITriggerGameLooperResponse;
+        WorldParametersDto WorldParameters) : ITriggerGameLooperResponse;
 }

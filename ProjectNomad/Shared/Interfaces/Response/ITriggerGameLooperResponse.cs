@@ -1,4 +1,6 @@
-﻿namespace ProjectNomad.Shared.Interfaces.Response
+﻿using ProjectNomad.Shared.DTOs.ServerToWasm;
+
+namespace ProjectNomad.Shared.Interfaces.Response
 {
     public interface ITriggerGameLooperResponse
     {
@@ -8,6 +10,6 @@
         IEnumerable<IHumanUnitTaskDto> HumanUnitTasks { get; }
         IEnumerable<IHumanUnitTaskOrder> HumanUnitTaskOrders { get; }
         IEnumerable<INotification> Notifications { get; }
-        IEnumerable<IWorldEvent> WorldEvents { get; }
+        WorldParametersDto WorldParameters { get; }
     }
 }

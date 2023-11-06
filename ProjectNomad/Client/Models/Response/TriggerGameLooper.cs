@@ -1,4 +1,4 @@
-﻿using ProjectNomad.Shared.Interfaces;
+﻿using ProjectNomad.Shared.DTOs.ServerToWasm;
 
 namespace ProjectNomad.Client.Models.Response
 {
@@ -9,5 +9,5 @@ namespace ProjectNomad.Client.Models.Response
         IEnumerable<HumanUnitTaskOrder> HumanUnitTaskOrders,
         IEnumerable<TribeStructure> TribeStructures,
         IEnumerable<Notification> Notifications,
-        IEnumerable<WorldEvent> WorldEvents); //: ITriggerGameLooperResponse;
+        WorldParametersDto WorldParameters); //: ITriggerGameLooperResponse;
 }

@@ -1,4 +1,6 @@
-﻿namespace GameModule.Entities
+﻿using ProjectNomad.Shared.DTOs.ServerToWasm;
+
+namespace GameModule.Entities
 {
     internal class WorldZoneParameter
     {
@@ -9,6 +11,9 @@
         public bool IsRain { get; set; }
         public bool IsSnow { get; set; }
         public bool IsBlizzard { get; set; }
+
+        public static implicit operator WorldParametersDto(WorldZoneParameter model) 
+            => new WorldParametersDto(model.AverageTemperature, model.IsWind, model.IsRain, model.IsSnow, model.IsBlizzard);
     }
 
     internal enum EWorldZoneParameter
