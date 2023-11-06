@@ -6,5 +6,6 @@ namespace ProjectNomad.Client.Models.Response
         string Name,
         int X,
         int Y,
-        int FoodLevelPercentage) : IHumanUnit;
+        int FoodLevelPercentage,
+        int ThermalLevelPercentage) : IHuman;
 }

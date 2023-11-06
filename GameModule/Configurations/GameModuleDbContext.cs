@@ -16,6 +16,7 @@ namespace GameModule.Configurations
         public DbSet<HumanTaskOrder> HumanTaskOrders { get; set; }
         public DbSet<TribeRelocation> TribeRelocations { get; set; }
         public DbSet<TribeStructure> TribeStructures { get; set; }
+        public DbSet<WorldZoneParameter> WorldZoneParameter { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

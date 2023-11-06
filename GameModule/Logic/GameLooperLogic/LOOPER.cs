@@ -1,15 +1,13 @@
-﻿using GameModule.Configurations;
-using GameModule.DtoModels;
+﻿using GameModule.DtoModels;
 using GameModule.Entities;
-using GameModule.Logic.GameLooperLogic;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
-using GameModule.Logic.TasksLogic;
+using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
 using GameModule.Repositories;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Interfaces.Response;
 
-namespace GameModule.Logic
+namespace GameModule.Logic.GameLooperLogic
 {
     internal class LOOPER
     {
@@ -21,9 +19,10 @@ namespace GameModule.Logic
         readonly IDateTimeProvider _dateTimeProvider;
         readonly IMapTileRepository _mapTileRepository;
         readonly IGameOverApplicator _gameOverApplicator;
+        readonly ITenSecondsExecutor _tenSecondsExecutor;
         readonly ITribeRelocationService _tribeRelocationService;
+        readonly IWorldZoneParameterRepository _worldZoneParameterRepository;
 
-        GameModuleDbContext gameModuleDbContext;
         public LOOPER(
             IDayExecutor dayExecutor,
             IHourExecutor hourExecutor,
@@ -33,8 +32,9 @@ namespace GameModule.Logic
             IDateTimeProvider dateTimeProvider,
             IMapTileRepository mapTileRepository,
             IGameOverApplicator gameOverApplicator,
+            ITenSecondsExecutor tenSecondsExecutor,
             ITribeRelocationService tribeRelocationService,
-            GameModuleDbContext gameModuleDbContext)
+            IWorldZoneParameterRepository worldZoneParameterRepository)
         {
             _dayExecutor = dayExecutor;
             _hourExecutor = hourExecutor;
@@ -44,26 +44,30 @@ namespace GameModule.Logic
             _dateTimeProvider = dateTimeProvider;
             _mapTileRepository = mapTileRepository;
             _gameOverApplicator = gameOverApplicator;
+            _tenSecondsExecutor = tenSecondsExecutor;
             _tribeRelocationService = tribeRelocationService;
-            this.gameModuleDbContext = gameModuleDbContext;
+            _worldZoneParameterRepository = worldZoneParameterRepository;
         }
 
-        public async Task<ITriggerGameLooperResponse>  LoopTribe(Guid accountId)
+        public async Task<ITriggerGameLooperResponse> LoopTribe(Guid accountId)
         {
             var tribe = await _tribeRepository.GetAllDataMaterialized(accountId);
-            //REMOVE KEEP FIRE ORDER WHEN FIRE IS OFF???
+            var worldZoneParameters = await _worldZoneParameterRepository.GetByZone(EWorldZoneParameter.Temperate);//todo get from tribe localization
+            if (worldZoneParameters == null)
+                worldZoneParameters = await _worldZoneParameterRepository.Create();
 
-            if (!tribe.Humans.Any()) 
+
+            if (!tribe.Humans.Any())
                 return GetGameOverResponse(tribe);
 
             var lastUpdated = tribe.Updated;
 
             if (lastUpdated > _dateTimeProvider.UtcNow().AddSeconds(-1))
                 return GetEmptyResponse(tribe);//UWAGA!!! JAKIE EMPTY - STĄD ZACIĄGASZ DANE DO WYŚWIETLENIA!!
-                // CO ZROBIĆ? MOŻE JAKIŚ WYJĄTEK ALBO KOD BŁĘDU I OBSŁUŻYĆ W KLIENTCIE?
-                //MOŻE NULL?? 
-                //A MOŻE JEDNAK TRZEBA POBRAĆ DANE I WYSŁAĆ?
-                //W A Ż N E       => POMYSŁ - ZWRÓĆ NULL, NA WIDOKU - JAK NULL - NIE PODMIENIAJ VM
+                                               // CO ZROBIĆ? MOŻE JAKIŚ WYJĄTEK ALBO KOD BŁĘDU I OBSŁUŻYĆ W KLIENTCIE?
+                                               //MOŻE NULL?? 
+                                               //A MOŻE JEDNAK TRZEBA POBRAĆ DANE I WYSŁAĆ?
+                                               //W A Ż N E       => POMYSŁ - ZWRÓĆ NULL, NA WIDOKU - JAK NULL - NIE PODMIENIAJ VM
 
             var mapTiles = await GetMapTileToInteract(tribe);
             var notifications = new List<INotification>();
@@ -80,13 +84,7 @@ namespace GameModule.Logic
                         currentTimeInLoop);
 
                     if (lastUpdated.Second % 10 == 0)
-                        if (tribe.TribeStructures != null)
-                        {
-                            var campfire = tribe
-                                .TribeStructures
-                                .SingleOrDefault(x => x.Type == ProjectNomad.Shared.Enums.ETribeStructureType.Firecamp);
-                            LightFire.CampfireBurning(campfire);
-                        }
+                        await _tenSecondsExecutor.Execute(tribe, worldZoneParameters, notifications, currentTimeInLoop);
 
                     if (lastUpdated.Second == 0)
                         _minuteExecutor.Execute(tribe, notifications);
@@ -95,7 +93,10 @@ namespace GameModule.Logic
                         break;
 
                     if (lastUpdated.Minute == 0 && lastUpdated.Second == 0)
-                        _hourExecutor.Execute(tribe, mapTiles, notifications);
+                        _hourExecutor.Execute(tribe, 
+                            mapTiles, 
+                            worldZoneParameters, 
+                            notifications);
 
                     if (lastUpdated.Hour == 12 && lastUpdated.Minute == 0 && lastUpdated.Second == 0)
                         _dayExecutor.Execute();
@@ -118,24 +119,25 @@ namespace GameModule.Logic
             }
             else
             {
-                tribe.Updated =  lastUpdated;
+                tribe.Updated = lastUpdated;
                 await _tribeRepository.SaveChangesAsync();
 
                 var relocationStatus = _tribeRelocationService.GetTribeRelocationStatus(tribe);
 
-                var tribeDto = new TribeDto(tribe.Id, 
-                    tribe.Name, 
-                    tribe.Localization.X, 
-                    tribe.Localization.Y, 
-                    tribe.Resources.Wood, 
-                    tribe.Resources.FreshFood, 
+                var tribeDto = new TribeDto(tribe.Id,
+                    tribe.Name,
+                    tribe.Localization.X,
+                    tribe.Localization.Y,
+                    tribe.Resources.Wood,
+                    tribe.Resources.FreshFood,
                     relocationStatus);
 
-                var humanUnitDtos = tribe.Humans.Select(x => new HumanUnitDto(x.Id, 
-                    x.Name, 
-                    x.Localization.X, 
-                    x.Localization.Y, 
-                    x.FoodLevelPercentage));
+                var humanUnitDtos = tribe.Humans.Select(x => new HumanUnitDto(x.Id,
+                    x.Name,
+                    x.Localization.X,
+                    x.Localization.Y,
+                    x.FoodLevelPercentage,
+                    x.ThermalLevelPercentage));
 
                 var humanUnitTaskDtos = tribe.HumanTasks
                     .Select(x => new HumanUnitTaskDto(x.Id,
@@ -147,12 +149,12 @@ namespace GameModule.Logic
                     x.To,
                     x.IsCompleted));
 
-                var humanUnitTaskOrderDtos = tribe.HumanTaskOrders.Select(x => new HumanUnitTaskOrderDto(x.Id, 
-                    x.TribeId, 
-                    x.Added, 
-                    x.Type, 
-                    x.HumanTaskId, 
-                    x.Localization.X, 
+                var humanUnitTaskOrderDtos = tribe.HumanTaskOrders.Select(x => new HumanUnitTaskOrderDto(x.Id,
+                    x.TribeId,
+                    x.Added,
+                    x.Type,
+                    x.HumanTaskId,
+                    x.Localization.X,
                     x.Localization.Y));
 
                 var TribeStructureDtos = tribe.TribeStructures.Select(x => new TribeStructuresDto(x.Id,
@@ -165,7 +167,7 @@ namespace GameModule.Logic
                     humanUnitTaskDtos,
                     humanUnitTaskOrderDtos,
                     TribeStructureDtos,
-                    notifications, 
+                    notifications,
                     new List<WorldEventDto>());
             }
         }
@@ -194,24 +196,29 @@ namespace GameModule.Logic
                 new List<HumanUnitTaskDto>(),
                 new List<HumanUnitTaskOrderDto>(),
                 new List<TribeStructuresDto>(),
-                new List<NotificationDto>() 
-                { 
-                    new NotificationDto(0, 
-                        "none", 
-                        _dateTimeProvider.UtcNow(), 
-                        ProjectNomad.Shared.Enums.ENotificationType.GameOver, 
-                        null) 
+                new List<NotificationDto>()
+                {
+                    new NotificationDto(0,
+                        "none",
+                        _dateTimeProvider.UtcNow(),
+                        ProjectNomad.Shared.Enums.ENotificationType.GameOver,
+                        null)
                 },
                 new List<WorldEventDto>());
 
         TriggerGameLooperResponse GetEmptyResponse(Tribe tribe)
             => new(
                 new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, ETribeRelocationStatus.None),
-                tribe.Humans.Select(x => new HumanUnitDto(x.Id, x.Name, x.Localization.X, x.Localization.Y, x.FoodLevelPercentage)),
+                tribe.Humans.Select(x => new HumanUnitDto(x.Id, 
+                    x.Name, 
+                    x.Localization.X, 
+                    x.Localization.Y,
+                    x.FoodLevelPercentage,
+                    x.ThermalLevelPercentage)),
                 new List<HumanUnitTaskDto>(),
                 new List<HumanUnitTaskOrderDto>(),
                 new List<TribeStructuresDto>(),
-                new List<NotificationDto>(), 
+                new List<NotificationDto>(),
                 new List<WorldEventDto>());
     }
 }

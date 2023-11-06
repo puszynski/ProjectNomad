@@ -4,18 +4,18 @@ using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 
-namespace GameModule.Logic.GameLooperLogic
+namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 {
     internal interface IHumanUnitAutoTaskScheduler
     {
-        System.Threading.Tasks.Task Execute(Tribe tribe,
+        Task Execute(Tribe tribe,
             List<INotification> notifications,
             DateTime currentTimeInLoop);
     }
 
     internal class HumanUnitAutoTaskScheduler : IHumanUnitAutoTaskScheduler
     {
-        public async System.Threading.Tasks.Task Execute(Tribe tribe,
+        public async Task Execute(Tribe tribe,
             List<INotification> notifications,
             DateTime currentTimeInLoop)
         {
@@ -32,9 +32,9 @@ namespace GameModule.Logic.GameLooperLogic
             {
                 if (tribe.Resources.FreshFood >= GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit)
                 {
-                    var notification = await CreateTask(humanUnit, 
-                        tribe.Id, 
-                        tribe.HumanTasks, 
+                    var notification = await CreateTask(humanUnit,
+                        tribe.Id,
+                        tribe.HumanTasks,
                         currentTimeInLoop);
 
                     tribe.Resources.FreshFood -= GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit;
@@ -44,12 +44,12 @@ namespace GameModule.Logic.GameLooperLogic
             }
         }
 
-        async Task<INotification> CreateTask(Human humanUnit, 
-            int tribeId, 
-            ICollection<Entities.HumanTask> tasksToConsume,
+        async Task<INotification> CreateTask(Human humanUnit,
+            int tribeId,
+            ICollection<HumanTask> tasksToConsume,
             DateTime currentTimeInLoop)
         {
-            var entity = new Entities.HumanTask
+            var entity = new HumanTask
             {
                 From = currentTimeInLoop.AddSeconds(-1),//todo remove -1 due to TaskRequire mechanism and change UT
                 HumanId = humanUnit.Id,
@@ -60,11 +60,11 @@ namespace GameModule.Logic.GameLooperLogic
             };
 
             tasksToConsume.Add(entity);
-            
-            return new NotificationDto(humanUnit.Id, 
-                humanUnit.Name, 
-                currentTimeInLoop, 
-                ENotificationType.FoodConsumptionStarted, 
+
+            return new NotificationDto(humanUnit.Id,
+                humanUnit.Name,
+                currentTimeInLoop,
+                ENotificationType.FoodConsumptionStarted,
                 entity.To.ToString());
         }
     }

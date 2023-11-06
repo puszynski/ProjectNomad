@@ -3,12 +3,12 @@ using GameModule.Entities.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
 
-namespace GameModule.Logic
+namespace GameModule.Logic.Services
 {
     internal class NewTribeLocalizationInitializer
     {
         private readonly GameModuleDbContext _dbContext;
-        public NewTribeLocalizationInitializer(GameModuleDbContext dbContext) 
+        public NewTribeLocalizationInitializer(GameModuleDbContext dbContext)
             => _dbContext = dbContext;
 
         internal async Task<Localization> Initialize()
@@ -21,7 +21,7 @@ namespace GameModule.Logic
                 {
                     while (_dbContext.Tribes.Any(x => x.Localization.X == localization.X && x.Localization.Y == localization.Y))
                     {
-                        //note - simple fast solution to be updated in the future
+                        //note - simple fast solution - should be updated in the future
                         var maxX_Task = _dbContext.Tribes.Select(x => x.Localization).MaxAsync(x => x.X);
                         var maxY_Task = _dbContext.Tribes.Select(x => x.Localization).MaxAsync(x => x.X);
 
@@ -39,7 +39,7 @@ namespace GameModule.Logic
                 {
 
                     throw ex;
-                }                
+                }
             }
 
             return localization;

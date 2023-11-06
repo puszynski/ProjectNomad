@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ProjectNomad.Shared.Interfaces;
+﻿using GameModule.Entities.SharedInterfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameModule.Entities.ValueObjects
 {

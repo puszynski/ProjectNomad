@@ -1,5 +1,6 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
+using GameModule.Logic.Services;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Interfaces;
 

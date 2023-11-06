@@ -1,4 +1,4 @@
-﻿namespace ProjectNomad.Shared.Interfaces
+﻿namespace GameModule.Entities.SharedInterfaces
 {
     public interface IValueObject
     {

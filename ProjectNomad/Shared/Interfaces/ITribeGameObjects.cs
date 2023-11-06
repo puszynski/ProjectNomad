@@ -3,6 +3,9 @@
     public interface ITribeGameObjects
     {
         ITribe Tribe { get; }
-        IEnumerable<IHumanUnit> HumanUnits { get; }
+        IEnumerable<IHuman> HumanUnits { get; }
+
+        //todo
+        IWorldParameters WorldParameters { get; }
     }
 }

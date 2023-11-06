@@ -17,7 +17,7 @@ namespace GameModule.Entities
         public EMapType Type { get; set; }
         public TileRecourse Food { get; set; }
         public TileRecourse Wood { get; set; }
-    }
+    } 
 
     [Owned]
     internal class TileRecourse : IValueObject

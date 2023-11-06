@@ -1,8 +1,9 @@
 ﻿using GameModule.Configurations;
 using GameModule.DtoModels;
 using GameModule.Entities;
-using GameModule.Logic;
+using GameModule.Logic.GameLooperLogic;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
+using GameModule.Logic.Services;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;

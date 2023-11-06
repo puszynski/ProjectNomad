@@ -17,7 +17,12 @@ namespace GameModule.Logic.TasksLogic
             DateTime currentTimeInLoop, 
             IEnumerable<MapTile> mapTiles)
         {
-            var human = BasicDataSelector.SelectFirstHumanWithCondition(tribe);
+            var humansWithConditions = BasicDataSelector
+                .SelectHumansWithCondition(tribe)
+                .Where(x => x.FoodLevelPercentage < HUMAN_FOOD_PERCENTAGE_TO_START_CONSUME);
+
+            var human = RandomCalculator.GetRandomItemFromList(humansWithConditions); 
+
             if (human == null)
                 return default;
 

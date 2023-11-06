@@ -1,4 +1,5 @@
 ﻿using GameModule.Entities;
+using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Interfaces;
 
@@ -23,8 +24,7 @@ namespace GameModule.Logic.GameLooperLogic
             foreach (var human in tribe.Humans)
                 human.FoodLevelPercentage -= GameSETTINGS.Food.FoodToGetHungryForHumanUnitEachMinute;
 
-            var notificationsAbouStarvations = _humansDeathApplicator.StarvationDeath(tribe.Humans);
-            notifications.AddRange(notificationsAbouStarvations);
+            _humansDeathApplicator.StarvationDeath(tribe.Humans, notifications);
         }
     }
 }

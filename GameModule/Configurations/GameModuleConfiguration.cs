@@ -1,7 +1,8 @@
-﻿using GameModule.Logic;
-using GameModule.Logic.GameLooperLogic;
+﻿using GameModule.Logic.GameLooperLogic;
 using GameModule.Logic.GameLooperLogic.HourExecutorLogic;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
+using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
+using GameModule.Logic.Services;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,7 @@ namespace GameModule.Configurations
         /// <summary>
         /// to run migration
         ///     cd .\GameModule
-        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add HumanTaskAddColumnIsCompleted -c GameModuleDbContext
+        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add WorldZoneParametersHumanThermalLvl -c GameModuleDbContext
         ///     
         ///  note: you are in migration and context library project and are referring to startup project
         ///  plus specify context where multiple are detected by -c Name
@@ -45,10 +46,12 @@ namespace GameModule.Configurations
             services.AddScoped<IHumanUnitTaskRepository,  HumanUnitTaskRepository>();
             services.AddScoped<ITribeStructureRepository, TribeStructureRepository>();
             services.AddScoped<ITribeRelocationRepository, TribeRelocationRepository>();
+            services.AddScoped<IWorldZoneParameterRepository, WorldZoneParameterRepository>();
             services.AddScoped<IHumanUnitTaskOrderRepository,  HumanUnitTaskOrderRepository>();
 
             services.AddScoped<LOOPER>();
             services.AddScoped<ISecundExecutor, SecundExecutor>();
+            services.AddScoped<ITenSecondsExecutor, TenSecondsExecutor>();
             services.AddScoped<IMinuteExecutor, MinuteExecutor>();
 
             services.AddScoped<IHourExecutor, HourExecutor>();
@@ -64,6 +67,7 @@ namespace GameModule.Configurations
             services.AddScoped<IHumansDeathApplicator, HumansDeathApplicator>();
             services.AddScoped<IGameOverApplicator, GameOverApplicator>();
             services.AddScoped<ITribeRelocationService, TribeRelocationService>();
+            services.AddScoped<WeatherAndThermalService>();
         }
     }
 }

@@ -1,36 +1,49 @@
 ﻿using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic.HourExecutorLogic;
-using ProjectNomad.Shared;
+using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
+using GameModule.Logic.Services;
 using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic.GameLooperLogic
 {
     internal interface IHourExecutor
     {
-        void Execute(Tribe tribe, ICollection<MapTile> mapTiles, List<INotification> notifications);
+        void Execute(Tribe tribe, 
+            ICollection<MapTile> mapTiles,
+            WorldZoneParameter worldZoneParameter, 
+            List<INotification> notifications);
     }
     internal class HourExecutor : IHourExecutor
     {
         readonly MapTileRegenerator _mapTileRegenerator;
         readonly BreedingApplicator _breedingApplicator;
         readonly IHumansDeathApplicator _humansDeathApplicator;
+        readonly WeatherAndThermalService _weatherAndThermalService;
+
         public HourExecutor(MapTileRegenerator mapTileRegenerator,
             BreedingApplicator breedingApplicator,
-            IHumansDeathApplicator humansDeathApplicator)
+            IHumansDeathApplicator humansDeathApplicator,
+            WeatherAndThermalService weatherAndThermalService)
         {
             _mapTileRegenerator = mapTileRegenerator;
             _breedingApplicator = breedingApplicator;
             _humansDeathApplicator = humansDeathApplicator;
+            _weatherAndThermalService = weatherAndThermalService;
         }
 
-        void IHourExecutor.Execute(Tribe tribe, ICollection<MapTile> mapTiles, List<INotification> notifications)
+        void IHourExecutor.Execute(Tribe tribe, 
+            ICollection<MapTile> mapTiles, 
+            WorldZoneParameter worldZoneParameter, 
+            List<INotification> notifications)
         {
             var inProgressHumanTasks = tribe.HumanTasks.Where(x => !x.IsCompleted).ToList();
             tribe.HumanTasks = inProgressHumanTasks;
 
             _mapTileRegenerator.Execute(mapTiles);
-            _breedingApplicator.Execute(tribe, notifications);
-            _humansDeathApplicator.DeathFromAgeOrIllness(tribe.Humans, notifications);
+            _breedingApplicator.Execute(tribe, notifications); 
+            _humansDeathApplicator.AgeOrIllnessDeath(tribe.Humans, notifications);
+
+            _weatherAndThermalService.UpdateWorldZoneParameters(worldZoneParameter);//UWAGA UWAGA! GAME LOOPER BĘDZIE URUCHAMIANY PER MEMBER - A TO MUSI BYĆ PER ALIKACJA!!! TODOOOO todo
         }
     }
 }

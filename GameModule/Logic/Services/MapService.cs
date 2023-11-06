@@ -5,7 +5,7 @@ using ProjectNomad.Shared.Enums;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("UnitTests")]
-namespace GameModule.Logic
+namespace GameModule.Logic.Services
 {
     internal class MapService
     {
@@ -29,7 +29,7 @@ namespace GameModule.Logic
             return new TileRecourse { ActualPoints = maxWoodPoints, MaxLimitPoints = maxWoodPoints };
         }
 
-        internal async Task<IEnumerable<MapTile>> GenerateMapTiles(int x_start, 
+        internal async Task<IEnumerable<MapTile>> GenerateMapTiles(int x_start,
             int y_start)
         {
             if (x_start % 100 != 0 || y_start % 100 != 0)

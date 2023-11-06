@@ -4,12 +4,12 @@ using GameModule.Logic.TasksLogic;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 
-namespace GameModule.Logic.GameLooperLogic
+namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 {
     internal interface ITaskAssigner
     {
         Task Execute(Tribe tribe,
-            ICollection<MapTile> mapTiles, 
+            ICollection<MapTile> mapTiles,
             List<INotification> notifications,
             DateTime currentTimeInLoop);
     }
@@ -43,7 +43,7 @@ namespace GameModule.Logic.GameLooperLogic
                             break;
                     }
 
-                    var notification = assigner?.Start(null, tribe, currentTimeInLoop, mapTiles); 
+                    var notification = assigner?.Start(null, tribe, currentTimeInLoop, mapTiles);
 
                     if (notification != null)
                         notifications.Add(notification);
@@ -83,11 +83,11 @@ namespace GameModule.Logic.GameLooperLogic
 
                     if (notification != null)
                         notifications.Add(notification);
-                }                
+                }
             }
         }
 
-        
+
 
         void TribeRelocationTasksAssign(HumanTaskOrder taskOrder, Tribe tribe)
         {

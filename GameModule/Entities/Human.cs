@@ -1,5 +1,6 @@
 ﻿using GameModule.Entities.SharedInterfaces;
 using GameModule.Entities.ValueObjects;
+using System.ComponentModel.DataAnnotations;
 
 namespace GameModule.Entities
 {
@@ -12,8 +13,14 @@ namespace GameModule.Entities
         public string Name { get; set; }
         public Localization Localization { get; set; }
 
-        //1-100
+        [Range(0, 100)]
         public int FoodLevelPercentage { get; set; }
+
+        [Range(0, 100)]
+        //0 - death from freezing
+        //50 - optimal
+        //100 - death from overheating
+        public int ThermalLevelPercentage { get; set; }
 
         public ICollection<HumanTask> HumanUnitTasks { get; set; }
     }

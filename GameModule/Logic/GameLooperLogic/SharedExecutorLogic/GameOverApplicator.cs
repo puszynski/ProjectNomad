@@ -4,7 +4,7 @@ using GameModule.Repositories;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Interfaces;
 
-namespace GameModule.Logic.GameLooperLogic
+namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 {
     internal interface IGameOverApplicator
     {

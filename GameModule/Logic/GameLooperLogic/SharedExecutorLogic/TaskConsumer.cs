@@ -3,7 +3,7 @@ using GameModule.Logic.TasksLogic;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 
-namespace GameModule.Logic.GameLooperLogic
+namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 {
     internal interface ITaskConsumer
     {
@@ -29,7 +29,7 @@ namespace GameModule.Logic.GameLooperLogic
                 .Where(x => x.To <= currentTimeInLoop && !x.IsCompleted)
                 .ToList();
 
-            foreach (var task in tasksToConsume) 
+            foreach (var task in tasksToConsume)
             {
                 var notification = ConsumeTask(task,
                     tribe,
@@ -69,9 +69,9 @@ namespace GameModule.Logic.GameLooperLogic
                 default: throw new NotImplementedException();
             }
 
-            return consumer.End(humanUnitTask, 
-                tribe, 
-                currentTimeInLoop, 
+            return consumer.End(humanUnitTask,
+                tribe,
+                currentTimeInLoop,
                 mapTiles);
         }
     }

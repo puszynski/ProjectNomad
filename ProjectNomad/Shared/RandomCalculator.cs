@@ -22,5 +22,16 @@ namespace ProjectNomad.Shared
         {
             return Math.Min(GetRandomInt(min, max), GetRandomInt(min, max));
         }
+
+        public static T GetRandomItemFromList<T>(IEnumerable<T> list)
+        {
+            if (!list.Any())
+                return default;
+
+            var random = new Random();
+            var randomIndex = random.Next(list.ToList().Count);
+
+            return list.ToList()[randomIndex];
+        }
     }
 }

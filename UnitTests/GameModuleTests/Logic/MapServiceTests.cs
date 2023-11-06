@@ -1,4 +1,5 @@
 ﻿using GameModule.Logic;
+using GameModule.Logic.Services;
 using Xunit;
 
 namespace UnitTests.GameModuleTests.Logic
@@ -8,15 +9,12 @@ namespace UnitTests.GameModuleTests.Logic
         [Fact]
         public async Task GenerateMapTiles_should_generate_random_wood_and_food_values()
         {
-            var mapService = new GameModule.Logic.MapService();
+            var mapService = new MapService();
 
             var TILE_MAX_FOOD_POINTS_LIMIT = 100;
             var TILE_MAX_WOOD_POINTS_LIMIT = 100;
 
-            var tiles = await mapService.GenerateMapTiles(0,
-                0,
-                TILE_MAX_FOOD_POINTS_LIMIT,
-                TILE_MAX_WOOD_POINTS_LIMIT);
+            var tiles = await mapService.GenerateMapTiles(0, 0);
 
             var woodAverage = tiles.Select(x => x.Wood.ActualPoints).Average();
             var foodAverage = tiles.Select(x => x.Food.ActualPoints).Average();
@@ -35,15 +33,12 @@ namespace UnitTests.GameModuleTests.Logic
         [InlineData(101, 101)]
         public async Task GenerateMapTiles_should_throw_ArgumentOutOfRangeException_when_x_y_do_not_point_to_start_of_square(int x, int y)
         {
-            var mapService = new GameModule.Logic.MapService();
+            var mapService = new MapService();
 
             var TILE_MAX_FOOD_POINTS_LIMIT = 100;
             var TILE_MAX_WOOD_POINTS_LIMIT = 100;
 
-            Func<Task> testCode = () => mapService.GenerateMapTiles(x,
-                y,
-                TILE_MAX_FOOD_POINTS_LIMIT,
-                TILE_MAX_WOOD_POINTS_LIMIT);
+            Func<Task> testCode = () => mapService.GenerateMapTiles(x, y);
 
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(testCode);
         }
@@ -54,15 +49,12 @@ namespace UnitTests.GameModuleTests.Logic
         [InlineData(100, 100)]
         public async Task GenerateMapTiles_should_generate_100x100_tiles(int x, int y)
         {
-            var mapService = new GameModule.Logic.MapService();
+            var mapService = new MapService();
 
             var TILE_MAX_FOOD_POINTS_LIMIT = 100;
             var TILE_MAX_WOOD_POINTS_LIMIT = 100;
 
-            var tiles = await mapService.GenerateMapTiles(x,
-                y,
-                TILE_MAX_FOOD_POINTS_LIMIT,
-                TILE_MAX_WOOD_POINTS_LIMIT);
+            var tiles = await mapService.GenerateMapTiles(x, y);
 
             Assert.Equal(100*100, tiles.Count());
 

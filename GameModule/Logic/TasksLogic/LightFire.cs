@@ -10,7 +10,7 @@ namespace GameModule.Logic.TasksLogic
     internal class LightFire : ITask
     {
         private const int FIRE_POWER_AFTER_LIGHT_A_FIRE = 50;
-        internal static void CampfireBurning(TribeStructure tribeStructure)
+        internal static void CampfireBurning(TribeStructure? tribeStructure)
         {
             if (tribeStructure == null) 
                 return;

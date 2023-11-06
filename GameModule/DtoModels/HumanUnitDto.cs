@@ -6,5 +6,6 @@ namespace GameModule.DtoModels
         string Name, 
         int X, 
         int Y, 
-        int FoodLevelPercentage) : IHumanUnit;
+        int FoodLevelPercentage,
+        int ThermalLevelPercentage) : IHuman;
 }

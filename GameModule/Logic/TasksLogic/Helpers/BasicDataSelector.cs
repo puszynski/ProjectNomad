@@ -1,4 +1,5 @@
 ﻿using GameModule.Entities;
+using ProjectNomad.Shared;
 
 namespace GameModule.Logic.TasksLogic.Helpers
 {
@@ -6,15 +7,27 @@ namespace GameModule.Logic.TasksLogic.Helpers
     {
         internal static Human? SelectFirstHumanWithCondition(Tribe tribe)
         {
-            var humanIDsWithTaskAssigned = tribe.HumanTasks.Where(x => !x.IsCompleted).Select(x => x.HumanId);
+            return RandomCalculator.GetRandomItemFromList(SelectHumansWithCondition(tribe));
+        }
 
-            var humanWithConditionToStartNewTask = tribe
-                .Humans
+        internal static IEnumerable<Human> SelectHumansWithCondition(Tribe tribe)
+        {
+            if (tribe.Humans == null)
+                return default;
+
+            var humanIDsWithTaskAssigned = tribe
+                .HumanTasks?
+                .Where(x => !x.IsCompleted)
+                .Select(x => x.HumanId);
+
+            if (humanIDsWithTaskAssigned == null)
+                return tribe.Humans
+                    .Where(x => x.FoodLevelPercentage > 10);
+
+
+            return tribe.Humans
                 .Where(x => !humanIDsWithTaskAssigned.Contains(x.Id))
-                .Where(x => x.FoodLevelPercentage > 10)
-                .FirstOrDefault();//todo make random (always first guy will be taken..)
-
-            return humanWithConditionToStartNewTask;
+                .Where(x => x.FoodLevelPercentage > 10);
         }
     }
 }

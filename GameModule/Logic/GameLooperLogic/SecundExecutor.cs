@@ -1,5 +1,6 @@
 ﻿using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
+using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
 using GameModule.Logic.TasksLogic;
 using ProjectNomad.Shared.Interfaces;
 

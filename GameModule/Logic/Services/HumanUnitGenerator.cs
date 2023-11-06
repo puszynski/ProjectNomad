@@ -2,7 +2,7 @@
 using GameModule.Entities.ValueObjects;
 using ProjectNomad.Shared;
 
-namespace GameModule.Logic
+namespace GameModule.Logic.Services
 {
     internal static class HumanUnitGenerator
     {
@@ -21,7 +21,8 @@ namespace GameModule.Logic
                         Y = tribe.Localization.Y
                     },
                     Tribe = tribe,
-                    FoodLevelPercentage = RandomCalculator.GetRandomInt(50, 100)
+                    FoodLevelPercentage = RandomCalculator.GetRandomInt(50, 100),
+                    ThermalLevelPercentage = 50
                 };
 
                 result.Add(human);
@@ -41,14 +42,15 @@ namespace GameModule.Logic
                     Y = tribe.Localization.Y
                 },
                 Tribe = tribe,
-                FoodLevelPercentage = RandomCalculator.GetRandomInt(50, 100) 
+                FoodLevelPercentage = RandomCalculator.GetRandomInt(50, 100),
+                ThermalLevelPercentage = 50
             };
         }
 
         static string GetRandomString(IEnumerable<string> existingNames)
         {
-            var names = new List<string>() 
-            { 
+            var names = new List<string>()
+            {
                 "Aka", "Kha", "Buk", "Bor", "Buku", "Brio", "Bro", "Ciech", "Dobro", "Dola", "Droga", "Goj", "Gost", "Mygi", "Jar", "Lub", "Mił", "Mir", "Mysł", "Rad", "Rat", "Siem", "Wit", "Włod", "Woj", "Hug", "Mug", "Los", "Żyr"
             };
 
