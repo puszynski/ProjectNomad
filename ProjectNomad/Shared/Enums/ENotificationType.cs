@@ -24,6 +24,8 @@
         FoodConsumptionStarted,
         FoodConsumptionEnded,
 
+        HeatUpHumanByFireEnded,
+
         Newborn,
     }
 }

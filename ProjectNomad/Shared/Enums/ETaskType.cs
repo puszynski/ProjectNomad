@@ -13,8 +13,9 @@ namespace ProjectNomad.Shared.Enums
 
         TribeRelocation = 300,
 
-        //autotaskss
+        // auto-tasks
         ConsumeFood = 1001,
+        HeatUpHumanByFireEnded = 1002,
     }
 
     public static class HumanUnitTaskTypeExtensions
