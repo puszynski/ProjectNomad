@@ -65,6 +65,9 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 case ETaskType.ConsumeFood:
                     consumer = new ConsumeFood();
                     break;
+                case ETaskType.HeatUpHumanByFireEnded:
+                    consumer = new HeatUpByFire();
+                    break;
 
                 default: throw new NotImplementedException();
             }

@@ -7,10 +7,10 @@ using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic.TasksLogic
 {
-    internal class HeatUpByFire : ITask //todo implement
+    internal class HeatUpByFire : ITask
     {
-        //ThermalLevelPercentage
-        private const int HUMAN_THERMAL_PERCENTAGE_TO_START = 30;
+        const int HUMAN_THERMAL_PERCENTAGE_TO_START = 30;
+        const int HEAT_UP_POINTS = 40;
 
         INotification ITask.Start(HumanTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
         {
@@ -42,7 +42,7 @@ namespace GameModule.Logic.TasksLogic
             };
 
             tribe.HumanTasks.Add(entity);
-            human.ThermalLevelPercentage += 20; //todo const
+            human.ThermalLevelPercentage += HEAT_UP_POINTS;
 
             return new NotificationDto(human.Id,
                 human.Name,

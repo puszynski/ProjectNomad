@@ -41,6 +41,9 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                         case ETaskType.ConsumeFood:
                             assigner = new ConsumeFood();
                             break;
+                        case ETaskType.HeatUpHumanByFireEnded:
+                            assigner = new HeatUpByFire();
+                            break;
                     }
 
                     var notification = assigner?.Start(null, tribe, currentTimeInLoop, mapTiles);

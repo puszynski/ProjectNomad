@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace ProjectNomad.Shared.Enums
+﻿namespace ProjectNomad.Shared.Enums
 {
     public enum ETaskType
     {
@@ -36,6 +34,8 @@ namespace ProjectNomad.Shared.Enums
                     return "zmień lokalizację";
                 case ETaskType.ConsumeFood:
                     return "konsumuj jedzenie";
+                case ETaskType.HeatUpHumanByFireEnded:
+                    return "ogrzewaj przy ogniu";
                 default:
                     throw new NotImplementedException();
             }
@@ -43,7 +43,7 @@ namespace ProjectNomad.Shared.Enums
 
         public static List<ETaskType> GetAutoTasks()
         {
-            return new List<ETaskType>() { ETaskType.ConsumeFood };
+            return new List<ETaskType>() { ETaskType.ConsumeFood, ETaskType.HeatUpHumanByFireEnded };
         }
     }
 }
