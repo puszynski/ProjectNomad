@@ -50,46 +50,40 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
         {
             var humansToDieFromStarving = humans.Where(x => x.ThermalLevelPercentage <= 0).ToList();
 
-            if (humansToDieFromStarving.Any())
-            {
-                _humanUnitRepository.RemoveRange(humansToDieFromStarving);
+            if (!humansToDieFromStarving.Any())
+                return;
 
-                foreach (var human in humansToDieFromStarving)
-                    notifications.Add(new NotificationDto(human.Id,
-                        human.Name,
-                        _dateTimeProvider.UtcNow(),
-                        ProjectNomad.Shared.Enums.ENotificationType.DeathFromFreezing,
-                        null));
+            _humanUnitRepository.RemoveRange(humansToDieFromStarving);
 
-                foreach (var humanUnitRemoved in humansToDieFromStarving)
-                    humans.Remove(humanUnitRemoved);
-            }
+            foreach (var human in humansToDieFromStarving)
+                notifications.Add(new NotificationDto(human.Id,
+                    human.Name,
+                    _dateTimeProvider.UtcNow(),
+                    ProjectNomad.Shared.Enums.ENotificationType.DeathFromFreezing,
+                    null));
 
-            if (!humans.Any())
-            {
-                var tests = "testuje sobie gdzie idzie wyjątek..";
-            }
+            foreach (var humanUnitRemoved in humansToDieFromStarving)
+                humans.Remove(humanUnitRemoved);
         }
 
         void IHumansDeathApplicator.OverheatingDeath(ICollection<Human> humans, List<INotification> notifications)
         {
             var humansToDieFromStarving = humans.Where(x => x.ThermalLevelPercentage >= 100).ToList();
 
-            if (humansToDieFromStarving.Any())
-            {
-                _humanUnitRepository.RemoveRange(humansToDieFromStarving);
+            if (!humansToDieFromStarving.Any())
+                return;
 
-                foreach (var human in humansToDieFromStarving)
-                    notifications.Add(new NotificationDto(human.Id,
-                        human.Name,
-                        _dateTimeProvider.UtcNow(),
-                        ProjectNomad.Shared.Enums.ENotificationType.DeathFromOverheat,
-                        null));
+            _humanUnitRepository.RemoveRange(humansToDieFromStarving);
 
-                foreach (var humanUnitRemoved in humansToDieFromStarving)
-                    humans.Remove(humanUnitRemoved);
+            foreach (var human in humansToDieFromStarving)
+                notifications.Add(new NotificationDto(human.Id,
+                    human.Name,
+                    _dateTimeProvider.UtcNow(),
+                    ProjectNomad.Shared.Enums.ENotificationType.DeathFromOverheat,
+                    null));
 
-            }
+            foreach (var humanUnitRemoved in humansToDieFromStarving)
+                humans.Remove(humanUnitRemoved);
         }
 
         void IHumansDeathApplicator.AgeOrIllnessDeath(ICollection<Human> humanUnits, List<INotification> notifications)
