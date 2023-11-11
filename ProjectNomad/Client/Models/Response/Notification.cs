@@ -28,6 +28,9 @@ namespace ProjectNomad.Client.Models.Response
                 case ENotificationType.KeepFireProceeded: return $"{HumanName} dożucić do ogień";
                 case ENotificationType.FoodConsumptionStarted: return $"{HumanName} jeść";
                 case ENotificationType.HeatUpHumanByFireEnded: return $"{HumanName} ciepło przy ognisko";
+                case ENotificationType.DeathFromFreezing: return $"{HumanName} ŚMIERĆ MRÓZ";
+                case ENotificationType.DeathFromOverheat: return $"{HumanName} ŚMIERĆ UPAŁ";
+
                 default: return string.Empty;
             }
         }

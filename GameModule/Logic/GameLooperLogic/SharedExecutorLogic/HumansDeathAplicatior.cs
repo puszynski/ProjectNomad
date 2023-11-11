@@ -83,7 +83,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                     notifications.Add(new NotificationDto(human.Id,
                         human.Name,
                         _dateTimeProvider.UtcNow(),
-                        ProjectNomad.Shared.Enums.ENotificationType.DeathFromFreezing,
+                        ProjectNomad.Shared.Enums.ENotificationType.DeathFromOverheat,
                         null));
 
                 foreach (var humanUnitRemoved in humansToDieFromStarving)
