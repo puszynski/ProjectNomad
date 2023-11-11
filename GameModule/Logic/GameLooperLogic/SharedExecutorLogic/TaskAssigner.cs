@@ -32,7 +32,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 
             void AutoTaskAssign()
             {
-                foreach (var autoTasks in HumanUnitTaskTypeExtensions.GetAutoTasks())
+                foreach (var autoTasks in TaskTypeExtensions.GetAutoTasks())
                 {
                     ITask? assigner = null;
 
@@ -71,11 +71,8 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                         case ETaskType.GatheringWood:
                             assigner = new GatheringWood();
                             break;
-                        case ETaskType.LightAFire:
-                            assigner = new LightFire();
-                            break;
-                        case ETaskType.KeepFire:
-                            assigner = new KeepFire();
+                        case ETaskType.CampfireUp:
+                            assigner = new Campfire();
                             break;
                         case ETaskType.TribeRelocation:
                             TribeRelocationTasksAssign(taskOrder, tribe);

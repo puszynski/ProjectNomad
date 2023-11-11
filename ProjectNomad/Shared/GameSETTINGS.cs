@@ -34,13 +34,13 @@
 
         public static class Fire
         {
-            public const int TimeToCompleteAttemptToStartFire = 1;
+            public const int TimeToCompleteFireUp = 1;
             public const double ChanceToStartFire = 0.2;
 
             public const int WoodUsedToKeepTheCampfireBurning = 1;
             public const int BurningCampFireEch10Seconds = 1;
 
-            public const int TimeToHeatUpHumanByFire = 2; //todo depends on lvl, if freezeing, very long to recover..
+            public const int TimeToHeatUpHumanByFire = 1; //todo depends on lvl, if freezeing, very long to recover..
         }
 
         public static class MapResources

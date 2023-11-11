@@ -17,30 +17,21 @@
     <br />
     <button type="button" class="button_active" style="width: 250px;" @onclick="OrderToGatherWood">zbierz drewno w okolicy</button>
     <br />
-    @if (!TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 0) && !HumanUnitTaskOrders.Any(x => x.Type == ETaskType.LightAFire))
+
+    @if (!HumanUnitTaskOrders.Any(x => x.Type == ETaskType.CampfireUp))
     {
-        <button type="button" class="button_active" style="width: 250px;" @onclick="OrderToLightFire">rozpal ognisko</button>
+        <button type="button" class="button_active" style="width: 250px;" @onclick="OrderCampfireUp">pal ognisko</button>
         <br />
     }
     else
     {
-        <button type="button" class="button_inactive" style="width: 250px;">rozpal ognisko</button>
-        <br />
-    }
-    @if (TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 1))
-    {
-        <button type="button" class="button_active" style="width: 250px;" @onclick="OrderToKeepFire">utrzymuj ogień</button>
-        <br />
-    }
-    else
-    {
-        <button type="button" class="button_inactive" style="width: 250px;">utrzymuj ogień</button>
+        <button type="button" class="button_inactive" style="width: 250px;">pal ognisko</button>
         <br />
     }
     <br />
 
 
-    @foreach (var autoTask in HumanUnitTasks.Where(x => HumanUnitTaskTypeExtensions.GetAutoTasks().Contains(x.Type)))
+    @foreach (var autoTask in HumanUnitTasks.Where(x => TaskTypeExtensions.GetAutoTasks().Contains(x.Type)))
     {
         <ProjectNomad.Client.Components.TasksComponents.ProgressButton HumanUnitTask="autoTask" />
     }
@@ -77,17 +68,36 @@
         }
     }
     @* ⏵⏸ *@
+
+    @* TODO *@
     @foreach (var button in buttons)
     {
-        var desc = HumanUnitTaskTypeExtensions.GetDescription(button.Type);
-        @if (button.InProgressCount != button.AllCount)
+        var desc = TaskTypeExtensions.GetDescription(button.Type);
+        var symbol = TaskTypeExtensions.GetSymbol(button.Type);
+
+        @if (TaskTypeExtensions.GetConstantTasks().Contains(button.Type))
         {
-            <button type="button" class="button_active" style="width: 250px;">@(desc)(@button.InProgressCount/@button.AllCount◴)</button>
+            if (button.InProgressCount != button.AllCount)
+            {
+                <button type="button" class="button_active" style="width: 250px;">@(desc) @symbol</button>
+            }
+            else
+            {
+                <button type="button" class="button_inactive" style="width: 250px;">@(desc) @symbol</button>
+            }
         }
         else
         {
-            <button type="button" class="button_inactive" style="width: 250px;">@(desc)(@button.InProgressCount/@button.AllCount◴)</button>
+            if (button.InProgressCount != button.AllCount)
+            {
+                <button type="button" class="button_active" style="width: 250px;">@(desc) @button.InProgressCount/@button.AllCount@symbol</button>
+            }
+            else
+            {
+                <button type="button" class="button_inactive" style="width: 250px;">@(desc) @button.InProgressCount/@button.AllCount@symbol</button>
+            }
         }
+        
 
         foreach (var task in button.MatchedTasks)
         {
@@ -147,11 +157,8 @@ else
     {
     }
 
-    async Task OrderToLightFire()
-        => _taskOrderManager.Add(Tribe.Id, ETaskType.LightAFire, Tribe.X, Tribe.Y);
-
-    async Task OrderToKeepFire()
-        => _taskOrderManager.Add(Tribe.Id, ETaskType.KeepFire, Tribe.X, Tribe.Y);
+    async Task OrderCampfireUp()
+        => _taskOrderManager.Add(Tribe.Id, ETaskType.CampfireUp, Tribe.X, Tribe.Y);
 
     async Task OrderToGatherFood()
         => _taskOrderManager.Add(Tribe.Id, ETaskType.GatheringFood, Tribe.X, Tribe.Y);

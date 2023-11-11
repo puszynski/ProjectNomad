@@ -33,7 +33,7 @@ namespace GameModule.Logic.GameLooperLogic
             var campfire = tribe
                 .TribeStructures?
                 .SingleOrDefault(x => x.Type == ProjectNomad.Shared.Enums.ETribeStructureType.Firecamp);
-            LightFire.CampfireBurning(campfire);
+            Campfire.CampfireBurning(campfire);
 
             _weatherAndThermalService.UpdateHumanThermalLevel(tribe, worldZoneParameter.AverageTemperature);
 

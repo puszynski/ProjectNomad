@@ -56,11 +56,8 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 case ETaskType.GatheringWood:
                     consumer = new GatheringWood();
                     break;
-                case ETaskType.LightAFire:
-                    consumer = new LightFire();
-                    break;
-                case ETaskType.KeepFire:
-                    consumer = new KeepFire();
+                case ETaskType.CampfireUp:
+                    consumer = new Campfire();
                     break;
                 case ETaskType.ConsumeFood:
                     consumer = new ConsumeFood();

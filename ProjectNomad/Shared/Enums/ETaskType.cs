@@ -6,8 +6,7 @@
 
         GatheringWood = 200,
 
-        LightAFire = 220,
-        KeepFire = 201,
+        CampfireUp = 220,
 
         TribeRelocation = 300,
 
@@ -16,7 +15,7 @@
         HeatUpHumanByFireEnded = 1002,
     }
 
-    public static class HumanUnitTaskTypeExtensions
+    public static class TaskTypeExtensions
     {
         public static string GetDescription(this ETaskType type)
         {
@@ -26,9 +25,7 @@
                     return "gromadź jedzenie";
                 case ETaskType.GatheringWood:
                     return "gromadź drewno";
-                case ETaskType.LightAFire:
-                    return "rozpal ogień";
-                case ETaskType.KeepFire:
+                case ETaskType.CampfireUp:
                     return "utrzymuj ogień";
                 case ETaskType.TribeRelocation:
                     return "zmień lokalizację";
@@ -39,6 +36,21 @@
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public static string GetSymbol(this ETaskType type)
+        {
+            if (GetConstantTasks().Contains(type)) //note - that task "Type" will not depend on enum, rather on player decission
+                return "∞";
+            else if (GetAutoTasks().Contains(type))
+                return "⚡";
+            else
+                return "◴"; //means scheduled tasks
+        }
+
+        public static List<ETaskType> GetConstantTasks()
+        {
+            return new List<ETaskType>() { ETaskType.CampfireUp };
         }
 
         public static List<ETaskType> GetAutoTasks()

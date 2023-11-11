@@ -36,7 +36,7 @@ namespace GameModule.Logic.GameLooperLogic
             WorldZoneParameter worldZoneParameter, 
             List<INotification> notifications)
         {
-            var inProgressHumanTasks = tribe.HumanTasks.Where(x => !x.IsCompleted).ToList();
+            var inProgressHumanTasks = tribe.HumanTasks.Where(x => !x.IsCompleted).ToList();//removing completed tasks
             tribe.HumanTasks = inProgressHumanTasks;
 
             _mapTileRegenerator.Execute(mapTiles);

@@ -23,7 +23,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        description = HumanUnitTaskTypeExtensions.GetDescription(HumanUnitTask.Type);
+        description = TaskTypeExtensions.GetDescription(HumanUnitTask.Type);
 
         UpdatePercentage();
         await UpdateRemainingTimeToDisplay();
