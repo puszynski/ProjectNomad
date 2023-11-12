@@ -20,6 +20,9 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
             DateTime currentTimeInLoop,
             List<INotification> notifications)
         {
+            if (tribe.Humans == null || !tribe.Humans.Any() || tribe.HumanTasks == null || !tribe.HumanTasks.Any())
+                return;
+
             var humanUnitIds = tribe.Humans
                 .Select(x => x.Id)
                 .ToList();

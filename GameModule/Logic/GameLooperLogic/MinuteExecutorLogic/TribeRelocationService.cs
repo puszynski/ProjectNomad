@@ -92,11 +92,14 @@ namespace GameModule.Logic.GameLooperLogic.MinuteExecutorLogic
             };
 
             tribe.TribeRelocation = relocation;
-            tribe.HumanTaskOrders.Remove(taskOrder);
+            tribe.HumanTaskOrders?.Remove(taskOrder);
         }
 
         void ITribeRelocationService.EndRelocationProcess(Tribe tribe)
         {
+            if (tribe.Humans == null || !tribe.Humans.Any())
+                return;
+
             if (tribe.TribeRelocation == null)
                 return;
 

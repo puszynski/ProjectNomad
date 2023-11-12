@@ -1,7 +1,6 @@
 ﻿using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
-using GameModule.Logic.TasksLogic;
 using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic.GameLooperLogic
@@ -35,7 +34,6 @@ namespace GameModule.Logic.GameLooperLogic
             DateTime currentTimeInLoop)
         {
             await _taskAssigner.Execute(tribe, mapTiles, notifications, currentTimeInLoop);
-            //await _humanUnitAutoTaskScheduler.Execute(tribe, notifications, currentTimeInLoop); //todo remove codes
             _humanUnitTaskConsumer.Execute(tribe, mapTiles, currentTimeInLoop, notifications);
             _tribeRelocationService.EndRelocationProcess(tribe);
         }

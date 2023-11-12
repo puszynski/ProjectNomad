@@ -17,6 +17,9 @@ namespace GameModule.Logic.Services
         /// </summary>
         internal void UpdateHumanThermalLevel(Tribe tribe, int temperature)
         {
+            if (tribe.Humans == null)
+                return;
+
             if (temperature < -10)
                 tribe.Humans.ToList().ForEach(x => x.ThermalLevelPercentage -= 3);
             else if (temperature < 0)
@@ -34,7 +37,7 @@ namespace GameModule.Logic.Services
             }
         }
 
-        internal async Task UpdateWorldZoneParameters(WorldZoneParameter worldZoneParameter)
+        internal void UpdateWorldZoneParameters(WorldZoneParameter worldZoneParameter)
         {
             //todo sth more..
             worldZoneParameter.AverageTemperature = RandomCalculator.GetRandomInt(-11, 40);

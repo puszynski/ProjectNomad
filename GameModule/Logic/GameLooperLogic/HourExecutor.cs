@@ -36,14 +36,20 @@ namespace GameModule.Logic.GameLooperLogic
             WorldZoneParameter worldZoneParameter, 
             List<INotification> notifications)
         {
+            if (tribe.HumanTasks == null)
+                return;
+
             var inProgressHumanTasks = tribe.HumanTasks.Where(x => !x.IsCompleted).ToList();//removing completed tasks
             tribe.HumanTasks = inProgressHumanTasks;
 
             _mapTileRegenerator.Execute(mapTiles);
             _breedingApplicator.Execute(tribe, notifications); 
-            _humansDeathApplicator.AgeOrIllnessDeath(tribe.Humans, notifications);
 
-            _weatherAndThermalService.UpdateWorldZoneParameters(worldZoneParameter);//UWAGA UWAGA! GAME LOOPER BĘDZIE URUCHAMIANY PER MEMBER - A TO MUSI BYĆ PER ALIKACJA!!! TODOOOO todo
+            if (tribe.Humans != null)
+                _humansDeathApplicator.AgeOrIllnessDeath(tribe.Humans, notifications);
+
+            //temp cancel to check if it provides errors
+            //_weatherAndThermalService.UpdateWorldZoneParameters(worldZoneParameter);//UWAGA UWAGA! GAME LOOPER BĘDZIE URUCHAMIANY PER MEMBER - A TO MUSI BYĆ PER ALIKACJA!!! TODOOOO todo
         }
     }
 }

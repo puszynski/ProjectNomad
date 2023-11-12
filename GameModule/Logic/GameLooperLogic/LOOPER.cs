@@ -58,7 +58,7 @@ namespace GameModule.Logic.GameLooperLogic
                 worldZoneParameters = await _worldZoneParameterRepository.Create();
 
 
-            if (!tribe.Humans.Any())
+            if (tribe.Humans == null || !tribe.Humans.Any())
                 return GetGameOverResponse(tribe);
 
             var lastUpdated = tribe.Updated;
@@ -140,6 +140,9 @@ namespace GameModule.Logic.GameLooperLogic
                     x.FoodLevelPercentage,
                     x.ThermalLevelPercentage));
 
+                if (tribe.HumanTasks == null || tribe.HumanTaskOrders == null || tribe.TribeStructures == null)
+                    throw new NullReferenceException();
+
                 var humanUnitTaskDtos = tribe.HumanTasks
                     .Select(x => new HumanUnitTaskDto(x.Id,
                     x.TribeId,
@@ -175,6 +178,9 @@ namespace GameModule.Logic.GameLooperLogic
 
         async Task<ICollection<MapTile>> GetMapTileToInteract(Tribe tribe)
         {
+            if (tribe.HumanTasks == null || tribe.HumanTaskOrders == null)
+                throw new NullReferenceException();
+
             var mapTileLocalizationsForTasks = tribe.HumanTasks
                 .Where(x => x.Localization != null)
                 .Select(y => y.Localization)

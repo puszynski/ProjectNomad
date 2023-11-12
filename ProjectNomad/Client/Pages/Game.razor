@@ -21,7 +21,6 @@
         <button type="button" class="button_active" @onclick="DisplayMiniMap">map</button>
         <button type="button" class="button_active" @onclick="DisplayCamp">camp</button>
         <button type="button" class="button_active" @onclick="NavigateToOptions">options</button>
-        <button type="button" class="button_active" @onclick="NafivateToRelocationTESTONLY">relocationAttempt</button>
         <br />
         <ProjectNomad.Client.Components.BasicStatsBar GameObjectsViewModel="GameObjectsViewModel" />
 
@@ -137,8 +136,6 @@ else
 
     void NavigateToOptions()
         => _navigationManager.NavigateTo($"options");
-
-    void NafivateToRelocationTESTONLY() => _navigationManager.NavigateTo($"/relocation/" + DateTime.UtcNow.AddSeconds(11).ToString("s", System.Globalization.CultureInfo.InvariantCulture));
 
     void IDisposable.Dispose()
     {

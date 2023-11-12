@@ -27,6 +27,9 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
             List<INotification> notifications,
             DateTime currentTimeInLoop)
         {
+            if (tribe.Humans == null || !tribe.Humans.Any())
+                return;
+
             AutoTaskAssign();
             OrderTaskAssign();
 
@@ -86,8 +89,6 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 }
             }
         }
-
-
 
         void TribeRelocationTasksAssign(HumanTaskOrder taskOrder, Tribe tribe)
         {

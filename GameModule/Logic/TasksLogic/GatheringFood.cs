@@ -9,8 +9,11 @@ namespace GameModule.Logic.TasksLogic
 {
     internal class GatheringFood : ITask
     {
-        INotification ITask.Start(HumanTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification? ITask.Start(HumanTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
         {
+            if (tribe.HumanTaskOrders == null)
+                return default;
+
             var human = BasicDataSelector.SelectFirstHumanWithCondition(tribe);
             if (human == null)
                 return default;
@@ -45,13 +48,8 @@ namespace GameModule.Logic.TasksLogic
                 IsCompleted = false,
             };
 
-            //temp check
-            if (taskToAdd.Localization == null)
-                throw new NullReferenceException("Localization cant be null!");
-
             taskOrderToAssign.HumanTask = taskToAdd;
             destinyMapTile.Food.ActualPoints -= GameSETTINGS.Food.MapTileFoodGathered;
-            //tribe.HumanTasks.Add(taskToAdd); zbędne?
 
             return new NotificationDto(human.Id,
                 human.Name,
@@ -73,11 +71,15 @@ namespace GameModule.Logic.TasksLogic
 
         }
 
-        INotification ITask.End(HumanTask taskToEnd, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification? ITask.End(HumanTask taskToEnd, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
         {
-            var mapTile = mapTiles.SingleOrDefault(x => x.Localization.Equals(taskToEnd.Localization));//wkradł się task który nie ma lokalizacji.. jak? taskToEnd nie ma lokalizacji
-            if (mapTile == null)//temp - after fir change to Single()
-                throw new NullReferenceException("MapTile can not be a null. GatheringFood.End()");
+            if (tribe.Humans == null)
+                return default;
+
+            if (taskToEnd.Localization == null)
+                throw new Exception("Localization in HumanTask can not be null");
+
+            var mapTile = mapTiles.Single(x => x.Localization.Equals(taskToEnd.Localization));
 
             var mapTileFoodPoints = mapTile.Food.ActualPoints;
 
