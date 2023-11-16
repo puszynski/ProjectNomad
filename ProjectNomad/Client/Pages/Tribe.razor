@@ -40,7 +40,7 @@
     protected override async Task OnInitializedAsync()
     {
         var accountId = await GetAccountIdOr404();
-        var result = await _gameLooperManager.TriggerGameLooper(accountId);
+        var result = await _gameLooperManager.TriggerGameLooper(accountId); //gdy uderzasz 2x na sec to Trigger zwraca nulla - to tak nie może być.. 
         HumanUnits = result.HumanUnits;
         StateHasChanged();
     }

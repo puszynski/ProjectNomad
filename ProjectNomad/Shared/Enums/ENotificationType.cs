@@ -12,9 +12,12 @@
 
         FoodGatheringStarted,
         FoodGatheringEnded,
+        NoFoodFounded,
 
         WoodGatheringStarted, 
         WoodGatheringEnded,
+        NoWoodFounded,
+
         NoWoodForCampfire,
         AttemptToStartFireStarted,
         AttemptToStartFireFailed,

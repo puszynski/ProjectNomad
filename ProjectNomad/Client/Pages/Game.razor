@@ -19,6 +19,7 @@
     <div class="header">
         <button type="button" class="button_active" @onclick="DisplayMap">home</button>
         <button type="button" class="button_active" @onclick="DisplayMiniMap">map</button>
+        <button type="button" class="button_active" @onclick="NavigateToTribe">tribe</button>
         <button type="button" class="button_active" @onclick="DisplayCamp">camp</button>
         <button type="button" class="button_active" @onclick="NavigateToOptions">options</button>
         <br />
@@ -133,6 +134,9 @@ else
     void DisplayMiniMap() => MainGameWindow = "MiniMap";
     void DisplayCamp() => MainGameWindow = "Camp";
     void DisplayMap() => MainGameWindow = "Map";
+
+    void NavigateToTribe()
+        => _navigationManager.NavigateTo("tribe");
 
     void NavigateToOptions()
         => _navigationManager.NavigateTo($"options");

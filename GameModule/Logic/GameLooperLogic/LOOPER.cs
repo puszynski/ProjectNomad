@@ -3,10 +3,12 @@ using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
 using GameModule.Repositories;
+using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.DTOs.ServerToWasm;
 using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Interfaces.Response;
+using System;
 
 namespace GameModule.Logic.GameLooperLogic
 {
@@ -53,25 +55,23 @@ namespace GameModule.Logic.GameLooperLogic
         public async Task<ITriggerGameLooperResponse> LoopTribe(Guid accountId)
         {
             var tribe = await _tribeRepository.GetAllDataMaterialized(accountId);
+
             var worldZoneParameters = await _worldZoneParameterRepository.GetByZone(EWorldZoneParameter.Temperate);//todo get from tribe localization
             if (worldZoneParameters == null)
                 worldZoneParameters = await _worldZoneParameterRepository.Create();
 
-
             if (tribe.Humans == null || !tribe.Humans.Any())
                 return GetGameOverResponse(tribe);
 
+            var notifications = new List<INotification>();
             var lastUpdated = tribe.Updated;
 
             if (lastUpdated > _dateTimeProvider.UtcNow().AddSeconds(-1))
-                return GetEmptyResponse(tribe);//UWAGA!!! JAKIE EMPTY - STĄD ZACIĄGASZ DANE DO WYŚWIETLENIA!!
-                                               // CO ZROBIĆ? MOŻE JAKIŚ WYJĄTEK ALBO KOD BŁĘDU I OBSŁUŻYĆ W KLIENTCIE?
-                                               //MOŻE NULL?? 
-                                               //A MOŻE JEDNAK TRZEBA POBRAĆ DANE I WYSŁAĆ?
-                                               //W A Ż N E       => POMYSŁ - ZWRÓĆ NULL, NA WIDOKU - JAK NULL - NIE PODMIENIAJ VM
+                return GetResponseModel(tribe,
+                    notifications,
+                    worldZoneParameters);
 
             var mapTiles = await GetMapTileToInteract(tribe);
-            var notifications = new List<INotification>();
 
             while (lastUpdated <= _dateTimeProvider.UtcNow().AddSeconds(-1))
             {
@@ -113,9 +113,28 @@ namespace GameModule.Logic.GameLooperLogic
 
             if (IGameOverApplicator.IsGameOver(tribe.Humans))
             {
-                _gameOverApplicator.Execute(tribe);
+                await _gameOverApplicator.Execute(tribe);
                 tribe.Updated = _dateTimeProvider.UtcNow();
-                await _tribeRepository.SaveChangesAsync();
+
+                //https://stackoverflow.com/questions/19295232/how-to-ignore-a-dbupdateconcurrencyexception-when-deleting-an-entity
+                bool saveFailed;
+                do
+                {
+                    saveFailed = false;
+                    try
+                    {
+                        await _tribeRepository.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException ex)
+                    {
+                        saveFailed = true;
+                        foreach (var entry in ex.Entries)
+                        {
+                            entry.State = EntityState.Detached;//zakładasz ze usuwasz - to chyba je usunie.. 
+                        }
+                    }
+                } while (saveFailed);
+
                 return GetGameOverResponse(tribe);
             }
             else
@@ -123,54 +142,7 @@ namespace GameModule.Logic.GameLooperLogic
                 tribe.Updated = lastUpdated;
                 await _tribeRepository.SaveChangesAsync();
 
-                var relocationStatus = _tribeRelocationService.GetTribeRelocationStatus(tribe);
-
-                var tribeDto = new TribeDto(tribe.Id,
-                    tribe.Name,
-                    tribe.Localization.X,
-                    tribe.Localization.Y,
-                    tribe.Resources.Wood,
-                    tribe.Resources.FreshFood,
-                    relocationStatus);
-
-                var humanUnitDtos = tribe.Humans.Select(x => new HumanUnitDto(x.Id,
-                    x.Name,
-                    x.Localization.X,
-                    x.Localization.Y,
-                    x.FoodLevelPercentage,
-                    x.ThermalLevelPercentage));
-
-                if (tribe.HumanTasks == null || tribe.HumanTaskOrders == null || tribe.TribeStructures == null)
-                    throw new NullReferenceException();
-
-                var humanUnitTaskDtos = tribe.HumanTasks
-                    .Select(x => new HumanUnitTaskDto(x.Id,
-                    x.TribeId,
-                    x.HumanId,
-                    x.Human.Name,
-                    x.Type,
-                    x.From,
-                    x.To,
-                    x.IsCompleted));
-
-                var humanUnitTaskOrderDtos = tribe.HumanTaskOrders.Select(x => new HumanUnitTaskOrderDto(x.Id,
-                    x.TribeId,
-                    x.Added,
-                    x.Type,
-                    x.HumanTaskId,
-                    x.Localization.X,
-                    x.Localization.Y));
-
-                var tribeStructureDtos = tribe.TribeStructures.Select(x => new TribeStructuresDto(x.Id,
-                    x.Type,
-                    x.PowerAndDurability));
-
-                return new TriggerGameLooperResponse(
-                    tribeDto,
-                    humanUnitDtos,
-                    humanUnitTaskDtos,
-                    humanUnitTaskOrderDtos,
-                    tribeStructureDtos,
+                return GetResponseModel(tribe, 
                     notifications,
                     worldZoneParameters);
             }
@@ -196,6 +168,62 @@ namespace GameModule.Logic.GameLooperLogic
             return await _mapTileRepository.GetByLocalizations(allMapTileLocalization);
         }
 
+        TriggerGameLooperResponse GetResponseModel(Tribe tribe,
+            IEnumerable<INotification> notifications,
+            WorldParametersDto worldParameters)
+        {
+            var relocationStatus = _tribeRelocationService.GetTribeRelocationStatus(tribe);
+
+            var tribeDto = new TribeDto(tribe.Id,
+                tribe.Name,
+                tribe.Localization.X,
+                tribe.Localization.Y,
+                tribe.Resources.Wood,
+                tribe.Resources.FreshFood,
+                relocationStatus);
+
+            var humanUnitDtos = tribe.Humans.Select(x => new HumanUnitDto(x.Id,
+                x.Name,
+                x.Localization.X,
+                x.Localization.Y,
+                x.FoodLevelPercentage,
+                x.ThermalLevelPercentage));
+
+            if (tribe.HumanTasks == null || tribe.HumanTaskOrders == null || tribe.TribeStructures == null)
+                throw new NullReferenceException();
+
+            var humanUnitTaskDtos = tribe.HumanTasks
+                .Select(x => new HumanUnitTaskDto(x.Id,
+                x.TribeId,
+                x.HumanId,
+                x.Human.Name,
+                x.Type,
+                x.From,
+                x.To,
+                x.IsCompleted));
+
+            var humanUnitTaskOrderDtos = tribe.HumanTaskOrders.Select(x => new HumanUnitTaskOrderDto(x.Id,
+                x.TribeId,
+                x.Added,
+                x.Type,
+                x.HumanTaskId,
+                x.Localization.X,
+                x.Localization.Y));
+
+            var tribeStructureDtos = tribe.TribeStructures.Select(x => new TribeStructuresDto(x.Id,
+                x.Type,
+                x.PowerAndDurability));
+
+            return new TriggerGameLooperResponse(
+                    tribeDto,
+                    humanUnitDtos,
+                    humanUnitTaskDtos,
+                    humanUnitTaskOrderDtos,
+                    tribeStructureDtos,
+                    notifications,
+                    worldParameters);
+        }
+
         TriggerGameLooperResponse GetGameOverResponse(Tribe tribe)
             => new(
                 new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, ETribeRelocationStatus.None),
@@ -213,19 +241,19 @@ namespace GameModule.Logic.GameLooperLogic
                 },
                 new WorldParametersDto(50, false, false, false, false));
 
-        TriggerGameLooperResponse GetEmptyResponse(Tribe tribe)
-            => new(
-                new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, ETribeRelocationStatus.None),
-                tribe.Humans.Select(x => new HumanUnitDto(x.Id, 
-                    x.Name, 
-                    x.Localization.X, 
-                    x.Localization.Y,
-                    x.FoodLevelPercentage,
-                    x.ThermalLevelPercentage)),
-                new List<HumanUnitTaskDto>(),
-                new List<HumanUnitTaskOrderDto>(),
-                new List<TribeStructuresDto>(),
-                new List<NotificationDto>(),
-                new WorldParametersDto(50, false, false, false, false));
+        //TriggerGameLooperResponse GetEmptyResponse(Tribe tribe)
+        //    => new(
+        //        new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, ETribeRelocationStatus.None),
+        //        tribe.Humans.Select(x => new HumanUnitDto(x.Id, 
+        //            x.Name, 
+        //            x.Localization.X, 
+        //            x.Localization.Y,
+        //            x.FoodLevelPercentage,
+        //            x.ThermalLevelPercentage)),
+        //        new List<HumanUnitTaskDto>(),
+        //        new List<HumanUnitTaskOrderDto>(),
+        //        new List<TribeStructuresDto>(),
+        //        new List<NotificationDto>(),
+        //        new WorldParametersDto(50, false, false, false, false));
     }
 }

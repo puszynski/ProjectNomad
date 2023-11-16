@@ -29,9 +29,6 @@ namespace GameModule.Logic.TasksLogic
 
             var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskOrderToAssign.Localization));
 
-            if (destinyMapTile.Food.ActualPoints < GameSETTINGS.Food.MapTileFoodGathered)
-                return default;
-
             var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond);
 
             if (!shouldAssign)
@@ -49,14 +46,12 @@ namespace GameModule.Logic.TasksLogic
             };
 
             taskOrderToAssign.HumanTask = taskToAdd;
-            destinyMapTile.Food.ActualPoints -= GameSETTINGS.Food.MapTileFoodGathered;
 
             return new NotificationDto(human.Id,
                 human.Name,
                 taskToAdd.From,
                 ENotificationType.FoodGatheringStarted,
                 taskToAdd.To.ToString());
-
 
             DateTime CalculateTimeToEndTask()
             {
@@ -68,7 +63,6 @@ namespace GameModule.Logic.TasksLogic
                 var timeToEndTask = HumanUnitSpeedCalculator.CalculateTravelSpeed(distance, human.FoodLevelPercentage) + TimeSpan.FromMinutes(GameSETTINGS.Food.MinutesToGatherFood);
                 return currentTimeInLoop.Add(timeToEndTask);
             }
-
         }
 
         INotification? ITask.End(HumanTask taskToEnd, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
@@ -85,23 +79,39 @@ namespace GameModule.Logic.TasksLogic
 
             var human = tribe.Humans.Single(x => x.Id == taskToEnd.HumanId);
 
-            var foodGatheringCoefficient = (double)human.FoodLevelPercentage / 100 * 2;
-            var foodPoints = foodGatheringCoefficient >= 1
-                ? GameSETTINGS.Food.MapTileFoodGathered
-                : foodGatheringCoefficient * GameSETTINGS.Food.MapTileFoodGathered;
+            var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskToEnd.Localization));
 
-            var gatheredFoodPoints = mapTileFoodPoints > foodPoints
-                ? foodPoints
-                : mapTileFoodPoints;
+            if (destinyMapTile.Food.ActualPoints < GameSETTINGS.Food.MapTileFoodGathered)
+            {
+                taskToEnd.IsCompleted = true;
 
-            tribe.Resources.FreshFood += (int)gatheredFoodPoints;    
-            taskToEnd.IsCompleted = true;
+                return new NotificationDto(taskToEnd.HumanId,
+                    human.Name,
+                    currentTimeInLoop,
+                    ENotificationType.NoFoodFounded,
+                    CustomValue: null);
+            }
+            else
+            {
+                var foodGatheringCoefficient = (double)human.FoodLevelPercentage / 100 * 2;
+                var foodPoints = foodGatheringCoefficient >= 1
+                    ? GameSETTINGS.Food.MapTileFoodGathered
+                    : foodGatheringCoefficient * GameSETTINGS.Food.MapTileFoodGathered;
 
-            return new NotificationDto(taskToEnd.HumanId,
-                human.Name,
-                currentTimeInLoop, 
-                ENotificationType.FoodGatheringEnded, 
-                gatheredFoodPoints.ToString());
+                var gatheredFoodPoints = mapTileFoodPoints > foodPoints
+                    ? foodPoints
+                    : mapTileFoodPoints;
+
+                destinyMapTile.Food.ActualPoints -= GameSETTINGS.Food.MapTileFoodGathered;
+                tribe.Resources.FreshFood += (int)gatheredFoodPoints;
+                taskToEnd.IsCompleted = true;
+
+                return new NotificationDto(taskToEnd.HumanId,
+                    human.Name,
+                    currentTimeInLoop,
+                    ENotificationType.FoodGatheringEnded,
+                    gatheredFoodPoints.ToString());
+            }
         }
 
     }

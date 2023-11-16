@@ -17,10 +17,16 @@ namespace ProjectNomad.Client.Models.Response
                 case ENotificationType.DeathFromStarvation: return $"{HumanName} głód";
                 case ENotificationType.DeathFromAgeOrIllness: return $"{HumanName} ŚMIERĆ TAJEMNICA";
                 case ENotificationType.Newborn: return $"{HumanName} NOWY CZŁOWIEK";
+
                 case ENotificationType.FoodGatheringStarted: return $"{HumanName} szukać jedzenie";
                 case ENotificationType.FoodGatheringEnded: return $"{HumanName} przynieść jedzenie +{CustomValue}";
+                case ENotificationType.NoFoodFounded: return $"{HumanName} nie znaleźć jedzenie!";
+
                 case ENotificationType.WoodGatheringStarted: return $"{HumanName} szukać drewno";
                 case ENotificationType.WoodGatheringEnded: return $"{HumanName} przynieść drewno +{CustomValue}";
+                case ENotificationType.NoWoodFounded: return $"{HumanName} nie znaleźć drewno!";
+
+
                 case ENotificationType.NoWoodForCampfire: return $"{HumanName} drewno brak ogień nie";
                 case ENotificationType.AttemptToStartFireStarted: return $"{HumanName} ogień próbować";
                 case ENotificationType.AttemptToStartFireFailed: return $"{HumanName} ogień nie";

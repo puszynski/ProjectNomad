@@ -28,7 +28,7 @@ namespace ProjectNomad.Client.Logic
             _dateTimeProvider = dateTimeProvider;
         }
 
-        internal async Task<TriggerGameLooper> TriggerGameLooper(Guid accountId) 
+        internal async Task<TriggerGameLooper?> TriggerGameLooper(Guid accountId) 
         {
             try
             {
@@ -36,14 +36,14 @@ namespace ProjectNomad.Client.Logic
 
                 if (response == null || !response.IsSuccessStatusCode)
                 {
-                    //todo log
-                    //+ co chcemy zrobić gdy coś się spypnie po stronie serwera??
                     _navigationManager.NavigateTo("error");
                     return null;
                 }
 
-                var responseContent = await response.Content.ReadFromJsonAsync<TriggerGameLooper>(); 
-                //RelocationStatus is not mapping  correctly.. 
+                var responseContent = await response.Content.ReadFromJsonAsync<TriggerGameLooper?>();
+
+                if (responseContent == null)
+                    throw new Exception("response model from server is null");
 
                 if (responseContent?.Notifications?.Any() == true)
                 {
@@ -62,7 +62,7 @@ namespace ProjectNomad.Client.Logic
                 if (responseContent.Tribe.RelocationStatus == ETribeRelocationStatus.InProgress)
                     _navigationManager.NavigateTo($"/relocation/" + _dateTimeProvider.UtcNow().ToString("s", System.Globalization.CultureInfo.InvariantCulture));
 
-                return responseContent;//UWAGA - NAWET JAK UŻYJESZ URL`I WYŻEJ - TJ gameOver/relocation/error - I TAK WRÓCISZ TUTAJ DO GameModule i będzie błąd..
+                return responseContent;
 
             }
             catch (Exception ex)

@@ -42,7 +42,7 @@ namespace GameModule.Logic.GameLooperLogic
             var inProgressHumanTasks = tribe.HumanTasks.Where(x => !x.IsCompleted).ToList();//removing completed tasks
             tribe.HumanTasks = inProgressHumanTasks;
 
-            _mapTileRegenerator.Execute(mapTiles);
+            //_mapTileRegenerator.Execute(mapTiles); temprary remove to check bug existance - btw should be run via bg jobs
             _breedingApplicator.Execute(tribe, notifications); 
 
             if (tribe.Humans != null)

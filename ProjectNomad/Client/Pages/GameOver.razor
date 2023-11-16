@@ -5,16 +5,16 @@
 @inject NavigationManager _navigationManager
 @inject ILocalStorageService _localStorageService
 
-<div style="border: 2px dashed;
-                    border-color: Gainsboro;
-                    margin: auto;
-                    width: 500px;
-                    padding: 10px;">
+<div style="margin: auto;">
 
     <center>
-        <img src="/images/game/tribe_death.jpg" style="margin: auto;" />
         <h5>All members of your tribe have died.. </h5>
-        <button class="button" @onclick="ReBornTribeMembers"><span>Reborn tribe with new members</span></button>
+        <button class="button_active" @onclick="ReBornTribeMembers"><span>Reborn tribe with new members</span></button>
+        <br />
+        <br />
+        <br />
+
+        <img src="/images/game/tribe_death.jpg" style="margin: auto; border-radius: 8px;" />
     </center>
 
 </div>

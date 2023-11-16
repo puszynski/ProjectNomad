@@ -47,7 +47,6 @@ namespace GameModule.Logic.TasksLogic
             };
 
             taskOrder.HumanTask = taskToAdd;
-            destinyMapTile.Wood.ActualPoints -= GameSETTINGS.Wood.WoodAmountGatheredFromMap;
             tribe.HumanTasks.Add(taskToAdd);
             
             return new NotificationDto(human.Id,
@@ -68,23 +67,41 @@ namespace GameModule.Logic.TasksLogic
 
             var human = tribe.Humans.Single(x => x.Id ==  taskToEnd.HumanId);
 
-            var woodGatheringCoefficient = (double)human.FoodLevelPercentage / 100 * 2;
-            var woodPoints = woodGatheringCoefficient >= 1
-                ? GameSETTINGS.Wood.WoodAmountGatheredFromMap
-                : woodGatheringCoefficient * GameSETTINGS.Wood.WoodAmountGatheredFromMap;
 
-            var gatheredWoodPoints = mapTileWoodPoints > woodPoints
-                ? woodPoints
-                : mapTileWoodPoints;
+            var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskToEnd.Localization));
 
-            tribe.Resources.Wood += (int)gatheredWoodPoints;
-            taskToEnd.IsCompleted = true;
+            if (destinyMapTile.Wood.ActualPoints < GameSETTINGS.Wood.WoodAmountGatheredFromMap)
+            {
+                taskToEnd.IsCompleted = true;
 
-            return new NotificationDto(taskToEnd.HumanId,
-                human.Name, 
-                currentTimeInLoop, 
-                ENotificationType.WoodGatheringEnded, 
-                gatheredWoodPoints.ToString());
+                return new NotificationDto(taskToEnd.HumanId,
+                    human.Name,
+                    currentTimeInLoop,
+                    ENotificationType.NoWoodFounded,
+                    null);
+            }
+            else
+            {
+                var woodGatheringCoefficient = (double)human.FoodLevelPercentage / 100 * 2;
+                var woodPoints = woodGatheringCoefficient >= 1
+                    ? GameSETTINGS.Wood.WoodAmountGatheredFromMap
+                    : woodGatheringCoefficient * GameSETTINGS.Wood.WoodAmountGatheredFromMap;
+
+                var gatheredWoodPoints = mapTileWoodPoints > woodPoints
+                    ? woodPoints
+                    : mapTileWoodPoints;
+
+
+                destinyMapTile.Wood.ActualPoints -= GameSETTINGS.Wood.WoodAmountGatheredFromMap;
+                tribe.Resources.Wood += (int)gatheredWoodPoints;
+                taskToEnd.IsCompleted = true;
+
+                return new NotificationDto(taskToEnd.HumanId,
+                    human.Name,
+                    currentTimeInLoop,
+                    ENotificationType.WoodGatheringEnded,
+                    gatheredWoodPoints.ToString());
+            }
         }
     }
 }

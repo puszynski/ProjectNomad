@@ -59,5 +59,12 @@
         {
             public const int FoodPointsNeededToTravelOneTileForOneTribeMember = 1;
         }
+
+        // start at .eg. 10:10 - 10:16 day / 10:16-10:20 night
+        public static class Time
+        {
+            public const int DayDurationInMinutes = 10;
+            public const int NightDurationInMinutes = 4;
+        }
     }
 }
