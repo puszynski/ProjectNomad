@@ -1,6 +1,7 @@
 ﻿@using ProjectNomad.Client.Logic;
 @using ProjectNomad.Client.ViewModels.Game;
 @using ProjectNomad.Client.Models.Response;
+@using ProjectNomad.Shared.Logic;
 @inject EventBroadcastService _eventBroadcastService;
 
 @if (GameObjectsViewModel != null)
@@ -9,7 +10,8 @@
     <smaller>position </smaller>    <b> @GameObjectsViewModel.Tribe.X|@GameObjectsViewModel.Tribe.Y</b>
     <smaller>fresh food</smaller>   <b> @GameObjectsViewModel.Tribe.FreshFood</b><smaller>(-6)</smaller>
     <smaller>wood </smaller>        <b> @GameObjectsViewModel.Tribe.Wood</b>
-    <b> @GameObjectsViewModel.WorldParameters.AverageTemperature°C </b>
+    <br/>
+    <smaller> @DayNightService.GetDayNightType(DateTime.UtcNow), @GameObjectsViewModel.WorldParameters.AverageTemperature°C </smaller>
 }
 else
 {

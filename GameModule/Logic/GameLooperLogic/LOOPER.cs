@@ -127,10 +127,11 @@ namespace GameModule.Logic.GameLooperLogic
                     }
                     catch (DbUpdateConcurrencyException ex)
                     {
+                        //The database operation was expected to affect 1 row(s), but actually affected 0 row(s); data may have been modified or deleted since entities were loaded. See http://go.microsoft.com/fwlink/?LinkId=527962 for information on understanding and handling optimistic concurrency exceptions.'
                         saveFailed = true;
                         foreach (var entry in ex.Entries)
                         {
-                            entry.State = EntityState.Detached;//zakładasz ze usuwasz - to chyba je usunie.. 
+                            entry.State = EntityState.Detached;//NIE POMAGA.. 
                         }
                     }
                 } while (saveFailed);

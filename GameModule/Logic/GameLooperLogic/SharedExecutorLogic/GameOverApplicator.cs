@@ -1,6 +1,5 @@
 ﻿using GameModule.Entities;
 using GameModule.Repositories;
-using ProjectNomad.Shared;
 
 namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 {
@@ -27,6 +26,9 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 
         async Task IGameOverApplicator.Execute(Tribe tribe)
         {
+            //test - save changes before deleting to prevent error
+            await _humanUnitTaskOrderRepository.SaveChangesAsync();
+
             await _humanUnitTaskOrderRepository.RemoveAll(tribe.Id);
             await _humanUnitTaskRepository.RemoveAll(tribe.Id);
             await _tribeStructureRepository.RemoveAll(tribe.Id);
