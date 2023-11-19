@@ -2,11 +2,14 @@
 {
     public enum ETaskType
     {
+        Sleep = 1,
+
         GatheringFood = 100,
 
         GatheringWood = 200,
 
         CampfireUp = 220,
+
 
         TribeRelocation = 300,
 
@@ -33,6 +36,8 @@
                     return "konsumuj jedzenie";
                 case ETaskType.HeatUpHumanByFireEnded:
                     return "ogrzewaj przy ogniu";
+                case ETaskType.Sleep:
+                    return "sen";
                 default:
                     throw new NotImplementedException();
             }
@@ -50,12 +55,20 @@
 
         public static List<ETaskType> GetConstantTasks()
         {
-            return new List<ETaskType>() { ETaskType.CampfireUp };
+            return new List<ETaskType>() 
+            { 
+                ETaskType.CampfireUp 
+            };
         }
 
         public static List<ETaskType> GetAutoTasks()
         {
-            return new List<ETaskType>() { ETaskType.ConsumeFood, ETaskType.HeatUpHumanByFireEnded };
+            return new List<ETaskType>() 
+            { 
+                ETaskType.ConsumeFood, 
+                ETaskType.HeatUpHumanByFireEnded,
+                ETaskType.Sleep
+            };
         }
     }
 }

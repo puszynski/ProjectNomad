@@ -3,6 +3,7 @@ using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Logic.TasksLogic;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
+using ProjectNomad.Shared.Logic;
 
 namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 {
@@ -39,15 +40,29 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 {
                     ITask? assigner = null;
 
-                    switch (autoTasks)
+                    if (DayNightService.IsNight(currentTimeInLoop))
                     {
-                        case ETaskType.ConsumeFood:
-                            assigner = new ConsumeFood();
-                            break;
-                        case ETaskType.HeatUpHumanByFireEnded:
-                            assigner = new HeatUpByFire();
-                            break;
+                        switch (autoTasks)
+                        {
+                            case ETaskType.Sleep:
+                                assigner = new Sleep();
+                                break;
+                        }
                     }
+                    else
+                    {
+                        switch (autoTasks)
+                        {
+                            case ETaskType.ConsumeFood:
+                                assigner = new ConsumeFood();
+                                break;
+                            case ETaskType.HeatUpHumanByFireEnded:
+                                assigner = new HeatUpByFire();
+                                break;
+                        }
+                    }
+
+                    
 
                     var notification = assigner?.Start(null, tribe, currentTimeInLoop, mapTiles);
 
@@ -66,21 +81,36 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 {
                     ITask? assigner = null;
 
-                    switch (taskOrder.Type)
+                    if (DayNightService.IsNight(currentTimeInLoop))
                     {
-                        case ETaskType.GatheringFood:
-                            assigner = new GatheringFood();
-                            break;
-                        case ETaskType.GatheringWood:
-                            assigner = new GatheringWood();
-                            break;
-                        case ETaskType.CampfireUp:
-                            assigner = new Campfire();
-                            break;
-                        case ETaskType.TribeRelocation:
-                            TribeRelocationTasksAssign(taskOrder, tribe);
-                            break;
+                        switch (taskOrder.Type)
+                        {
+                            case ETaskType.CampfireUp:
+                                assigner = new Campfire();
+                                break;
+                            case ETaskType.Sleep:
+                                assigner = new Sleep();
+                                break;
+                        }
                     }
+                    else
+                    {
+                        switch (taskOrder.Type)
+                        {
+                            case ETaskType.GatheringFood:
+                                assigner = new GatheringFood();
+                                break;
+                            case ETaskType.GatheringWood:
+                                assigner = new GatheringWood();
+                                break;
+                            case ETaskType.CampfireUp:
+                                assigner = new Campfire();
+                                break;
+                            case ETaskType.TribeRelocation:
+                                TribeRelocationTasksAssign(taskOrder, tribe);
+                                break;
+                        }
+                    }                    
 
                     var notification = assigner?.Start(taskOrder, tribe, currentTimeInLoop, mapTiles);
 

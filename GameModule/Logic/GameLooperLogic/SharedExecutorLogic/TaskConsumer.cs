@@ -68,6 +68,9 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 case ETaskType.HeatUpHumanByFireEnded:
                     consumer = new HeatUpByFire();
                     break;
+                case ETaskType.Sleep:
+                    consumer = new Sleep();
+                    break;
 
                 default: throw new NotImplementedException();
             }

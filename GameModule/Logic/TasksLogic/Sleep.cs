@@ -1,32 +1,33 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Logic.TasksLogic.Helpers;
-using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
+using ProjectNomad.Shared;
 using ProjectNomad.Shared.Interfaces;
+using ProjectNomad.Shared.Logic;
 
 namespace GameModule.Logic.TasksLogic
 {
-    internal class ConsumeFood : ITask
+    public class Sleep : ITask
     {
-        private const int HUMAN_FOOD_PERCENTAGE_TO_START_CONSUME = 80;
+        const int MINIMUM_FOOD_LVL_TO_START_SLEEP = 10;
+        const int MINIMUM_THERMAL_LVL_TO_START_SLEEP = 10;
 
-        INotification ITask.Start(
-            HumanTaskOrder taskOrder,//not used in auto task 
+        INotification? ITask.Start(HumanTaskOrder taskOrder, 
             Tribe tribe, 
             DateTime currentTimeInLoop, 
             IEnumerable<MapTile> mapTiles)
         {
+            taskOrder = null; //auto task
+
             var humansWithConditions = BasicDataSelector
                 .SelectHumansWithCondition(tribe)
-                .Where(x => x.FoodLevelPercentage < HUMAN_FOOD_PERCENTAGE_TO_START_CONSUME);
+                .Where(x => x.FoodLevelPercentage > MINIMUM_FOOD_LVL_TO_START_SLEEP)
+                .Where(x => x.ThermalLevelPercentage > MINIMUM_THERMAL_LVL_TO_START_SLEEP);
 
-            var human = RandomCalculator.GetRandomItemFromList(humansWithConditions); 
+            var human = RandomCalculator.GetRandomItemFromList(humansWithConditions);
 
             if (human == null)
-                return default;
-
-            if (tribe.Resources.FreshFood < GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit)
                 return default;
 
             var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond);
@@ -38,24 +39,21 @@ namespace GameModule.Logic.TasksLogic
                 From = currentTimeInLoop,
                 HumanId = human.Id,
                 TribeId = tribe.Id,
-                Type = ETaskType.ConsumeFood,
-                To = currentTimeInLoop.AddMinutes(GameSETTINGS.Food.MinutesToConsumeFoodToFill20PercentageOfFood),
+                Type = ETaskType.Sleep,
+                To = currentTimeInLoop.AddMinutes(DayNightService.NIGHT_DURATION_MINUTES),
                 Localization = null,
                 IsCompleted = false,
             };
-
             tribe.HumanTasks.Add(entity);
-            tribe.Resources.FreshFood -= GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit;
-            human.FoodLevelPercentage += 20;
 
             return new NotificationDto(human.Id,
                 human.Name,
                 currentTimeInLoop,
-                ENotificationType.FoodConsumptionStarted,
+                ENotificationType.SleepStart,
                 entity.To.ToString());
         }
-
-        INotification ITask.End(HumanTask taskToEnd, 
+        
+        INotification? ITask.End(HumanTask taskToEnd, 
             Tribe tribe, 
             DateTime currentTimeInLoop, 
             IEnumerable<MapTile> mapTiles)
@@ -63,9 +61,9 @@ namespace GameModule.Logic.TasksLogic
             tribe.HumanTasks.Remove(taskToEnd);
 
             return new NotificationDto(taskToEnd.HumanId,
-                tribe.Humans.Single(x => x.Id == taskToEnd.HumanId).Name, 
-                currentTimeInLoop, 
-                ENotificationType.FoodConsumptionEnded, 
+                tribe.Humans.Single(x => x.Id == taskToEnd.HumanId).Name,
+                currentTimeInLoop,
+                ENotificationType.SleepEnd,
                 null);
         }
 

@@ -29,6 +29,9 @@
 
         HeatUpHumanByFireEnded,
 
+        SleepStart,
+        SleepEnd,
+
         Newborn,
     }
 }

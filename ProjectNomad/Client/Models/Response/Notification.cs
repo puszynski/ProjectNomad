@@ -26,7 +26,6 @@ namespace ProjectNomad.Client.Models.Response
                 case ENotificationType.WoodGatheringEnded: return $"{HumanName} przynieść drewno +{CustomValue}";
                 case ENotificationType.NoWoodFounded: return $"{HumanName} nie znaleźć drewno!";
 
-
                 case ENotificationType.NoWoodForCampfire: return $"{HumanName} drewno brak ogień nie";
                 case ENotificationType.AttemptToStartFireStarted: return $"{HumanName} ogień próbować";
                 case ENotificationType.AttemptToStartFireFailed: return $"{HumanName} ogień nie";
@@ -36,6 +35,10 @@ namespace ProjectNomad.Client.Models.Response
                 case ENotificationType.HeatUpHumanByFireEnded: return $"{HumanName} ciepło przy ognisko";
                 case ENotificationType.DeathFromFreezing: return $"{HumanName} ŚMIERĆ MRÓZ";
                 case ENotificationType.DeathFromOverheat: return $"{HumanName} ŚMIERĆ UPAŁ";
+
+                case ENotificationType.SleepStart: return $"{HumanName} iść spać";
+                case ENotificationType.SleepEnd: return $"{HumanName} spać skończyć";
+
 
                 default: return string.Empty;
             }

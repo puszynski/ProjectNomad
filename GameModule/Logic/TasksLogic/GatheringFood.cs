@@ -9,7 +9,10 @@ namespace GameModule.Logic.TasksLogic
 {
     internal class GatheringFood : ITask
     {
-        INotification? ITask.Start(HumanTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification? ITask.Start(HumanTaskOrder taskOrder, 
+            Tribe tribe, 
+            DateTime currentTimeInLoop, 
+            IEnumerable<MapTile> mapTiles)
         {
             if (tribe.HumanTaskOrders == null)
                 return default;
@@ -18,16 +21,10 @@ namespace GameModule.Logic.TasksLogic
             if (human == null)
                 return default;
 
-            var taskOrderToAssign = tribe.HumanTaskOrders
-                .Where(x => x.Type == ETaskType.GatheringFood)
-                .Where(x => !x.HumanTaskId.HasValue)
-                .OrderBy(x => x.Added)
-                .FirstOrDefault();
-
-            if (taskOrderToAssign == null)
+            if (taskOrder == null)
                 return default;
 
-            var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskOrderToAssign.Localization));
+            var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskOrder.Localization));
 
             var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond);
 
@@ -45,7 +42,7 @@ namespace GameModule.Logic.TasksLogic
                 IsCompleted = false,
             };
 
-            taskOrderToAssign.HumanTask = taskToAdd;
+            taskOrder.HumanTask = taskToAdd;
 
             return new NotificationDto(human.Id,
                 human.Name,

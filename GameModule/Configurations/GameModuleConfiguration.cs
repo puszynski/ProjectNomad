@@ -31,7 +31,7 @@ namespace GameModule.Configurations
         {
             services.AddDbContextFactory<GameModuleDbContext>(options =>
                 options.UseSqlServer(connectionStrings,
-                x => x.MigrationsAssembly("GameModule")));  
+                x => x.MigrationsAssembly("GameModule")));
         }
 
         public static void RegisterIoC(IServiceCollection services)
