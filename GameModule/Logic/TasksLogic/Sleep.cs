@@ -30,10 +30,6 @@ namespace GameModule.Logic.TasksLogic
             if (human == null)
                 return default;
 
-            var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond);
-            if (!shouldAssign)
-                return default;
-
             var entity = new HumanTask
             {
                 From = currentTimeInLoop,

@@ -25,11 +25,6 @@ namespace GameModule.Logic.TasksLogic
             if (destinyMapTile.Wood.ActualPoints < GameSETTINGS.Wood.WoodAmountGatheredFromMap)
                 return default;
 
-            var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond);
-
-            if (!shouldAssign)
-                return default;
-
             var distance = MapTileDistanceCalculator.Execute(tribe.Localization.X,
                     tribe.Localization.Y,
                     destinyMapTile.Localization.X,

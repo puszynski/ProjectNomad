@@ -29,10 +29,6 @@ namespace GameModule.Logic.TasksLogic
             if (tribe.Resources.FreshFood < GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit)
                 return default;
 
-            var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond);
-            if (!shouldAssign)
-                return default;
-
             var entity = new HumanTask
             {
                 From = currentTimeInLoop,

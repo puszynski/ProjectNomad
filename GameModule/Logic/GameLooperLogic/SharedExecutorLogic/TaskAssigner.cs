@@ -1,6 +1,7 @@
 ﻿using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Logic.TasksLogic;
+using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Logic;
@@ -31,6 +32,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
             if (tribe.Humans == null || !tribe.Humans.Any())
                 return;
 
+
             AutoTaskAssign();
             OrderTaskAssign();
 
@@ -38,6 +40,10 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
             {
                 foreach (var autoTasks in TaskTypeExtensions.GetAutoTasks())
                 {
+                    var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond);
+                    if (!shouldAssign)
+                        continue;
+
                     ITask? assigner = null;
 
                     if (DayNightService.IsNight(currentTimeInLoop))
@@ -60,12 +66,9 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                                 assigner = new HeatUpByFire();
                                 break;
                         }
-                    }
-
-                    
+                    }                    
 
                     var notification = assigner?.Start(null, tribe, currentTimeInLoop, mapTiles);
-
                     if (notification != null)
                         notifications.Add(notification);
                 }
@@ -80,6 +83,10 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 
                 foreach (var taskOrder in taskOrdersToAssign)
                 {
+                    var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond);
+                    if (!shouldAssign)
+                        continue;
+
                     ITask? assigner = null;
 
                     if (DayNightService.IsNight(currentTimeInLoop))
@@ -114,7 +121,6 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                     }                    
 
                     var notification = assigner?.Start(taskOrder, tribe, currentTimeInLoop, mapTiles);
-
                     if (notification != null)
                         notifications.Add(notification);
                 }

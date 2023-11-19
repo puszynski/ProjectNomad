@@ -26,11 +26,6 @@ namespace GameModule.Logic.TasksLogic
 
             var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskOrder.Localization));
 
-            var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond);
-
-            if (!shouldAssign)
-                return default;
-
             var taskToAdd = new HumanTask
             {
                 From = currentTimeInLoop,

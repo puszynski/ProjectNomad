@@ -26,10 +26,6 @@ namespace GameModule.Logic.TasksLogic
             if (!tribe.TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 1))
                 return default;
 
-            var shouldAssign = RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond);
-            if (!shouldAssign)
-                return default;
-
             var entity = new HumanTask
             {
                 From = currentTimeInLoop,

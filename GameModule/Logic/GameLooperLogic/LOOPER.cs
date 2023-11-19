@@ -8,7 +8,6 @@ using ProjectNomad.Shared;
 using ProjectNomad.Shared.DTOs.ServerToWasm;
 using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Interfaces.Response;
-using System;
 
 namespace GameModule.Logic.GameLooperLogic
 {
@@ -250,20 +249,5 @@ namespace GameModule.Logic.GameLooperLogic
                         null)
                 },
                 new WorldParametersDto(50, false, false, false, false));
-
-        //TriggerGameLooperResponse GetEmptyResponse(Tribe tribe)
-        //    => new(
-        //        new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, ETribeRelocationStatus.None),
-        //        tribe.Humans.Select(x => new HumanUnitDto(x.Id, 
-        //            x.Name, 
-        //            x.Localization.X, 
-        //            x.Localization.Y,
-        //            x.FoodLevelPercentage,
-        //            x.ThermalLevelPercentage)),
-        //        new List<HumanUnitTaskDto>(),
-        //        new List<HumanUnitTaskOrderDto>(),
-        //        new List<TribeStructuresDto>(),
-        //        new List<NotificationDto>(),
-        //        new WorldParametersDto(50, false, false, false, false));
     }
 }

@@ -34,9 +34,6 @@ namespace GameModule.Logic.TasksLogic
             if (humanWithConditionToStartNewTask == null)
                 return default;
 
-            if (!RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.BasicProbabilityToAssignToTaskOrderPerSecond))
-                return default;
-
             if (tribe.Resources.Wood < GameSETTINGS.Fire.WoodUsedToKeepTheCampfireBurning)
             {
                 return new NotificationDto(humanWithConditionToStartNewTask.Id,
