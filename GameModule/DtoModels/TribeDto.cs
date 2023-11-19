@@ -8,5 +8,6 @@ namespace GameModule.DtoModels
         int Y,
         int Wood,
         int FreshFood,
+        DateTime Started,
         ETribeRelocationStatus RelocationStatus) : ITribe;
 }

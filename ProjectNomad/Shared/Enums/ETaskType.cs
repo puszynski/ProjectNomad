@@ -1,14 +1,15 @@
 ﻿namespace ProjectNomad.Shared.Enums
 {
-    public enum ETaskType
+    public enum ETaskType //order makes priority of assigning
     {
-        Sleep = 1,
+        CampfireUp = 1,
+
+        Sleep = 2,
 
         GatheringFood = 100,
 
         GatheringWood = 200,
 
-        CampfireUp = 220,
 
 
         TribeRelocation = 300,

@@ -101,6 +101,8 @@ namespace GameModule.Logic.TasksLogic
                     if (taskOrder != null)
                         taskOrder.HumanTask = null;
 
+                    tribe.HumanTasks?.Remove(taskToEnd);
+
                     return new NotificationDto(taskToEnd.HumanId,
                         tribe.Humans.Single(x => x.Id == taskToEnd.HumanId).Name,
                         looperNow,
@@ -124,7 +126,7 @@ namespace GameModule.Logic.TasksLogic
                     tribe.TribeStructures?.Add(fire);
                 }
 
-                tribe.HumanTasks?.Remove(taskToEnd); //REMOVING FOR CONTANT TASKS
+                tribe.HumanTasks?.Remove(taskToEnd);
 
                 return new NotificationDto(taskToEnd.HumanId,
                     tribe.Humans.Single(x => x.Id == taskToEnd.HumanId).Name,

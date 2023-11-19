@@ -11,7 +11,7 @@
     <smaller>fresh food</smaller>   <b> @GameObjectsViewModel.Tribe.FreshFood</b><smaller>(-6)</smaller>
     <smaller>wood </smaller>        <b> @GameObjectsViewModel.Tribe.Wood</b>
     <br/>
-    <smaller> @DayNightService.GetDayNightType(DateTime.UtcNow), @GameObjectsViewModel.WorldParameters.AverageTemperature°C </smaller>
+    <smaller>day @DayNightService.TotalDays(@GameObjectsViewModel.Tribe.Started, DateTime.UtcNow), @DayNightService.GetDayNightType(DateTime.UtcNow).ToString().ToLower(), @GameObjectsViewModel.WorldParameters.AverageTemperature°C </smaller>
 }
 else
 {

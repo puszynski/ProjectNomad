@@ -1,7 +1,6 @@
 ﻿using GameModule.Entities.SharedInterfaces;
 using GameModule.Entities.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using ProjectNomad.Shared.Interfaces;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,6 +16,7 @@ namespace GameModule.Entities
         [Required]
         public Guid AccountId { get; set; }
         public DateTime Updated { get; set; }
+        public DateTime Started { get; set; }
         public string Name { get; set; }
         public Localization Localization { get; set; }
         public Resources Resources { get; set; }

@@ -181,6 +181,7 @@ namespace GameModule.Logic.GameLooperLogic
                 tribe.Localization.Y,
                 tribe.Resources.Wood,
                 tribe.Resources.FreshFood,
+                tribe.Started,
                 relocationStatus);
 
             var humanUnitDtos = tribe.Humans.Select(x => new HumanUnitDto(x.Id,
@@ -227,7 +228,15 @@ namespace GameModule.Logic.GameLooperLogic
 
         TriggerGameLooperResponse GetGameOverResponse(Tribe tribe)
             => new(
-                new TribeDto(tribe.Id, tribe.Name, tribe.Localization.X, tribe.Localization.Y, tribe.Resources.Wood, tribe.Resources.FreshFood, ETribeRelocationStatus.None),
+                new TribeDto(
+                    tribe.Id, 
+                    tribe.Name, 
+                    tribe.Localization.X, 
+                    tribe.Localization.Y, 
+                    tribe.Resources.Wood, 
+                    tribe.Resources.FreshFood, 
+                    tribe.Started,
+                    ETribeRelocationStatus.None),
                 new List<HumanUnitDto>(),
                 new List<HumanUnitTaskDto>(),
                 new List<HumanUnitTaskOrderDto>(),

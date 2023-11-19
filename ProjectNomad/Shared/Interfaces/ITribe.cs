@@ -9,6 +9,7 @@
         public int Wood { get; }
         public int FreshFood { get; }
         public ETribeRelocationStatus RelocationStatus { get; }
+        public DateTime Started { get; }
     }
 
     public enum ETribeRelocationStatus

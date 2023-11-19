@@ -11,5 +11,7 @@ namespace ProjectNomad.Client.Models.Response
         public int Wood { get; set; }
         public int FreshFood { get; set; }
         public ETribeRelocationStatus RelocationStatus { get; set; }
+
+        public DateTime Started { get; set; }
     }
 }

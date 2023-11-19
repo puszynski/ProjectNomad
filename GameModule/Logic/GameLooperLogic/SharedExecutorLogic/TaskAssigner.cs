@@ -75,6 +75,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
             {
                 var taskOrdersToAssign = tribe.HumanTaskOrders
                     .Where(x => !x.HumanTaskId.HasValue)
+                    .OrderBy(x => x.Type)
                     .ToList();
 
                 foreach (var taskOrder in taskOrdersToAssign)

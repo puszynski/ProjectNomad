@@ -2,7 +2,6 @@
 using GameModule.DtoModels;
 using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic;
-using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Logic.Services;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -56,6 +55,7 @@ namespace GameModule
                 Name = "Tribe with no name",
                 Localization = localization,
                 Updated = _dateTimeProvider.UtcNow(),
+                Started = _dateTimeProvider.UtcNow(),
                 Resources = new Resources() { FreshFood = GameSETTINGS.InitializeRebornTribe.FoodPoints, Wood = GameSETTINGS.InitializeRebornTribe.WoodPoints }
             };
 
@@ -84,6 +84,7 @@ namespace GameModule
         {
             var tribe = await GetTribeOrArgumentException(accountId);
 
+            tribe.Started = _dateTimeProvider.UtcNow();
             tribe.Resources.FreshFood = GameSETTINGS.InitializeRebornTribe.FoodPoints;
             tribe.Resources.Wood = GameSETTINGS.InitializeRebornTribe.WoodPoints;
 
@@ -100,7 +101,6 @@ namespace GameModule
             }
             catch (Exception ex)
             {
-                //todo logs
                 throw ex;
             }
         }

@@ -34,6 +34,9 @@
 
         //public TimeSpan ExtendTaskDurationWithNightSleep(DateTime now, TimeSpan originalTaskDuration)
         //    => todo..
+
+        public static int TotalDays(DateTime from, DateTime to) 
+            => (int)((to - from).TotalMinutes % 10);
     }
 
     public enum EDayNightType
