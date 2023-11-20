@@ -14,11 +14,11 @@
         {
             var desc = @item.GetDescription();
 
-            if (!string.IsNullOrEmpty(desc))
-            {
-                <smaller>@desc</smaller>
-                <br/>                
-            }
+            if (string.IsNullOrEmpty(desc))
+                continue;
+
+            <smaller>@item.GetDescription()</smaller>
+            <br/>  
         }
     }
     else
