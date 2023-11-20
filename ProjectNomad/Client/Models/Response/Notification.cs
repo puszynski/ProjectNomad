@@ -17,7 +17,7 @@ namespace ProjectNomad.Client.Models.Response
                 case ENotificationType.Starvation: return $"{HumanName} ŚMIERĆ GŁÓD";
                 case ENotificationType.DeathFromStarvation: return $"{HumanName} głód";
                 case ENotificationType.DeathFromAgeOrIllness: return $"{HumanName} ŚMIERĆ TAJEMNICA";
-                case ENotificationType.Newborn: return $"{HumanName} NOWY CZŁOWIEK";
+                case ENotificationType.Newborn: return $"{HumanName} NOWY MAŁY CZŁOWIEK";
 
                 //case ENotificationType.FoodGatheringStarted: return $"{HumanName} szukać jedzenie";
                 case ENotificationType.FoodGatheringEnded: return $"{HumanName} przynieść jedzenie +{CustomValue}";
