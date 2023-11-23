@@ -51,6 +51,9 @@ namespace GameModule.Logic.TasksLogic
                 if (firecamp.PowerAndDurability > FIRE_POWER_TO_ADD_WOOD)
                     return default;
 
+            if (taskOrder.HumanTask != null)
+                return default;
+
             var taskToAdd = new HumanTask
             {
                 From = looperNow,
@@ -62,7 +65,7 @@ namespace GameModule.Logic.TasksLogic
                 IsCompleted = false,
             };
 
-            tribe.HumanTasks?.Add(taskToAdd);
+            //tribe.HumanTasks?.Add(taskToAdd);
             taskOrder.HumanTask = taskToAdd;
             tribe.Resources.Wood -= GameSETTINGS.Fire.WoodUsedToKeepTheCampfireBurning;
 
@@ -123,6 +126,8 @@ namespace GameModule.Logic.TasksLogic
                     tribe.TribeStructures?.Add(fire);
                 }
 
+                if (taskOrder != null)
+                    taskOrder.HumanTask = null;
                 tribe.HumanTasks?.Remove(taskToEnd);
 
                 return new NotificationDto(taskToEnd.HumanId,
@@ -134,6 +139,9 @@ namespace GameModule.Logic.TasksLogic
             else
             {
                 firecamp.PowerAndDurability = FULL_FIRE_POWER;
+
+                if (taskOrder != null)
+                    taskOrder.HumanTask = null;
                 tribe.HumanTasks?.Remove(taskToEnd); //REMOVING FOR CONTANT TASKS
 
                 return new NotificationDto(taskToEnd.HumanId,

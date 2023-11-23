@@ -30,15 +30,20 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
             //test - save changes before deleting to prevent error
             try
             {
-                await _humanUnitTaskOrderRepository.SaveChangesAsync();
-            }
+                await _humanUnitTaskOrderRepository.SaveChangesAsync(); //czasami jak jest tu problem - to zadziała bez jak sie to zakomentuje, ale to skolei generuje ptoblem wcześniejszy z DbUpdateConcurrencyException w LOOP`erze -.-
+             }
             catch (DbUpdateConcurrencyException ex)
             {
                 throw ex;
             }
             catch (Exception ex)
             {
+
                 throw ex;
+                //SqlException: The UPDATE statement conflicted with the FOREIGN KEY constraint "FK_HumanTaskOrders_HumanTasks_HumanTaskId". The conflict occurred in database "ProjectNomadV3", table "GameModule.HumanTasks", column 'Id'.
+
+                //note - ten błąd powstaje po tym jak wszyscy umierają i przed wykonaniem poniższych kodów chcemy zapisać w lini 32 - gdy usuwamy humanUnits.. nie mają na sobie podpiętych tasków..
+
             }
 
             await _humanUnitTaskOrderRepository.RemoveAll(tribe.Id);
@@ -46,6 +51,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
             await _tribeStructureRepository.RemoveAll(tribe.Id);
             tribe.Resources.FreshFood = 0;
             tribe.Resources.Wood = 0;
+            
         }
     }
 }

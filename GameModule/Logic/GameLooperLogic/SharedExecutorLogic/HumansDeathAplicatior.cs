@@ -33,6 +33,8 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
             {
                 _humanUnitRepository.RemoveRange(humansToDieFromStarving);
 
+                //TODO CHECK IF HUMAN IS NOT HAVING HUMAN TASKS + DELETE?
+
                 foreach (var human in humansToDieFromStarving)
                     notifications.Add(new NotificationDto(human.Id,
                         human.Name,
@@ -52,6 +54,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 
             if (!humansToDieFromStarving.Any())
                 return;
+            //TODO CHECK IF HUMAN IS NOT HAVING HUMAN TASKS + DELETE?
 
             _humanUnitRepository.RemoveRange(humansToDieFromStarving);
 
@@ -68,21 +71,22 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 
         void IHumansDeathApplicator.OverheatingDeath(ICollection<Human> humans, List<INotification> notifications)
         {
-            var humansToDieFromStarving = humans.Where(x => x.ThermalLevelPercentage >= 100).ToList();
+            var humansToDieFromOverheating = humans.Where(x => x.ThermalLevelPercentage >= 100).ToList();
 
-            if (!humansToDieFromStarving.Any())
+            if (!humansToDieFromOverheating.Any())
                 return;
+            //TODO CHECK IF HUMAN IS NOT HAVING HUMAN TASKS + DELETE?
 
-            _humanUnitRepository.RemoveRange(humansToDieFromStarving);
+            _humanUnitRepository.RemoveRange(humansToDieFromOverheating);
 
-            foreach (var human in humansToDieFromStarving)
+            foreach (var human in humansToDieFromOverheating)
                 notifications.Add(new NotificationDto(human.Id,
                     human.Name,
                     _dateTimeProvider.UtcNow(),
                     ProjectNomad.Shared.Enums.ENotificationType.DeathFromOverheat,
                     null));
 
-            foreach (var humanUnitRemoved in humansToDieFromStarving)
+            foreach (var humanUnitRemoved in humansToDieFromOverheating)
                 humans.Remove(humanUnitRemoved);
         }
 
@@ -90,6 +94,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
         {
             if (!RandomCalculator.GetBoolWithGivenProbability(humanUnits.Count() * GameSETTINGS.Population.NaturalDeathChancePerHumanPerHour))
                 return;
+            //TODO CHECK IF HUMAN IS NOT HAVING HUMAN TASKS + DELETE?
 
             var human = humanUnits.First();
             humanUnits.Remove(human);

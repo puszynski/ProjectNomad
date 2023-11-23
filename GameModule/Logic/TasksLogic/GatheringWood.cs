@@ -30,6 +30,9 @@ namespace GameModule.Logic.TasksLogic
                     destinyMapTile.Localization.X,
                     destinyMapTile.Localization.Y);
 
+            if (taskOrder.HumanTask != null)
+                return default;
+
             var taskToAdd = new HumanTask
             {
                 From = currentTimeInLoop,
@@ -42,7 +45,7 @@ namespace GameModule.Logic.TasksLogic
             };
 
             taskOrder.HumanTask = taskToAdd;
-            tribe.HumanTasks.Add(taskToAdd);
+            //tribe.HumanTasks.Add(taskToAdd); //chyba niepotrzebne?
             
             return new NotificationDto(human.Id,
                human.Name,

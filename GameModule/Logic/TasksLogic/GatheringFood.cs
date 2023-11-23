@@ -26,6 +26,9 @@ namespace GameModule.Logic.TasksLogic
 
             var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskOrder.Localization));
 
+            if (taskOrder.HumanTask != null)
+                return default;
+
             var taskToAdd = new HumanTask
             {
                 From = currentTimeInLoop,
