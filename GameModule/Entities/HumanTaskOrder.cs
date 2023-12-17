@@ -14,6 +14,8 @@ namespace GameModule.Entities
     /// Clearing makes room for next batch of HumanTasks for next hour
     /// 
     /// </summary>
+    
+    /// V2 - todo - will be used only as one time order
     internal class HumanTaskOrder : IId, ITribeReference, IAdded
     {
         public int Id { get; set; }
@@ -21,11 +23,10 @@ namespace GameModule.Entities
         public int TribeId { get; set; }
         public Tribe Tribe { get; set; }
 
+        //public int? HumanId { get; set; } //todo - to allow aiming concrete human 
+
         public DateTime Added { get; set; }
         public ETaskType Type { get; set; } 
         public Localization Localization { get; set; }
-
-        public int? HumanTaskId { get; set; }
-        public HumanTask? HumanTask { get; set; }
     }
 }

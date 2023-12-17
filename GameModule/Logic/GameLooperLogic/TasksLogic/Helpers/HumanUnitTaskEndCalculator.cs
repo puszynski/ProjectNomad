@@ -1,6 +1,6 @@
 ﻿using ProjectNomad.Shared;
 
-namespace GameModule.Logic.TasksLogic.Helpers
+namespace GameModule.Logic.GameLooperLogic.TasksLogic.Helpers
 {
     internal class HumanUnitTaskEndCalculator
     {

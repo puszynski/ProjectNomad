@@ -1,4 +1,4 @@
-﻿using GameModule.Entities;
+﻿using ProjectNomad.Shared.DTOs.ServerToWasm;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Interfaces.Response;
@@ -18,10 +18,13 @@ namespace GameModule
         public Task AddTask(IAddHumanUnitTaskDto task);
         public Task<IEnumerable<IHumanUnitTaskDto>> GetActualTribeTasks(int tribeId);
 
-        // returns 7x7, x&y is pointing to the middle of teh square
+        // return ViewModel specific for page /tribe
+        public Task<IEnumerable<HumanWithJobsDto>> GetTribeHumans(Guid accountId);
+
+        // returns 7x7, x & y is pointing to the middle of the square
         public Task<IEnumerable<IMapTile>> GetMapTiles(int tribeId);
 
-        //get larger count of tiles (depends on mini-map size)
+        // get larger count of tiles (depends on mini-map size)
         public Task<IEnumerable<IMapTile>> GetMapTileForMiniMap(int tribeId, int miniMapSizeInTiles = 31);
 
         // NOTE

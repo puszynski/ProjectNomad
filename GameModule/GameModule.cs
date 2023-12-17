@@ -6,6 +6,7 @@ using GameModule.Logic.Services;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
+using ProjectNomad.Shared.DTOs.ServerToWasm;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Interfaces.Response;
@@ -14,9 +15,9 @@ namespace GameModule
 {
     internal class GameModule : IGameModule
     {
-
         readonly NewTribeLocalizationInitializer _newTribeLocalizationInitializer;
         readonly IHumanUnitTaskOrderRepository _humanUnitTaskOrderRepository;
+        readonly IHumanUnitRepository _humanUnitRepository;
         readonly IMapTileRepository _mapTileRepository;
         readonly IDateTimeProvider _dateTimeProvider;
         readonly GameModuleDbContext _dbContext;
@@ -26,21 +27,22 @@ namespace GameModule
         public GameModule(
             NewTribeLocalizationInitializer newTribeLocalizationInitializer,
             IHumanUnitTaskOrderRepository humanUnitTaskOrderRepository,
+            IHumanUnitRepository humanUnitRepository,
             IMapTileRepository mapTileRepository,
             IDateTimeProvider dateTimeProvider,
             GameModuleDbContext dbContext,
-            LOOPER gameLooper,
-            MapService mapService)
+            MapService mapService,
+            LOOPER gameLooper)
         {
             _newTribeLocalizationInitializer = newTribeLocalizationInitializer;
             _humanUnitTaskOrderRepository = humanUnitTaskOrderRepository;
+            _humanUnitRepository = humanUnitRepository;
             _mapTileRepository = mapTileRepository;
             _dateTimeProvider = dateTimeProvider;
             _gameLooper = gameLooper;
             _mapService = mapService;
             _dbContext = dbContext;
         }
-
 
         public async Task<ITriggerGameLooperResponse> TriggerPlayerGameObjectRecalculation(Guid accountId) 
             => await _gameLooper.LoopTribe(accountId);
@@ -105,6 +107,16 @@ namespace GameModule
             }
         }
 
+        public async Task<IEnumerable<HumanWithJobsDto>> GetTribeHumans(Guid accountId)
+        {
+            var humansWithJobs = await _humanUnitRepository.GetHumansWithJobsByAccountId(accountId);
+
+            return humansWithJobs.Select(x => new HumanWithJobsDto
+            (
+                new HumanDto(x.Id, x.Name, x.FoodLevelPercentage, x.ThermalLevelPercentage),
+                x.Jobs.Select(y => new JobDto(y.Id, y.Type, y.PriorityPercentage))
+            ));
+        }
 
         public async Task<IEnumerable<IMapTile>> GetMapTiles(int tribeId)
         {
@@ -245,7 +257,7 @@ namespace GameModule
                 .HumanTasks
                 .Where(x => x.TribeId == tribeId)
                 .Include(b => b.Human)
-                .Select(x => new HumanUnitTaskDto(x.Id, x.TribeId, x.HumanId, x.Human.Name, x.Type, x.From, x.To, x.IsCompleted))
+                .Select(x => new HumanUnitTaskDto(x.Id, x.TribeId, x.HumanId, x.Human.Name, x.Type, x.From, x.To))
                 .ToListAsync();
 
             tribeTasks ??= new List<HumanUnitTaskDto>();
@@ -256,7 +268,7 @@ namespace GameModule
             => await _dbContext
             .HumanTaskOrders
             .Where(x => x.TribeId == tribeId)
-            .Select(x => new HumanUnitTaskOrderDto(x.Id, x.TribeId, x.Added, x.Type, x.HumanTaskId, x.Localization.X, x.Localization.Y))
+            .Select(x => new HumanUnitTaskOrderDto(x.Id, x.TribeId, x.Added, x.Type, x.Localization.X, x.Localization.Y))
             .ToListAsync();
 
         public async Task AddHumanUnitTaskOrder(int tribeId, 

@@ -6,8 +6,7 @@ namespace GameModule.DtoModels
     internal record HumanUnitTaskOrderDto(int Id, 
         int TribeId, 
         DateTime Added, 
-        ETaskType Type, 
-        int? HumanTaskId,
+        ETaskType Type,
         int? X,
         int? Y) : IHumanUnitTaskOrder;
 }

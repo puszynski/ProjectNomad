@@ -2,19 +2,16 @@
 {
     public enum ETaskType //order makes priority of assigning
     {
+        //jobs
         CampfireUp = 1,
-
-        Sleep = 2,
-
         GatheringFood = 100,
-
         GatheringWood = 200,
 
-
-
+        //special
         TribeRelocation = 300,
 
         // auto-tasks
+        Sleep = 2,
         ConsumeFood = 1001,
         HeatUpHumanByFireEnded = 1002,
     }
@@ -59,6 +56,16 @@
             return new List<ETaskType>() 
             { 
                 ETaskType.CampfireUp 
+            };
+        }
+
+        public static List<ETaskType> GetJobs()
+        {
+            return new List<ETaskType>()
+            {   
+                ETaskType.GatheringWood,
+                ETaskType.GatheringFood,
+                ETaskType.CampfireUp
             };
         }
 

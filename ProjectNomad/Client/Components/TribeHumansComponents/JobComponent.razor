@@ -1,0 +1,148 @@
+﻿@using ProjectNomad.Client.ViewModels.TribeHumans
+@using ProjectNomad.Shared.DTOs.ServerToWasm
+@using ProjectNomad.Shared.DTOs.WasmToServer
+@using ProjectNomad.Shared.Enums
+
+@inject HttpClient _httpClient
+
+
+@foreach (var job in Jobs)
+{
+    <smaller>
+        @job.Type.GetDescription(): @GetPriorityVisualization(job)
+        <button type="button" class="button_active" @onclick="() => DecreaseJobPriority(job)">-</button>
+        @if (GetFreeTimePoints() >= 1)
+        {
+            <button type="button" class="button_active" @onclick="() => IncreaseJobPriority(job)">+</button>            
+        }
+    </smaller>
+    <br />
+}
+
+@* <smaller>wood gather: ### 
+    <button type="button" class="button_active" @onclick="DisplayJobsToAssign">-</button>
+    <button type="button" class="button_active" @onclick="DisplayJobsToAssign">+</button>
+</smaller>
+<br /> *@
+
+<smaller>free time: @GetFreeTimeVisualization()</smaller> <br />
+
+@if (IsDisplayJobsToAssign)
+{
+    foreach (var type in NotAssignedJobTypes)
+    {
+        <smaller><button type="button" class="button_active" @onclick="() => AssignJob(type)">@type.GetDescription()</button></smaller>
+    }
+}
+else
+{
+    <smaller><button type="button" class="button_active" @onclick="DisplayJobsToAssign">+</button></smaller>
+}
+<br />
+<br />
+
+@code {
+    [ParameterAttribute]
+    public ICollection<JobViewModel> Jobs { get; set; }
+
+    [ParameterAttribute]
+    public int HumanId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        UpdateNotAssignedJobTypes();
+    }
+
+    string GetPriorityVisualization(JobDto job)
+    {
+        var roundedNumber = job.PriorityPercentage / JobViewModel.ONE_POINT_TO_PERCENTAGE_COEFFICIENT;
+
+        var result = string.Empty;
+
+        for (int i = 0; i < roundedNumber; i++)
+        {
+            result += "#";
+        }
+
+        return result;
+    }
+
+    string GetFreeTimeVisualization()
+    {
+        var freeTimeNumber = GetFreeTimePoints();
+        var result = string.Empty;
+
+        for (int i = 0; i < freeTimeNumber; i++)
+        {
+            result += "#";
+        }
+
+        return result;
+    }
+    int GetFreeTimePoints()
+    {
+        var allJobsSum = Jobs.Sum(x => x.PriorityPercentage);
+        var roundedNumber = allJobsSum / JobViewModel.ONE_POINT_TO_PERCENTAGE_COEFFICIENT;
+        return JobViewModel.FULL_JOB_POINTS_SCALE - roundedNumber;
+    }
+
+    bool IsDisplayJobsToAssign = false;
+    void DisplayJobsToAssign() => IsDisplayJobsToAssign = true;
+
+    List<ETaskType> NotAssignedJobTypes;
+    void UpdateNotAssignedJobTypes()
+    {
+        NotAssignedJobTypes = new List<ETaskType>();
+
+        foreach (var jobType in TaskTypeExtensions.GetJobs())
+            if (!Jobs.Any(x => x.Type == jobType))
+                NotAssignedJobTypes.Add(jobType);
+    }
+
+    async Task AssignJob(ETaskType type)
+    {
+        var model = new JobAdd() 
+        { 
+            HumanId = HumanId, 
+            PriorityPercentage = JobViewModel.ONE_POINT_TO_PERCENTAGE_COEFFICIENT, 
+            Type = type 
+        };
+
+        var result = await _httpClient.PostAsJsonAsync<JobAdd>("api/job", model);
+
+        if (result.StatusCode != System.Net.HttpStatusCode.OK)
+            throw new Exception();//404 not found
+
+        var job = await result.Content.ReadFromJsonAsync<JobDto>();
+        Jobs.Add(job);
+        IsDisplayJobsToAssign = false;
+        UpdateNotAssignedJobTypes();
+    }
+    async Task IncreaseJobPriority(JobViewModel job)
+    {
+        job.IncreaseJobPriority();
+
+        var model = new JobUpdate() { Id = job.Id, PriorityPercentage = job.PriorityPercentage };
+        await _httpClient.PutAsJsonAsync($"api/job/{job.Id}", model); //todo server PUT
+    }
+    async Task DecreaseJobPriority(JobViewModel job)
+    {
+        if (job.PriorityPercentage <= JobViewModel.ONE_POINT_TO_PERCENTAGE_COEFFICIENT)
+        {
+            RemoveJob(job);
+            return;
+        }
+        
+        job.DecreaseJobPriority();
+        
+        var model = new JobUpdate() { Id = job.Id, PriorityPercentage = job.PriorityPercentage };
+        await _httpClient.PutAsJsonAsync($"api/job/{job.Id}", model); //todo server PUT
+    }
+    async Task RemoveJob(JobViewModel job)
+    {
+        Jobs.Remove(job);
+        NotAssignedJobTypes.Add(job.Type);
+
+        await _httpClient.DeleteAsync($"api/job/{job.Id}");
+    }
+}

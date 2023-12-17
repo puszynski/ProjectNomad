@@ -7,6 +7,8 @@ namespace GameModule.Repositories
     internal interface IHumanUnitRepository : IRepository
     {
         Task<List<Human>> GetHumanUnitsByTribeId(int tribeId);
+        Task<List<Human>> GetHumansWithJobsByAccountId(Guid accountId);
+
         void RemoveRange(IEnumerable<Human> humanUnits);
     }
 
@@ -21,6 +23,15 @@ namespace GameModule.Repositories
             return await _gameModuleDbContext
                 .Humans
                 .Where(x => x.TribeId == tribeId)
+                .ToListAsync();
+        }
+
+        async Task<List<Human>> IHumanUnitRepository.GetHumansWithJobsByAccountId(Guid accountId)
+        {
+            return await _gameModuleDbContext
+                .Humans
+                .Where(x => x.Tribe.AccountId == accountId)
+                .Include(x => x.Jobs) 
                 .ToListAsync();
         }
 

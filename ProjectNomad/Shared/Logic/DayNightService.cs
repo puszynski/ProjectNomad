@@ -9,7 +9,7 @@
     /// </summary>
     public static class DayNightService
     {
-        public const int DAY_DURATION_MINUTES = 10;
+        public const int DAY_DURATION_MINUTES = 10; //means 24h => day + night
         public const int NIGHT_DURATION_MINUTES = 4; //note - in future will depend on season and localization
 
         public static bool IsNight(DateTime now) 

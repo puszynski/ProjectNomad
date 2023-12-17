@@ -39,17 +39,14 @@ namespace GameModule.Logic.GameLooperLogic
             if (tribe.HumanTasks == null)
                 return;
 
-            var inProgressHumanTasks = tribe.HumanTasks.Where(x => !x.IsCompleted).ToList();//removing completed tasks
-            tribe.HumanTasks = inProgressHumanTasks;
-
-            //_mapTileRegenerator.Execute(mapTiles); temprary remove to check bug existance - btw should be run via bg jobs
+            _mapTileRegenerator.Execute(mapTiles);//UWAGA UWAGA! PRZENIEŚĆ DO MECHANIZMU GLOBALNEGO - TASK SCHEDULER CZY COS
             _breedingApplicator.Execute(tribe, notifications); 
 
             if (tribe.Humans != null)
                 _humansDeathApplicator.AgeOrIllnessDeath(tribe.Humans, notifications);
 
             //temp cancel to check if it provides errors
-            //_weatherAndThermalService.UpdateWorldZoneParameters(worldZoneParameter);//UWAGA UWAGA! GAME LOOPER BĘDZIE URUCHAMIANY PER MEMBER - A TO MUSI BYĆ PER ALIKACJA!!! TODOOOO todo
+            _weatherAndThermalService.UpdateWorldZoneParameters(worldZoneParameter);//UWAGA UWAGA! GAME LOOPER BĘDZIE URUCHAMIANY PER MEMBER - A TO MUSI BYĆ PER ALIKACJA!!! TODOOOO todo
         }
     }
 }

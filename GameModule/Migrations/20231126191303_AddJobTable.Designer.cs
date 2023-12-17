@@ -4,6 +4,7 @@ using GameModule.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameModule.Migrations
 {
     [DbContext(typeof(GameModuleDbContext))]
-    partial class GameModuleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231126191303_AddJobTable")]
+    partial class AddJobTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,6 +68,9 @@ namespace GameModule.Migrations
                     b.Property<int>("HumanId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("To")
                         .HasColumnType("datetime2");
 
@@ -76,8 +82,7 @@ namespace GameModule.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HumanId")
-                        .IsUnique();
+                    b.HasIndex("HumanId");
 
                     b.HasIndex("TribeId");
 
@@ -295,8 +300,8 @@ namespace GameModule.Migrations
             modelBuilder.Entity("GameModule.Entities.HumanTask", b =>
                 {
                     b.HasOne("GameModule.Entities.Human", "Human")
-                        .WithOne("HumanUnitTask")
-                        .HasForeignKey("GameModule.Entities.HumanTask", "HumanId")
+                        .WithMany("HumanUnitTasks")
+                        .HasForeignKey("HumanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -566,7 +571,7 @@ namespace GameModule.Migrations
 
             modelBuilder.Entity("GameModule.Entities.Human", b =>
                 {
-                    b.Navigation("HumanUnitTask");
+                    b.Navigation("HumanUnitTasks");
 
                     b.Navigation("Jobs");
                 });

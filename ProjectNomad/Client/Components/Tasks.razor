@@ -39,7 +39,15 @@
     <br />
 
     var buttons = new List<ButtonTaskOrders>();
-    @foreach (var taskOrder in HumanUnitTaskOrders.OrderBy(x => x.Added))
+    //todo HumanUnitTaskOrders where removed - just display HumanTasks (not in relation to HumanUnitTaskOrders..)
+
+    @foreach (var jobTasks in HumanUnitTasks.Where(x => TaskTypeExtensions.GetJobs().Contains(x.Type)))
+    {
+        <ProjectNomad.Client.Components.TasksComponents.ProgressButton HumanUnitTask="jobTasks" />
+    }
+
+    //outdated codes (orders + tasks grouped by task orders)
+    @* @foreach (var taskOrder in HumanUnitTaskOrders.OrderBy(x => x.Added))
     {
         var lastButton = buttons.LastOrDefault();
 
@@ -66,11 +74,10 @@
             if (matchingTask != null)
                 lastButton.MatchedTasks.Add(matchingTask);
         }
-    }
+    } *@
     @* ⏵⏸ *@
 
-    @* TODO *@
-    @foreach (var button in buttons)
+    @* @foreach (var button in buttons)
     {
         var desc = TaskTypeExtensions.GetDescription(button.Type);
         var symbol = TaskTypeExtensions.GetSymbol(button.Type);
@@ -105,7 +112,7 @@
         }
 
         <br/>
-    }
+    } *@
 
 
     <br />

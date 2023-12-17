@@ -1,18 +1,21 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
-using GameModule.Logic.TasksLogic.Helpers;
+using GameModule.Logic.GameLooperLogic.TasksLogic.Helpers;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 
-namespace GameModule.Logic.TasksLogic
+namespace GameModule.Logic.GameLooperLogic.TasksLogic
 {
-    internal class HeatUpByFire : ITask
+    internal class HeatUpByFire : IAutoTaskStart, ITaskEnd
     {
         const int HUMAN_THERMAL_PERCENTAGE_TO_START = 30;
         const int HEAT_UP_POINTS = 40;
 
-        INotification ITask.Start(HumanTaskOrder taskOrder, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification IAutoTaskStart.Start(
+            Tribe tribe,
+            DateTime currentTimeInLoop,
+            IEnumerable<MapTile> mapTiles)
         {
             var humansWithConditions = BasicDataSelector
                 .SelectHumansWithCondition(tribe)
@@ -30,11 +33,11 @@ namespace GameModule.Logic.TasksLogic
             {
                 From = currentTimeInLoop,
                 HumanId = human.Id,
+                Human = human,
                 TribeId = tribe.Id,
                 Type = ETaskType.HeatUpHumanByFireEnded,
                 To = currentTimeInLoop.AddMinutes(GameSETTINGS.Fire.TimeToHeatUpHumanByFire),
-                Localization = null,
-                IsCompleted = false,
+                Localization = null
             };
 
             tribe.HumanTasks.Add(entity);
@@ -47,10 +50,12 @@ namespace GameModule.Logic.TasksLogic
                 entity.To.ToString());
         }
 
-        INotification ITask.End(HumanTask taskToEnd, Tribe tribe, DateTime currentTimeInLoop, IEnumerable<MapTile> mapTiles)
+        INotification ITaskEnd.End(
+            HumanTask taskToEnd,
+            Tribe tribe,
+            DateTime currentTimeInLoop,
+            IEnumerable<MapTile> mapTiles)
         {
-            tribe.HumanTasks.Remove(taskToEnd);
-
             return new NotificationDto(taskToEnd.HumanId,
                 tribe.Humans.Single(x => x.Id == taskToEnd.HumanId).Name,
                 currentTimeInLoop,

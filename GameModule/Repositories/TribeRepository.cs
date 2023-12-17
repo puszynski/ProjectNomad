@@ -32,10 +32,10 @@ namespace GameModule.Repositories
                 .Tribes
                 .Where(x => x.AccountId == accountId)
                 .Include(x => x.TribeRelocation)
-                .Include(x => x.Humans)
                 .Include(x => x.HumanTasks)
                 .Include(x => x.HumanTaskOrders)
                 .Include(x => x.TribeStructures)
+                .Include(x => x.Humans).ThenInclude(x => x.Jobs)
                 .SingleOrDefaultAsync();
 
             if (data == null)

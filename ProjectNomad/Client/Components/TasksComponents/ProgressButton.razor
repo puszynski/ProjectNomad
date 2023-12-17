@@ -2,14 +2,13 @@
 @using ProjectNomad.Shared.Enums;
 @inject EventBroadcastService _eventBroadcastService
 
-@if (!HumanUnitTask.IsCompleted)
-{
-    <br/>
-    <button type="button" class="progress_button">
-        <div class="progress_button_progress" style="width: @ReversePercentage%;"></div>
-        <div class="progress_button_text">@description (@HumanUnitTask.HumanUnitName @RemainingTimeToDisplay)</div>
-    </button>
-}
+
+<br/>
+<button type="button" class="progress_button">
+    <div class="progress_button_progress" style="width: @ReversePercentage%;"></div>
+    <div class="progress_button_text">@description (@HumanUnitTask.HumanUnitName @RemainingTimeToDisplay)</div>
+</button>
+
 
 
 

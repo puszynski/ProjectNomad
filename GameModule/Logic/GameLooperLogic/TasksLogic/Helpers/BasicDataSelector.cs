@@ -1,7 +1,7 @@
 ﻿using GameModule.Entities;
 using ProjectNomad.Shared;
 
-namespace GameModule.Logic.TasksLogic.Helpers
+namespace GameModule.Logic.GameLooperLogic.TasksLogic.Helpers
 {
     internal static class BasicDataSelector
     {
@@ -16,14 +16,13 @@ namespace GameModule.Logic.TasksLogic.Helpers
                 return default;
 
             var humanIDsWithTaskAssigned = tribe
-                .HumanTasks?
-                .Where(x => !x.IsCompleted)
-                .Select(x => x.HumanId);
+                .Humans
+                .Where(x => x.HumanUnitTask != null)
+                .Select(x => x.Id);
 
             if (humanIDsWithTaskAssigned == null)
                 return tribe.Humans
                     .Where(x => x.FoodLevelPercentage > 10);
-
 
             return tribe.Humans
                 .Where(x => !humanIDsWithTaskAssigned.Contains(x.Id))

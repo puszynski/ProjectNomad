@@ -9,6 +9,10 @@ namespace GameModule.Repositories
     {
         Task<List<MapTile>> GetByLocalizations(List<Localization> localizations);
         Task<List<MapTile>> GetByIds(List<int> ids);
+        IEnumerable<MapTile> GetQueryFromCondition(
+            Func<MapTile, bool> condition1,
+            Func<MapTile, bool> condition2 = null);
+        //IQueryable<MapTile> GetQueryFromRadius(Localization startLocalization, int radius);
         Task<int> GetIdByLocalization(int x, int y);
         Task Remove(int taskOrderId);
     }
@@ -26,6 +30,32 @@ namespace GameModule.Repositories
                 .Where(x => ids.Contains(x.Id))
                 .ToListAsync();
         }
+
+        IEnumerable<MapTile> IMapTileRepository.GetQueryFromCondition(
+            Func<MapTile, bool> condition1, 
+            Func<MapTile, bool> condition2 = null)
+        {
+            var query = _gameModuleDbContext
+                .MapTiles
+                .Where(condition1);
+
+            if (condition2 != null)
+                query.Where(condition2);
+
+            return query;
+        }
+
+        //IQueryable<MapTile> IMapTileRepository.GetQueryFromRadius(
+        //    Localization startLocalization, 
+        //    int radius)
+        //{
+        //    return _gameModuleDbContext
+        //        .MapTiles
+        //        .Where(x => x.Localization.X >= startLocalization.X - radius
+        //            && x.Localization.X <= startLocalization.X + radius
+        //            && x.Localization.Y >= startLocalization.Y - radius
+        //            && x.Localization.Y <= startLocalization.Y + radius);
+        //}
 
         async Task<List<MapTile>> IMapTileRepository.GetByLocalizations(List<Localization> localizations)
         {

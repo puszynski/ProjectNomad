@@ -1,5 +1,5 @@
 ﻿using GameModule.Entities;
-using GameModule.Logic.TasksLogic;
+using GameModule.Logic.GameLooperLogic.TasksLogic;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 
@@ -15,6 +15,14 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 
     internal class TaskConsumer : ITaskConsumer
     {
+        readonly GatheringFood _gatheringFood;
+        readonly GatheringWood _gatheringWood;
+        public TaskConsumer(GatheringFood gatheringFood, GatheringWood gatheringWood)
+        {
+            _gatheringFood = gatheringFood;
+            _gatheringWood = gatheringWood;
+        }
+
         void ITaskConsumer.Execute(Tribe tribe,
             ICollection<MapTile> mapTiles,
             DateTime currentTimeInLoop,
@@ -23,13 +31,10 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
             if (tribe.Humans == null || !tribe.Humans.Any() || tribe.HumanTasks == null || !tribe.HumanTasks.Any())
                 return;
 
-            var humanUnitIds = tribe.Humans
-                .Select(x => x.Id)
-                .ToList();
-
-            var tasksToConsume = tribe.HumanTasks
-                .Where(x => humanUnitIds.Contains(x.HumanId))
-                .Where(x => x.To <= currentTimeInLoop && !x.IsCompleted)
+            var tasksToConsume = tribe.Humans
+                .Where(x => x.HumanUnitTask != null)
+                .Select(x => x.HumanUnitTask)
+                .Where(x => x.To <= currentTimeInLoop)
                 .ToList();
 
             foreach (var task in tasksToConsume)
@@ -44,41 +49,47 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
             }
         }
 
-        INotification? ConsumeTask(HumanTask humanUnitTask,
+        INotification? ConsumeTask(HumanTask taskToEnd,
             Tribe tribe,
             ICollection<MapTile> mapTiles,
             DateTime currentTimeInLoop)
         {
-            ITask consumer;
+            ITaskEnd taskEnd;
 
-            switch (humanUnitTask.Type)
+            switch (taskToEnd.Type)
             {
                 case ETaskType.GatheringFood:
-                    consumer = new GatheringFood();
+                    taskEnd = _gatheringFood;
                     break;
                 case ETaskType.GatheringWood:
-                    consumer = new GatheringWood();
+                    taskEnd = _gatheringWood;
                     break;
                 case ETaskType.CampfireUp:
-                    consumer = new Campfire();
+                    taskEnd = new Campfire();
                     break;
                 case ETaskType.ConsumeFood:
-                    consumer = new ConsumeFood();
+                    taskEnd = new ConsumeFood();
                     break;
                 case ETaskType.HeatUpHumanByFireEnded:
-                    consumer = new HeatUpByFire();
+                    taskEnd = new HeatUpByFire();
                     break;
                 case ETaskType.Sleep:
-                    consumer = new Sleep();
+                    taskEnd = new Sleep();
                     break;
 
                 default: throw new NotImplementedException();
             }
+            
+            var notification = taskEnd.End(taskToEnd,
+                    tribe,
+                    currentTimeInLoop,
+                    mapTiles);
 
-            return consumer.End(humanUnitTask,
-                tribe,
-                currentTimeInLoop,
-                mapTiles);
+            tribe.HumanTasks?.Remove(taskToEnd); //może to wystarczy żeby usunać i encje i referencje z human??
+            //humanUnitTask.Human.HumanUnitTask = null;
+            //await _humanTasks.Remove(humanUnitTask); //todo
+
+            return notification;
         }
     }
 }

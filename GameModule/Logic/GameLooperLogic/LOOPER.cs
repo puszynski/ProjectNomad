@@ -2,6 +2,7 @@
 using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
+using GameModule.Logic.GameLooperLogic.TasksLogic.Helpers;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
@@ -15,11 +16,11 @@ namespace GameModule.Logic.GameLooperLogic
     {
         readonly IDayExecutor _dayExecutor;
         readonly IHourExecutor _hourExecutor;
+        readonly MapTileFetcher _mapTileFetcher;
         readonly ISecundExecutor _secundExecutor;
         readonly IMinuteExecutor _minuteExecutor;
         readonly ITribeRepository _tribeRepository;
         readonly IDateTimeProvider _dateTimeProvider;
-        readonly IMapTileRepository _mapTileRepository;
         readonly IGameOverApplicator _gameOverApplicator;
         readonly ITenSecondsExecutor _tenSecondsExecutor;
         readonly ITribeRelocationService _tribeRelocationService;
@@ -28,11 +29,11 @@ namespace GameModule.Logic.GameLooperLogic
         public LOOPER(
             IDayExecutor dayExecutor,
             IHourExecutor hourExecutor,
-            ISecundExecutor secundExecutor,
+            MapTileFetcher mapTileFetcher,
+            ISecundExecutor secondExecutor,
             IMinuteExecutor minuteExecutor,
             ITribeRepository tribeRepository,
             IDateTimeProvider dateTimeProvider,
-            IMapTileRepository mapTileRepository,
             IGameOverApplicator gameOverApplicator,
             ITenSecondsExecutor tenSecondsExecutor,
             ITribeRelocationService tribeRelocationService,
@@ -40,11 +41,11 @@ namespace GameModule.Logic.GameLooperLogic
         {
             _dayExecutor = dayExecutor;
             _hourExecutor = hourExecutor;
-            _secundExecutor = secundExecutor;
+            _mapTileFetcher = mapTileFetcher;
+            _secundExecutor = secondExecutor;
             _minuteExecutor = minuteExecutor;
             _tribeRepository = tribeRepository;
             _dateTimeProvider = dateTimeProvider;
-            _mapTileRepository = mapTileRepository;
             _gameOverApplicator = gameOverApplicator;
             _tenSecondsExecutor = tenSecondsExecutor;
             _tribeRelocationService = tribeRelocationService;
@@ -70,7 +71,7 @@ namespace GameModule.Logic.GameLooperLogic
                     notifications,
                     worldZoneParameters);
 
-            var mapTiles = await GetMapTileToInteract(tribe);
+            var mapTiles = await _mapTileFetcher.GetMapTilesCurrentlyAssigned(tribe);
 
             while (lastUpdated <= _dateTimeProvider.UtcNow().AddSeconds(-1))
             {
@@ -148,26 +149,6 @@ namespace GameModule.Logic.GameLooperLogic
             }
         }
 
-        async Task<ICollection<MapTile>> GetMapTileToInteract(Tribe tribe)
-        {
-            if (tribe.HumanTasks == null || tribe.HumanTaskOrders == null)
-                throw new NullReferenceException();
-
-            var mapTileLocalizationsForTasks = tribe.HumanTasks
-                .Where(x => x.Localization != null)
-                .Select(y => y.Localization)
-                .ToList();
-
-            var mapTileLocalizationsForTaskOrders = tribe.HumanTaskOrders
-                .Where(x => x.Localization != null)
-                .Select(y => y.Localization)
-                .ToList();
-
-            var allMapTileLocalization = mapTileLocalizationsForTasks.Union(mapTileLocalizationsForTaskOrders).ToList();
-
-            return await _mapTileRepository.GetByLocalizations(allMapTileLocalization);
-        }
-
         TriggerGameLooperResponse GetResponseModel(Tribe tribe,
             IEnumerable<INotification> notifications,
             WorldParametersDto worldParameters)
@@ -200,14 +181,12 @@ namespace GameModule.Logic.GameLooperLogic
                 x.Human.Name,
                 x.Type,
                 x.From,
-                x.To,
-                x.IsCompleted));
+                x.To));
 
             var humanUnitTaskOrderDtos = tribe.HumanTaskOrders.Select(x => new HumanUnitTaskOrderDto(x.Id,
                 x.TribeId,
                 x.Added,
                 x.Type,
-                x.HumanTaskId,
                 x.Localization.X,
                 x.Localization.Y));
 

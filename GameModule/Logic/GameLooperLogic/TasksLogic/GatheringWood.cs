@@ -1,26 +1,40 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
-using GameModule.Logic.TasksLogic.Helpers;
+using GameModule.Logic.GameLooperLogic.TasksLogic.Helpers;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Logic;
 
-namespace GameModule.Logic.TasksLogic
+namespace GameModule.Logic.GameLooperLogic.TasksLogic
 {
-    internal class GatheringWood : ITask
+    internal class GatheringWood : ITaskFromJobStart, ITaskEnd
     {
-        INotification ITask.Start(HumanTaskOrder taskOrder,
+        readonly MapTileFetcher _mapTileFetcher;
+
+        public GatheringWood(MapTileFetcher mapTileFetcher)
+        {
+            _mapTileFetcher = mapTileFetcher;
+        }
+
+        INotification ITaskFromJobStart.Start(
+            Human human,
             Tribe tribe,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)
         {
-            var human = BasicDataSelector.SelectFirstHumanWithCondition(tribe);
+            var destinyMapTile = _mapTileFetcher.AssignMapTileToJobAndFetchMissingMapTiles(
+                mapTiles,
+                ETaskType.GatheringFood,
+                tribe.Localization);
 
-            if (taskOrder == null || human == null)
-                return default;
-
-            var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskOrder.Localization));
+            if (destinyMapTile == null)
+                return new NotificationDto(
+                    human.Id,
+                    human.Name,
+                    currentTimeInLoop,
+                    ENotificationType.NoWoodInCampArea,
+                    CustomValue: null);
 
             if (destinyMapTile.Wood.ActualPoints < GameSETTINGS.Wood.WoodAmountGatheredFromMap)
                 return default;
@@ -30,32 +44,30 @@ namespace GameModule.Logic.TasksLogic
                     destinyMapTile.Localization.X,
                     destinyMapTile.Localization.Y);
 
-            if (taskOrder.HumanTask != null)
-                return default;
 
             var taskToAdd = new HumanTask
             {
                 From = currentTimeInLoop,
                 HumanId = human.Id,
-                Localization = taskOrder.Localization,
+                Human = human,
+                Localization = destinyMapTile.Localization,
                 To = currentTimeInLoop.Add(TaskDurationCalculator.WoodGathering(distance)), //CalculateTimeToEndTask(),
                 TribeId = tribe.Id,
-                Type = ETaskType.GatheringWood,
-                IsCompleted = false,
+                Type = ETaskType.GatheringWood
             };
 
-            taskOrder.HumanTask = taskToAdd;
-            //tribe.HumanTasks.Add(taskToAdd); //chyba niepotrzebne?
-            
-            return new NotificationDto(human.Id,
-               human.Name,
-               taskToAdd.From,
-               ENotificationType.WoodGatheringStarted,
-               taskToAdd.To.ToString());
+            human.HumanUnitTask = taskToAdd;
+
+            return new NotificationDto(
+                human.Id,
+                human.Name,
+                currentTimeInLoop,
+                ENotificationType.WoodGatheringStarted,
+                CustomValue: taskToAdd.To.ToString());
         }
 
 
-        INotification ITask.End(HumanTask taskToEnd,
+        INotification ITaskEnd.End(HumanTask taskToEnd,
             Tribe tribe,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)
@@ -63,15 +75,11 @@ namespace GameModule.Logic.TasksLogic
             var mapTile = mapTiles.Single(x => x.Localization.Equals(taskToEnd.Localization));
             var mapTileWoodPoints = mapTile.Wood.ActualPoints;
 
-            var human = tribe.Humans.Single(x => x.Id ==  taskToEnd.HumanId);
+            Human human = tribe.Humans.Single(x => x.Id == taskToEnd.HumanId);
+            
 
-
-            var destinyMapTile = mapTiles.Single(x => x.Localization.Equals(taskToEnd.Localization));
-
-            if (destinyMapTile.Wood.ActualPoints < GameSETTINGS.Wood.WoodAmountGatheredFromMap)
+            if (mapTile.Wood.ActualPoints < GameSETTINGS.Wood.WoodAmountGatheredFromMap)
             {
-                taskToEnd.IsCompleted = true;
-
                 return new NotificationDto(taskToEnd.HumanId,
                     human.Name,
                     currentTimeInLoop,
@@ -90,9 +98,8 @@ namespace GameModule.Logic.TasksLogic
                     : mapTileWoodPoints;
 
 
-                destinyMapTile.Wood.ActualPoints -= GameSETTINGS.Wood.WoodAmountGatheredFromMap;
+                mapTile.Wood.ActualPoints -= GameSETTINGS.Wood.WoodAmountGatheredFromMap;
                 tribe.Resources.Wood += (int)gatheredWoodPoints;
-                taskToEnd.IsCompleted = true;
 
                 return new NotificationDto(taskToEnd.HumanId,
                     human.Name,

@@ -2,6 +2,8 @@
 using GameModule.Logic.GameLooperLogic.HourExecutorLogic;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
+using GameModule.Logic.GameLooperLogic.TasksLogic;
+using GameModule.Logic.GameLooperLogic.TasksLogic.Helpers;
 using GameModule.Logic.Services;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +17,7 @@ namespace GameModule.Configurations
         /// <summary>
         /// to run migration
         ///     cd .\GameModule
-        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add TribeAddStartedColumn -c GameModuleDbContext
+        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add RemoveIsComplitedFromHumanTask -c GameModuleDbContext
         ///     
         ///  note: you are in migration and context library project and are referring to startup project
         ///  plus specify context where multiple are detected by -c Name
@@ -37,9 +39,12 @@ namespace GameModule.Configurations
         public static void RegisterIoC(IServiceCollection services)
         {
             services.AddScoped<IGameModule, GameModule>();
+            services.AddScoped<IJobSection, JobSection>();
+
             services.AddScoped<NewTribeLocalizationInitializer>();
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
+            services.AddScoped<IJobRepository, JobRepository>();
             services.AddScoped<ITribeRepository, TribeRepository>();
             services.AddScoped<IMapTileRepository, MapTileRepository>();
             services.AddScoped<IHumanUnitRepository, HumanUnitRepository>();
@@ -54,9 +59,14 @@ namespace GameModule.Configurations
             services.AddScoped<ITenSecondsExecutor, TenSecondsExecutor>();
             services.AddScoped<IMinuteExecutor, MinuteExecutor>();
 
+            services.AddScoped<MapTileFetcher>();
+            services.AddScoped<GatheringFood>();
+            services.AddScoped<GatheringWood>();
+
             services.AddScoped<IHourExecutor, HourExecutor>();
             services.AddScoped<MapTileRegenerator>();
             services.AddScoped<BreedingApplicator>();
+
 
             services.AddScoped<IDayExecutor, DayExecutor>();
 

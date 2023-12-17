@@ -17,6 +17,7 @@
         WoodGatheringStarted, 
         WoodGatheringEnded,
         NoWoodFounded,
+        NoWoodInCampArea,
 
         NoWoodForCampfire,
         AttemptToStartFireStarted,

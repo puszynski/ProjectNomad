@@ -1,13 +1,13 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
-using GameModule.Logic.TasksLogic.Helpers;
+using GameModule.Logic.GameLooperLogic.TasksLogic.Helpers;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 
-namespace GameModule.Logic.TasksLogic
+namespace GameModule.Logic.GameLooperLogic.TasksLogic
 {
-    internal class Campfire : ITask
+    internal class Campfire : ITaskFromJobStart, ITaskEnd
     {
         private const int FULL_FIRE_POWER = 100;
         private const int FIRE_POWER_TO_ADD_WOOD = 30;
@@ -15,7 +15,7 @@ namespace GameModule.Logic.TasksLogic
 
         internal static void CampfireBurning(TribeStructure? tribeStructure)
         {
-            if (tribeStructure == null) 
+            if (tribeStructure == null)
                 return;
 
             if (tribeStructure.PowerAndDurability == 0)
@@ -24,20 +24,16 @@ namespace GameModule.Logic.TasksLogic
             tribeStructure.PowerAndDurability -= GameSETTINGS.Fire.BurningCampFireEch10Seconds;
         }
 
-        INotification? ITask.Start(HumanTaskOrder taskOrder, 
-            Tribe tribe, 
+        INotification? ITaskFromJobStart.Start(
+            Human human,
+            Tribe tribe,
             DateTime looperNow,
             IEnumerable<MapTile> mapTiles)
         {
-            var humanWithConditionToStartNewTask = BasicDataSelector.SelectFirstHumanWithCondition(tribe);
-
-            if (humanWithConditionToStartNewTask == null)
-                return default;
-
             if (tribe.Resources.Wood < GameSETTINGS.Fire.WoodUsedToKeepTheCampfireBurning)
             {
-                return new NotificationDto(humanWithConditionToStartNewTask.Id,
-                    humanWithConditionToStartNewTask.Name,
+                return new NotificationDto(human.Id,
+                    human.Name,
                     looperNow,
                     ENotificationType.NoWoodForCampfire,
                     CustomValue: null);
@@ -51,44 +47,33 @@ namespace GameModule.Logic.TasksLogic
                 if (firecamp.PowerAndDurability > FIRE_POWER_TO_ADD_WOOD)
                     return default;
 
-            if (taskOrder.HumanTask != null)
-                return default;
-
             var taskToAdd = new HumanTask
             {
                 From = looperNow,
-                HumanId = humanWithConditionToStartNewTask.Id,
-                Localization = taskOrder.Localization,
+                Human = human,
+                HumanId = human.Id,
                 To = looperNow.AddMinutes(GameSETTINGS.Fire.TimeToCompleteFireUp),
                 TribeId = tribe.Id,
-                Type = ETaskType.CampfireUp,
-                IsCompleted = false,
+                Type = ETaskType.CampfireUp
             };
 
-            //tribe.HumanTasks?.Add(taskToAdd);
-            taskOrder.HumanTask = taskToAdd;
-            tribe.Resources.Wood -= GameSETTINGS.Fire.WoodUsedToKeepTheCampfireBurning;
+            human.HumanUnitTask = taskToAdd;
 
-            return new NotificationDto(humanWithConditionToStartNewTask.Id,
-                    humanWithConditionToStartNewTask.Name,
+            return new NotificationDto(human.Id,
+                    human.Name,
                     looperNow,
                     ENotificationType.AttemptToStartFireStarted,
                     CustomValue: null);
         }
 
-        INotification? ITask.End(HumanTask taskToEnd, 
-            Tribe tribe, 
+        INotification? ITaskEnd.End(
+            HumanTask taskToEnd,
+            Tribe tribe,
             DateTime looperNow,
             IEnumerable<MapTile> mapTiles)
         {
             if (tribe.Humans == null)
                 return default;
-
-            var taskOrder = tribe
-                .HumanTaskOrders?
-                .Where(x => x.Id == taskToEnd.Id)
-                .OrderBy(x => x.Added)
-                .FirstOrDefault();
 
             var firecamp = tribe
                 .TribeStructures?
@@ -98,9 +83,6 @@ namespace GameModule.Logic.TasksLogic
             {
                 if (!RandomCalculator.GetBoolWithGivenProbability(GameSETTINGS.Fire.ChanceToStartFire))
                 {
-                    if (taskOrder != null)
-                        taskOrder.HumanTask = null;
-
                     tribe.HumanTasks?.Remove(taskToEnd);
 
                     return new NotificationDto(taskToEnd.HumanId,
@@ -126,9 +108,7 @@ namespace GameModule.Logic.TasksLogic
                     tribe.TribeStructures?.Add(fire);
                 }
 
-                if (taskOrder != null)
-                    taskOrder.HumanTask = null;
-                tribe.HumanTasks?.Remove(taskToEnd);
+                tribe.Resources.Wood -= GameSETTINGS.Fire.WoodUsedToKeepTheCampfireBurning;
 
                 return new NotificationDto(taskToEnd.HumanId,
                     tribe.Humans.Single(x => x.Id == taskToEnd.HumanId).Name,
@@ -139,10 +119,7 @@ namespace GameModule.Logic.TasksLogic
             else
             {
                 firecamp.PowerAndDurability = FULL_FIRE_POWER;
-
-                if (taskOrder != null)
-                    taskOrder.HumanTask = null;
-                tribe.HumanTasks?.Remove(taskToEnd); //REMOVING FOR CONTANT TASKS
+                tribe.Resources.Wood -= GameSETTINGS.Fire.WoodUsedToKeepTheCampfireBurning;
 
                 return new NotificationDto(taskToEnd.HumanId,
                         tribe.Humans.Single(x => x.Id == taskToEnd.HumanId).Name,
@@ -150,6 +127,6 @@ namespace GameModule.Logic.TasksLogic
                         ENotificationType.KeepFireProceeded,
                         CustomValue: null);
             }
-        }            
+        }
     }
 }

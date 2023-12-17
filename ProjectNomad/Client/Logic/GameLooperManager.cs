@@ -69,8 +69,7 @@ namespace ProjectNomad.Client.Logic
             {
                 throw ex;
             }
-        }   
-
+        }
 
         internal async Task<IEnumerable<Notification>> GetNotifications() 
             => await _notificationsManager.Get();

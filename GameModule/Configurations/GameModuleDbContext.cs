@@ -9,14 +9,17 @@ namespace GameModule.Configurations
         {
         }
 
-        public DbSet<Tribe> Tribes { get; set; }
-        public DbSet<Human> Humans { get; set; }
         public DbSet<MapTile> MapTiles { get; set; }
+        public DbSet<WorldZoneParameter> WorldZoneParameter { get; set; }
+        
+        public DbSet<Tribe> Tribes { get; set; }
+
+        public DbSet<Human> Humans { get; set; }
+        public DbSet<Job> Jobs { get; set; }
         public DbSet<HumanTask> HumanTasks { get; set; }
         public DbSet<HumanTaskOrder> HumanTaskOrders { get; set; }
         public DbSet<TribeRelocation> TribeRelocations { get; set; }
         public DbSet<TribeStructure> TribeStructures { get; set; }
-        public DbSet<WorldZoneParameter> WorldZoneParameter { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

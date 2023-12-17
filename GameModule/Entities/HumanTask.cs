@@ -4,7 +4,7 @@ using ProjectNomad.Shared.Enums;
 
 namespace GameModule.Entities
 {
-    internal class HumanTask : IId, ITribeReference
+    internal class HumanTask : IId, ITribeReference, IHumanReference
     {
         public int Id { get; set; }
 
@@ -17,7 +17,6 @@ namespace GameModule.Entities
         public ETaskType Type { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
-        public bool IsCompleted { get; set; }
 
         public Localization? Localization { get; set; }
     }

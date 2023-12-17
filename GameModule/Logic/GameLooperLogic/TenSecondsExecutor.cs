@@ -1,7 +1,7 @@
 ﻿using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
+using GameModule.Logic.GameLooperLogic.TasksLogic;
 using GameModule.Logic.Services;
-using GameModule.Logic.TasksLogic;
 using ProjectNomad.Shared.Interfaces;
 
 namespace GameModule.Logic.GameLooperLogic
