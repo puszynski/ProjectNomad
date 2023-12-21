@@ -62,7 +62,12 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                             case ETaskType.Sleep:
                                 assigner = new Sleep();
                                 break;
-                                //but when human is starving/freezing??
+                            case ETaskType.ConsumeFood:
+                                assigner = new ConsumeFood();
+                                break;
+                            case ETaskType.HeatUpHumanByFireEnded:
+                                assigner = new HeatUpByFire();
+                                break;
                         }
                     }
                     else
@@ -86,7 +91,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 
             void JobTaskAssign()
             {
-                foreach (var human in BasicDataSelector.SelectHumansWithCondition(tribe))
+                foreach (var human in BasicDataSelector.SelectHumansWithCondition(tribe, notInCriticalCondition: true))
                 {
                     //coefficient simulate probability once per minute
                     if (RandomCalculator.GetBoolWithGivenProbability(0.02))//simulate 60 
@@ -132,7 +137,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                                 assigner = _gatheringWood;
                                 break;
                             case ETaskType.TribeRelocation:
-                                assigner = new Campfire();
+                                assigner = new Campfire();//todo!!
                                 break;
                             default:
                                 break;

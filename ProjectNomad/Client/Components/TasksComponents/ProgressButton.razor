@@ -6,7 +6,7 @@
 <br/>
 <button type="button" class="progress_button">
     <div class="progress_button_progress" style="width: @ReversePercentage%;"></div>
-    <div class="progress_button_text">@description (@HumanUnitTask.HumanUnitName @RemainingTimeToDisplay)</div>
+    <div class="progress_button_text">@description (@HumanUnitTask.HumanUnitName @RemainingTimeToDisplay@GetDestinyLocalization())</div>
 </button>
 
 
@@ -14,7 +14,7 @@
 
 @code {
     [ParameterAttribute]
-    public ProjectNomad.Shared.Interfaces.IHumanUnitTaskDto HumanUnitTask { get; set; }
+    public ProjectNomad.Shared.Interfaces.IHumanTaskDto HumanUnitTask { get; set; }
 
     int ReversePercentage = 100;
     string RemainingTimeToDisplay = string.Empty;
@@ -36,6 +36,14 @@
             if (isTaskEnded)
                 break;
         }
+    }
+
+    string GetDestinyLocalization()
+    {
+        if (HumanUnitTask.LocalizationX.HasValue && HumanUnitTask.LocalizationY.HasValue)
+            return $" ( => {HumanUnitTask.LocalizationX}|{HumanUnitTask.LocalizationY})";
+
+        return string.Empty;
     }
 
     void UpdatePercentage()

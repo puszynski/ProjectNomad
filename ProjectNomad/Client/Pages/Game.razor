@@ -60,12 +60,16 @@
                 {
                     <ProjectNomad.Client.Components.MiniMap Tribe="@GameObjectsViewModel.Tribe" />
                 }
+
+                <small>@GetImportantInfoMessage()</small>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        <p>todo footer ⨳ ✕ ⤫ × 𝈏 𝈻 ⟍ ▲ △ </p>
+        <center>
+            <smaller> pr◯ject n◯mad &nbsp;&nbsp; 2023 - early development version</smaller>
+        </center>
     </div>
 }
 else
@@ -128,6 +132,51 @@ else
             throw new ArgumentNullException("Guid from _localStorageService cant be null in game window");
 
         return accountId.Value;
+    }
+
+    string GetImportantInfoMessage()
+    {
+        var messages = new List<string>();
+
+        if (GameObjectsViewModel.HumanUnits.Any(x => x.ThermalLevelPercentage <= 10))
+        {
+            var names = GameObjectsViewModel.HumanUnits
+                .Where(x => x.ThermalLevelPercentage <= 10)
+                .Select(x => x.Name)
+                .ToList();
+
+            messages.Add($"{string.Join(", ", names)} freezing");
+        }
+        else if (GameObjectsViewModel.HumanUnits.Any(x => x.ThermalLevelPercentage <= 30))
+        {
+            var names = GameObjectsViewModel.HumanUnits
+                .Where(x => x.ThermalLevelPercentage <= 30)
+                .Select(x => x.Name)
+                .ToList();
+
+            messages.Add($"{string.Join(", ", names)} cold");
+        }
+
+        if (GameObjectsViewModel.HumanUnits.Any(x => x.FoodLevelPercentage <= 10))
+        {
+            var names = GameObjectsViewModel.HumanUnits
+                .Where(x => x.FoodLevelPercentage <= 10)
+                .Select(x => x.Name)
+                .ToList();
+
+            messages.Add($"{string.Join(", ", names)} starving");
+        }
+        else if (GameObjectsViewModel.HumanUnits.Any(x => x.FoodLevelPercentage <= 30))
+        {
+            var names = GameObjectsViewModel.HumanUnits
+                .Where(x => x.FoodLevelPercentage <= 30)
+                .Select(x => x.Name)
+                .ToList();
+
+            messages.Add($"{string.Join(", ", names)} hungry");
+        }
+
+        return string.Join(". ", messages);
     }
 
     string MainGameWindow = "MiniMap";

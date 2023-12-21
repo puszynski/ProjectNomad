@@ -6,7 +6,7 @@ namespace GameModule.DtoModels
 {
     internal record TriggerGameLooperResponse(ITribe Tribe,
         IEnumerable<IHuman> HumanUnits,
-        IEnumerable<IHumanUnitTaskDto> HumanUnitTasks,
+        IEnumerable<IHumanTaskDto> HumanUnitTasks,
         IEnumerable<IHumanUnitTaskOrder> HumanUnitTaskOrders,
         IEnumerable<ITribeStructure> TribeStructures,
         IEnumerable<INotification> Notifications,

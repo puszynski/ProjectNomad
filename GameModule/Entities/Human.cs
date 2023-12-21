@@ -22,7 +22,7 @@ namespace GameModule.Entities
         //100 - death from overheating
         public int ThermalLevelPercentage { get; set; }
 
-        public HumanTask? HumanUnitTask { get; set; } //todo 1:1 relation
+        public HumanTask? HumanTask { get; set; } //todo 1:1 relation
         public ICollection<Job> Jobs { get; set; }
     }
 }

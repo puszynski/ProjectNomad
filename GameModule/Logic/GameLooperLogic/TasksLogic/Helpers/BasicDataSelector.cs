@@ -1,32 +1,35 @@
 ﻿using GameModule.Entities;
-using ProjectNomad.Shared;
 
 namespace GameModule.Logic.GameLooperLogic.TasksLogic.Helpers
 {
     internal static class BasicDataSelector
     {
-        internal static Human? SelectFirstHumanWithCondition(Tribe tribe)
+        /// <param name="notInCriticalCondition"> Set false for eating and heating up in camp fire (when in critical condition, human must take care of them self)</param>
+        internal static IEnumerable<Human> SelectHumansWithCondition(
+            Tribe tribe,
+            bool notInCriticalCondition)
         {
-            return RandomCalculator.GetRandomItemFromList(SelectHumansWithCondition(tribe));
-        }
-
-        internal static IEnumerable<Human> SelectHumansWithCondition(Tribe tribe)
-        {
-            if (tribe.Humans == null)
+            if (tribe.Humans == null || !tribe.Humans.Any())
                 return default;
+
+            var selectedHumans = new List<Human>();
 
             var humanIDsWithTaskAssigned = tribe
                 .Humans
-                .Where(x => x.HumanUnitTask != null)
+                .Where(x => x.HumanTask != null)
                 .Select(x => x.Id);
-
-            if (humanIDsWithTaskAssigned == null)
-                return tribe.Humans
-                    .Where(x => x.FoodLevelPercentage > 10);
-
-            return tribe.Humans
+            
+            selectedHumans = tribe.Humans
                 .Where(x => !humanIDsWithTaskAssigned.Contains(x.Id))
-                .Where(x => x.FoodLevelPercentage > 10);
+                .ToList();
+
+            return notInCriticalCondition ? HumansNotInCriticalCondition() : selectedHumans;
+
+            List<Human> HumansNotInCriticalCondition()
+                => selectedHumans
+                    .Where(x => x.FoodLevelPercentage > 20)
+                    .Where(x => x.ThermalLevelPercentage > 20 && x.ThermalLevelPercentage < 80)
+                    .ToList();
         }
     }
 }

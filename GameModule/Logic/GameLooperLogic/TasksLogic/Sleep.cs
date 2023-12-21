@@ -10,18 +10,13 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
 {
     public class Sleep : IAutoTaskStart, ITaskEnd
     {
-        const int MINIMUM_FOOD_LVL_TO_START_SLEEP = 10;
-        const int MINIMUM_THERMAL_LVL_TO_START_SLEEP = 10;
-
         INotification? IAutoTaskStart.Start(
             Tribe tribe,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)
         {
             var humansWithConditions = BasicDataSelector
-                .SelectHumansWithCondition(tribe)
-                .Where(x => x.FoodLevelPercentage > MINIMUM_FOOD_LVL_TO_START_SLEEP)
-                .Where(x => x.ThermalLevelPercentage > MINIMUM_THERMAL_LVL_TO_START_SLEEP);
+                .SelectHumansWithCondition(tribe, notInCriticalCondition: true);
 
             var human = RandomCalculator.GetRandomItemFromList(humansWithConditions);
 

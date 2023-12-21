@@ -36,7 +36,12 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 TribeId = tribe.Id,
                 Type = ETaskType.GatheringFood
             };
-            human.HumanUnitTask = taskToAdd;
+
+            if (taskToAdd.Localization == null)
+                throw new Exception("Localization in HumanTask can not be null");
+
+            human.HumanTask = taskToAdd;
+            // dokładnie w tej samej chwili dodają sie wraz z dodaniem taska do humanX dodaja sie do pozostalych ale bez lokalizacji.. 
 
             return new NotificationDto(human.Id,
                 human.Name,

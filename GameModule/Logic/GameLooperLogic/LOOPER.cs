@@ -175,13 +175,16 @@ namespace GameModule.Logic.GameLooperLogic
                 throw new NullReferenceException();
 
             var humanUnitTaskDtos = tribe.HumanTasks
-                .Select(x => new HumanUnitTaskDto(x.Id,
-                x.TribeId,
-                x.HumanId,
-                x.Human.Name,
-                x.Type,
-                x.From,
-                x.To));
+                .Select(x => new HumanUnitTaskDto(
+                    x.Id,
+                    x.TribeId,
+                    x.HumanId,
+                    x.Human.Name,
+                    x.Type,
+                    x.From,
+                    x.To,
+                    x.Localization != null ? x.Localization.X : null,
+                    x.Localization != null ? x.Localization.Y : null));
 
             var humanUnitTaskOrderDtos = tribe.HumanTaskOrders.Select(x => new HumanUnitTaskOrderDto(x.Id,
                 x.TribeId,

@@ -7,7 +7,7 @@ namespace ProjectNomad.Shared.Interfaces.Response
         ITribe Tribe { get; }
         IEnumerable<IHuman> HumanUnits { get; }
         IEnumerable<ITribeStructure> TribeStructures { get; }
-        IEnumerable<IHumanUnitTaskDto> HumanUnitTasks { get; }
+        IEnumerable<IHumanTaskDto> HumanUnitTasks { get; }
         IEnumerable<IHumanUnitTaskOrder> HumanUnitTaskOrders { get; }
         IEnumerable<INotification> Notifications { get; }
         WorldParametersDto WorldParameters { get; }

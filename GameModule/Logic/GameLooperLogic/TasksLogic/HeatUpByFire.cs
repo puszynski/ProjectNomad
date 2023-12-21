@@ -18,7 +18,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
             IEnumerable<MapTile> mapTiles)
         {
             var humansWithConditions = BasicDataSelector
-                .SelectHumansWithCondition(tribe)
+                .SelectHumansWithCondition(tribe, notInCriticalCondition: false)
                 .Where(x => x.ThermalLevelPercentage <= HUMAN_THERMAL_PERCENTAGE_TO_START);
 
             var human = RandomCalculator.GetRandomItemFromList(humansWithConditions);

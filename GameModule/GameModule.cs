@@ -251,13 +251,22 @@ namespace GameModule
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<IHumanUnitTaskDto>> GetActualTribeTasks(int tribeId)
+        public async Task<IEnumerable<IHumanTaskDto>> GetActualTribeTasks(int tribeId)
         {
             var tribeTasks = await _dbContext
                 .HumanTasks
                 .Where(x => x.TribeId == tribeId)
                 .Include(b => b.Human)
-                .Select(x => new HumanUnitTaskDto(x.Id, x.TribeId, x.HumanId, x.Human.Name, x.Type, x.From, x.To))
+                .Select(x => new HumanUnitTaskDto(
+                    x.Id, 
+                    x.TribeId, 
+                    x.HumanId, 
+                    x.Human.Name, 
+                    x.Type, 
+                    x.From, 
+                    x.To,
+                    x.Localization != null ? x.Localization.X : null,
+                    x.Localization != null ? x.Localization.Y : null))
                 .ToListAsync();
 
             tribeTasks ??= new List<HumanUnitTaskDto>();

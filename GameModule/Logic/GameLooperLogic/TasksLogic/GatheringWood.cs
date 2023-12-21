@@ -25,7 +25,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
         {
             var destinyMapTile = _mapTileFetcher.AssignMapTileToJobAndFetchMissingMapTiles(
                 mapTiles,
-                ETaskType.GatheringFood,
+                ETaskType.GatheringWood,
                 tribe.Localization);
 
             if (destinyMapTile == null)
@@ -56,7 +56,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 Type = ETaskType.GatheringWood
             };
 
-            human.HumanUnitTask = taskToAdd;
+            human.HumanTask = taskToAdd;
 
             return new NotificationDto(
                 human.Id,

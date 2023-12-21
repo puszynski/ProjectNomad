@@ -9,7 +9,7 @@ namespace ProjectNomad.Client.Logic
         readonly HttpClient _httpClient;
         public TasksManager(HttpClient httpClient) => _httpClient = httpClient;
 
-        internal async Task<IEnumerable<IHumanUnitTaskDto>> GetAll(int tribeId) 
+        internal async Task<IEnumerable<IHumanTaskDto>> GetAll(int tribeId) 
             => await _httpClient.GetFromJsonAsync<IEnumerable<HumanUnitTask>>($"api/task/get-actual-tasks/{tribeId}");
 
         internal async Task AddToServer(IAddHumanUnitTaskDto dto) 

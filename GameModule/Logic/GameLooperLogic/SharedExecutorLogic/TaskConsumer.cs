@@ -32,8 +32,8 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 return;
 
             var tasksToConsume = tribe.Humans
-                .Where(x => x.HumanUnitTask != null)
-                .Select(x => x.HumanUnitTask)
+                .Where(x => x.HumanTask != null)
+                .Select(x => x.HumanTask)
                 .Where(x => x.To <= currentTimeInLoop)
                 .ToList();
 

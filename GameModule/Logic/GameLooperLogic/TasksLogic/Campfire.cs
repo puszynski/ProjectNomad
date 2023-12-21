@@ -1,6 +1,5 @@
 ﻿using GameModule.DtoModels;
 using GameModule.Entities;
-using GameModule.Logic.GameLooperLogic.TasksLogic.Helpers;
 using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
@@ -57,7 +56,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 Type = ETaskType.CampfireUp
             };
 
-            human.HumanUnitTask = taskToAdd;
+            human.HumanTask = taskToAdd;
 
             return new NotificationDto(human.Id,
                     human.Name,

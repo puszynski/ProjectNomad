@@ -2,7 +2,7 @@
 
 namespace ProjectNomad.Shared.Interfaces
 {
-    public interface IHumanUnitTaskDto
+    public interface IHumanTaskDto
     {
         public int Id { get; }
         public int TribeId { get; }
@@ -11,5 +11,8 @@ namespace ProjectNomad.Shared.Interfaces
         public ETaskType Type { get; }
         public DateTime From { get; }
         public DateTime To { get; }
+
+        public int? LocalizationX { get; }
+        public int? LocalizationY { get; }
     }
 }

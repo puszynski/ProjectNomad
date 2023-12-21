@@ -10,5 +10,7 @@ namespace ProjectNomad.Client.Models.Response
         ETaskType Type,
         DateTime From,
         DateTime To,
-        bool IsCompleted) : IHumanUnitTaskDto;
+        bool IsCompleted,
+        int? LocalizationX,
+        int? LocalizationY) : IHumanTaskDto;
 }

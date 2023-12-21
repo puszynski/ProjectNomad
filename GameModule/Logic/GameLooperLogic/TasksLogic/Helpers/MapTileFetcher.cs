@@ -72,20 +72,20 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic.Helpers
 
                 case ETaskType.GatheringWood:
                     mapTileInTribeLocalization = mapTiles
-                        .FirstOrDefault(x => x.Localization == tribeLocalization)
+                        .FirstOrDefault(x => x.Localization.Equals(tribeLocalization))
                         ?? throw new ArgumentNullException(nameof(taskType));
 
-                    if (mapTileInTribeLocalization.Food.ActualPoints >= GameSETTINGS.Wood.WoodAmountGatheredFromMap)
+                    if (mapTileInTribeLocalization.Wood.ActualPoints >= GameSETTINGS.Wood.WoodAmountGatheredFromMap)
                         return mapTileInTribeLocalization;
 
                     for (int radius = 1; radius <= 3; radius++)
                     {
                         var mapTileNearByTribeLocalization = GetMapTilesWithRadiusCondition(mapTiles, GetConditionForRadius(radius))
-                            .FirstOrDefault(x => x.Food.ActualPoints >= GameSETTINGS.Wood.WoodAmountGatheredFromMap)
+                            .FirstOrDefault(x => x.Wood.ActualPoints >= GameSETTINGS.Wood.WoodAmountGatheredFromMap)
                             ??
                             _mapTileRepository.GetQueryFromCondition(
                                 GetConditionForRadius(radius),
-                                x => x.Food.ActualPoints >= GameSETTINGS.Wood.WoodAmountGatheredFromMap)
+                                x => x.Wood.ActualPoints >= GameSETTINGS.Wood.WoodAmountGatheredFromMap)
                                 .FirstOrDefault();
 
                         if (mapTileNearByTribeLocalization != null)

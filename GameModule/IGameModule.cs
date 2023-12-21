@@ -16,7 +16,7 @@ namespace GameModule
         public Task<ITriggerGameLooperResponse> TriggerPlayerGameObjectRecalculation(Guid accountId);
 
         public Task AddTask(IAddHumanUnitTaskDto task);
-        public Task<IEnumerable<IHumanUnitTaskDto>> GetActualTribeTasks(int tribeId);
+        public Task<IEnumerable<IHumanTaskDto>> GetActualTribeTasks(int tribeId);
 
         // return ViewModel specific for page /tribe
         public Task<IEnumerable<HumanWithJobsDto>> GetTribeHumans(Guid accountId);
