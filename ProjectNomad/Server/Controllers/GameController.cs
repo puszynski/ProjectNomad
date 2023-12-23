@@ -34,11 +34,6 @@ namespace ProjectNomad.Server.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-
-                //12.11.2023
-                //oba wyjątki dzieja sie blisko śmierci plemienia - bo po kilku odswiezeniach dziala.. :
-                //{"The database operation was expected to affect 1 row(s), but actually affected 0 row(s); data may have been modified or deleted since entities were loaded. See http://go.microsoft.com/fwlink/?LinkId=527962 for information on understanding and handling optimistic concurrency exceptions."} ==> sprawdz => "The second error was trying to update a model that without first pulling it from the database:" https://stackoverflow.com/questions/53676084/entity-framework-core-database-operation-expected-to-affect-1-rows-but-actual
-                //{"The connection does not support MultipleActiveResultSets."} => https://stackoverflow.com/questions/46163437/getting-the-connection-does-not-support-multipleactiveresultsets-in-a-foreach !!SECOND answer
             }
         }
         

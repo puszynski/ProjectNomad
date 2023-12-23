@@ -11,9 +11,9 @@
         TribeRelocation = 300,
 
         // auto-tasks
-        Sleep = 2,
-        ConsumeFood = 1001,
-        HeatUpHumanByFireEnded = 1002,
+        Sleep = 1001,
+        ConsumeFood = 1002,
+        HeatUpHumanByFireEnded = 1003,
     }
 
     public static class TaskTypeExtensions

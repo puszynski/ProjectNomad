@@ -42,6 +42,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 
 
             AutoTaskAssign();
+            CriticalTasksAutoAssign();
             JobTaskAssign();
             //OrderTaskAssign();
 
@@ -89,12 +90,41 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 }
             }
 
+            void CriticalTasksAutoAssign()
+            {
+                if (tribe.Resources.FreshFood == 0)
+                {
+                    var starvingHumans = BasicDataSelector
+                        .SelectHumansWithCondition(tribe, notInCriticalCondition: true)
+                        .Where(x => x.FoodLevelPercentage <= GameSETTINGS.HumanConditions.CriticalFoodLevel);
+
+                    foreach (var starvingHuman in starvingHumans)
+                    {
+                        ITaskFromJobStart assigner = _gatheringFood;
+                        assigner.Start(starvingHuman, tribe, currentTimeInLoop, mapTiles);
+                    }
+                }
+
+                if (!tribe.TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 0))
+                {
+                    var freezingHumans = BasicDataSelector
+                        .SelectHumansWithCondition(tribe, notInCriticalCondition: true)
+                        .Where(x => x.ThermalLevelPercentage <= GameSETTINGS.HumanConditions.CriticalLowThermalLevel);
+
+                    foreach (var freezingHuman in freezingHumans)
+                    {
+                        ITaskFromJobStart assigner = new Campfire();
+                        assigner.Start(freezingHuman, tribe, currentTimeInLoop, mapTiles);
+                    }
+                }
+            }
+
             void JobTaskAssign()
             {
                 foreach (var human in BasicDataSelector.SelectHumansWithCondition(tribe, notInCriticalCondition: true))
                 {
                     //coefficient simulate probability once per minute
-                    if (RandomCalculator.GetBoolWithGivenProbability(0.02))//simulate 60 
+                    if (RandomCalculator.GetBoolWithGivenProbability(0.02))
                         continue;
 
                     var jobs = human.Jobs //joby nie są zaciagnięte.. 

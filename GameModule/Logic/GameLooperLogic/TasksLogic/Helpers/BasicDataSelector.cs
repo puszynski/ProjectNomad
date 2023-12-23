@@ -1,4 +1,5 @@
 ﻿using GameModule.Entities;
+using ProjectNomad.Shared;
 
 namespace GameModule.Logic.GameLooperLogic.TasksLogic.Helpers
 {
@@ -27,8 +28,9 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic.Helpers
 
             List<Human> HumansNotInCriticalCondition()
                 => selectedHumans
-                    .Where(x => x.FoodLevelPercentage > 20)
-                    .Where(x => x.ThermalLevelPercentage > 20 && x.ThermalLevelPercentage < 80)
+                    .Where(x => (x.FoodLevelPercentage > GameSETTINGS.HumanConditions.CriticalFoodLevel) 
+                        || (x.ThermalLevelPercentage > GameSETTINGS.HumanConditions.CriticalLowThermalLevel
+                        && x.ThermalLevelPercentage < GameSETTINGS.HumanConditions.CriticalHighThermalLevel))
                     .ToList();
         }
     }

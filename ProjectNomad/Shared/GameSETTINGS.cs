@@ -17,19 +17,27 @@
             //public const int MinutesToTravelOneTileWhileTribeIsRelocating = 30;
         }
 
+        public static class HumanConditions
+        {
+            public const int CriticalFoodLevel = 20;
+            public const int CriticalLowThermalLevel = 20;
+            public const int CriticalHighThermalLevel = 80;
+        }
+
         public static class Wood
         {
-            public const int MinutesToGatherWood = 2;
-            public const int WoodAmountGatheredFromMap = 1;
+            public const int MinutesToGatherWood = 1;
+            public const int WoodAmountGatheredFromMap = 5;
         }
 
         public static class Food
         {
-            public const int MinutesToGatherFood = 10;
+            public const int MinutesToGatherFood = 5;
+            public const int MapTileFoodGathered = 2;
+
             public const int MinutesToConsumeFoodToFill20PercentageOfFood = 1;
             public const int FoodToGetHungryForHumanUnitEachMinute = 1;
             public const int TribeFoodNeededToFill20PercentageOfHumanUnit = 2;
-            public const int MapTileFoodGathered = 2;
         }
 
         public static class Fire
