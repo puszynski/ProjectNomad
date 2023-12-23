@@ -1,4 +1,5 @@
-﻿using GameModule.Entities;
+﻿using GameModule.DtoModels;
+using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Logic.GameLooperLogic.TasksLogic;
 using GameModule.Logic.GameLooperLogic.TasksLogic.Helpers;
@@ -6,6 +7,7 @@ using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Logic;
+using System.Security.Cryptography;
 
 namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 {
@@ -42,6 +44,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 
 
             AutoTaskAssign();
+            SkipRegularTasksWhenInCriticalCondition();//todo
             CriticalTasksAutoAssign();
             JobTaskAssign();
             //OrderTaskAssign();
@@ -90,16 +93,45 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 }
             }
 
+            void SkipRegularTasksWhenInCriticalCondition()
+            {
+                if (tribe.Humans == null || !tribe.Humans.Any())
+                    return;
+
+                var humansInCriticalConditionsWithTasksAssigned = tribe.Humans
+                    .Where(x => x.HumanTask != null)
+                    .Where(x => x.HumanTask.Type == ETaskType.Sleep)
+                    .AsQueryable()
+                    .Where(BasicDataSelector.HumansInCriticalCondition());
+
+                foreach (var human in humansInCriticalConditionsWithTasksAssigned)
+                {
+                    notifications.Add(new NotificationDto(human.Id,
+                        human.Name,
+                        currentTimeInLoop,
+                        ENotificationType.SleepInterruptedDueToCriticalConditions,
+                        null));
+
+                    human.HumanTask = null;
+                }
+            }
+
             void CriticalTasksAutoAssign()
             {
                 if (tribe.Resources.FreshFood == 0)
                 {
                     var starvingHumans = BasicDataSelector
-                        .SelectHumansWithCondition(tribe, notInCriticalCondition: true)
+                        .SelectHumansWithNoTasksAssigned(tribe, notInCriticalCondition: true)
                         .Where(x => x.FoodLevelPercentage <= GameSETTINGS.HumanConditions.CriticalFoodLevel);
 
                     foreach (var starvingHuman in starvingHumans)
                     {
+                        notifications.Add(new NotificationDto(starvingHuman.Id,
+                            starvingHuman.Name,
+                            currentTimeInLoop,
+                            ENotificationType.FoodGatheringAutoStartedDueToStarvationAndLackOfFood,
+                            null));
+
                         ITaskFromJobStart assigner = _gatheringFood;
                         assigner.Start(starvingHuman, tribe, currentTimeInLoop, mapTiles);
                     }
@@ -108,11 +140,17 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 if (!tribe.TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 0))
                 {
                     var freezingHumans = BasicDataSelector
-                        .SelectHumansWithCondition(tribe, notInCriticalCondition: true)
+                        .SelectHumansWithNoTasksAssigned(tribe, notInCriticalCondition: true)
                         .Where(x => x.ThermalLevelPercentage <= GameSETTINGS.HumanConditions.CriticalLowThermalLevel);
 
                     foreach (var freezingHuman in freezingHumans)
                     {
+                        notifications.Add(new NotificationDto(freezingHuman.Id,
+                            freezingHuman.Name,
+                            currentTimeInLoop,
+                            ENotificationType.AttemptToStartFireStartedDueToFreezingAndLackOfCampfire,
+                            null));
+
                         ITaskFromJobStart assigner = new Campfire();
                         assigner.Start(freezingHuman, tribe, currentTimeInLoop, mapTiles);
                     }
@@ -121,7 +159,7 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 
             void JobTaskAssign()
             {
-                foreach (var human in BasicDataSelector.SelectHumansWithCondition(tribe, notInCriticalCondition: true))
+                foreach (var human in BasicDataSelector.SelectHumansWithNoTasksAssigned(tribe, notInCriticalCondition: true))
                 {
                     //coefficient simulate probability once per minute
                     if (RandomCalculator.GetBoolWithGivenProbability(0.02))
@@ -166,8 +204,8 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                             case ETaskType.GatheringWood:
                                 assigner = _gatheringWood;
                                 break;
-                            case ETaskType.TribeRelocation:
-                                assigner = new Campfire();//todo!!
+                            case ETaskType.CampfireUp:
+                                assigner = new Campfire();
                                 break;
                             default:
                                 break;

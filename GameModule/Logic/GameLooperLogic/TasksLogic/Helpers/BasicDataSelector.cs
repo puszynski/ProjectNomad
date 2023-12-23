@@ -1,12 +1,14 @@
 ﻿using GameModule.Entities;
 using ProjectNomad.Shared;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace GameModule.Logic.GameLooperLogic.TasksLogic.Helpers
 {
     internal static class BasicDataSelector
     {
         /// <param name="notInCriticalCondition"> Set false for eating and heating up in camp fire (when in critical condition, human must take care of them self)</param>
-        internal static IEnumerable<Human> SelectHumansWithCondition(
+        internal static IEnumerable<Human> SelectHumansWithNoTasksAssigned(
             Tribe tribe,
             bool notInCriticalCondition)
         {
@@ -19,7 +21,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic.Helpers
                 .Humans
                 .Where(x => x.HumanTask != null)
                 .Select(x => x.Id);
-            
+
             selectedHumans = tribe.Humans
                 .Where(x => !humanIDsWithTaskAssigned.Contains(x.Id))
                 .ToList();
@@ -28,10 +30,22 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic.Helpers
 
             List<Human> HumansNotInCriticalCondition()
                 => selectedHumans
-                    .Where(x => (x.FoodLevelPercentage > GameSETTINGS.HumanConditions.CriticalFoodLevel) 
-                        || (x.ThermalLevelPercentage > GameSETTINGS.HumanConditions.CriticalLowThermalLevel
-                        && x.ThermalLevelPercentage < GameSETTINGS.HumanConditions.CriticalHighThermalLevel))
+                    .AsQueryable()
+                    .Where(HumansInGoodCondition())
                     .ToList();
+        }
+
+        internal static Expression<Func<Human, bool>> HumansInGoodCondition()
+        {
+            return x => (x.FoodLevelPercentage > GameSETTINGS.HumanConditions.CriticalFoodLevel)
+                        || (x.ThermalLevelPercentage > GameSETTINGS.HumanConditions.CriticalLowThermalLevel
+                        && x.ThermalLevelPercentage< GameSETTINGS.HumanConditions.CriticalHighThermalLevel);
+        }
+        internal static Expression<Func<Human, bool>> HumansInCriticalCondition()
+        {
+            return x => (x.FoodLevelPercentage <= GameSETTINGS.HumanConditions.CriticalFoodLevel)
+                        || (x.ThermalLevelPercentage <= GameSETTINGS.HumanConditions.CriticalLowThermalLevel
+                        && x.ThermalLevelPercentage >= GameSETTINGS.HumanConditions.CriticalHighThermalLevel);
         }
     }
 }

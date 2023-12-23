@@ -48,13 +48,13 @@
             public const int WoodUsedToKeepTheCampfireBurning = 1;
             public const int BurningCampFireEch10Seconds = 1;
 
-            public const int TimeToHeatUpHumanByFire = 1; //todo depends on lvl, if freezeing, very long to recover..
+            public const int TimeToHeatUpHumanByFire = 1;
         }
 
         public static class MapResources
         {
             public const int FoodRegenerationPerHour = 10;
-            public const int WoodRegenerationPerHour = 2;
+            public const int WoodRegenerationPerHour = 1;
         }
 
         public static class  Population

@@ -40,8 +40,17 @@ namespace ProjectNomad.Client.Models.Response
                 //case ENotificationType.SleepStart: return $"{HumanName} iść spać";
                 //case ENotificationType.SleepEnd: return $"{HumanName} spać skończyć";
 
+                case ENotificationType.FoodGatheringStarted:
+                case ENotificationType.WoodGatheringStarted:
+                case ENotificationType.AttemptToStartFireStarted:
+                case ENotificationType.KeepFireProceeded:
+                case ENotificationType.FoodConsumptionStarted:
+                case ENotificationType.HeatUpHumanByFireEnded:
+                case ENotificationType.SleepStart:
+                case ENotificationType.SleepEnd:
+                    return default;
 
-                default: return default;
+                default: return Type.ToString();
             }
         }
     }

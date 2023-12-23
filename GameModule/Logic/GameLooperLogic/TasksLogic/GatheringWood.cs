@@ -72,6 +72,10 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)
         {
+            if (taskToEnd.Localization == null)
+                return default; //todo LOG + TRY FIND WHY IT HAPPEND..
+                //throw new ApplicationException();
+
             var mapTile = mapTiles.Single(x => x.Localization.Equals(taskToEnd.Localization));
             var mapTileWoodPoints = mapTile.Wood.ActualPoints;
 

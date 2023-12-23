@@ -16,7 +16,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
             IEnumerable<MapTile> mapTiles)
         {
             var humansWithConditions = BasicDataSelector
-                .SelectHumansWithCondition(tribe, notInCriticalCondition: true);
+                .SelectHumansWithNoTasksAssigned(tribe, notInCriticalCondition: true);
 
             var human = RandomCalculator.GetRandomItemFromList(humansWithConditions);
 

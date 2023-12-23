@@ -85,9 +85,9 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                     currentTimeInLoop,
                     mapTiles);
 
-            tribe.HumanTasks?.Remove(taskToEnd); //może to wystarczy żeby usunać i encje i referencje z human??
-            //humanUnitTask.Human.HumanUnitTask = null;
-            //await _humanTasks.Remove(humanUnitTask); //todo
+            tribe.HumanTasks?.Remove(taskToEnd);
+            var human = tribe.Humans.Single(x => x.Id == taskToEnd.HumanId);
+            human.HumanTask = null;
 
             return notification;
         }

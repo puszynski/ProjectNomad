@@ -39,14 +39,13 @@ namespace GameModule.Logic.GameLooperLogic
             if (tribe.HumanTasks == null)
                 return;
 
-            _mapTileRegenerator.Execute(mapTiles);//UWAGA UWAGA! PRZENIEŚĆ DO MECHANIZMU GLOBALNEGO - TASK SCHEDULER CZY COS
             _breedingApplicator.Execute(tribe, notifications); 
 
             if (tribe.Humans != null)
                 _humansDeathApplicator.AgeOrIllnessDeath(tribe.Humans, notifications);
 
-            //temp cancel to check if it provides errors
-            _weatherAndThermalService.UpdateWorldZoneParameters(worldZoneParameter);//UWAGA UWAGA! GAME LOOPER BĘDZIE URUCHAMIANY PER MEMBER - A TO MUSI BYĆ PER ALIKACJA!!! TODOOOO todo
+            _mapTileRegenerator.Execute(mapTiles);//todo - move to global scheduled tasks
+            _weatherAndThermalService.UpdateWorldZoneParameters(worldZoneParameter);//todo - move to global scheduled tasks
         }
     }
 }

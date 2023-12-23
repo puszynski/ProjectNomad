@@ -13,6 +13,7 @@
         FoodGatheringStarted,
         FoodGatheringEnded,
         NoFoodFounded,
+        FoodGatheringAutoStartedDueToStarvationAndLackOfFood,
 
         WoodGatheringStarted, 
         WoodGatheringEnded,
@@ -24,6 +25,7 @@
         AttemptToStartFireFailed,
         FireStarted,
         KeepFireProceeded,
+        AttemptToStartFireStartedDueToFreezingAndLackOfCampfire,
 
         FoodConsumptionStarted,
         FoodConsumptionEnded,
@@ -32,6 +34,7 @@
 
         SleepStart,
         SleepEnd,
+        SleepInterruptedDueToCriticalConditions,
 
         Newborn,
     }
