@@ -7,7 +7,6 @@ using ProjectNomad.Shared;
 using ProjectNomad.Shared.Enums;
 using ProjectNomad.Shared.Interfaces;
 using ProjectNomad.Shared.Logic;
-using System.Security.Cryptography;
 
 namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
 {
@@ -112,6 +111,9 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                         ENotificationType.SleepInterruptedDueToCriticalConditions,
                         null));
 
+                    var humanTaskToRemove = human.HumanTask;
+
+                    tribe.HumanTasks.Remove(humanTaskToRemove);
                     human.HumanTask = null;
                 }
             }

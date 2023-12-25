@@ -53,9 +53,11 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 HumanId = human.Id,
                 To = looperNow.AddMinutes(GameSETTINGS.Fire.TimeToCompleteFireUp),
                 TribeId = tribe.Id,
-                Type = ETaskType.CampfireUp
+                Type = ETaskType.CampfireUp,
+                Localization = tribe.Localization
             };
 
+            tribe.HumanTasks.Add(taskToAdd);//needed?
             human.HumanTask = taskToAdd;
 
             return new NotificationDto(human.Id,

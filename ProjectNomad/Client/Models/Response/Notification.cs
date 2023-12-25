@@ -45,6 +45,7 @@ namespace ProjectNomad.Client.Models.Response
                 case ENotificationType.AttemptToStartFireStarted:
                 case ENotificationType.KeepFireProceeded:
                 case ENotificationType.FoodConsumptionStarted:
+                case ENotificationType.FoodConsumptionEnded:
                 case ENotificationType.HeatUpHumanByFireEnded:
                 case ENotificationType.SleepStart:
                 case ENotificationType.SleepEnd:

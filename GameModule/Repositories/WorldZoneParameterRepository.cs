@@ -7,7 +7,7 @@ namespace GameModule.Repositories
     internal interface IWorldZoneParameterRepository : IRepository
     {
         internal Task<WorldZoneParameter> GetByZone(EWorldZoneParameter zone);
-        internal Task<WorldZoneParameter> Create();
+        internal Task<WorldZoneParameter> Create(EWorldZoneParameter zone);
     }
     internal class WorldZoneParameterRepository : BaseRepository, IWorldZoneParameterRepository
     {
@@ -22,12 +22,18 @@ namespace GameModule.Repositories
                 .SingleOrDefaultAsync(x => x.Zone == zone);
         }
 
-        async Task<WorldZoneParameter> IWorldZoneParameterRepository.Create()
+        async Task<WorldZoneParameter> IWorldZoneParameterRepository.Create(EWorldZoneParameter zone)
         {
-            //todo validate if not exist and create set for all zones
+            var existingZone = await _gameModuleDbContext
+                .WorldZoneParameter
+                .SingleOrDefaultAsync(x => x.Zone == zone);
+
+            if (existingZone != null)
+                throw new ArgumentException($"(!) WorldZoneParameter for zone {zone} can not be created because it already exists in database");
+
             var model = new WorldZoneParameter
             {
-                Zone = EWorldZoneParameter.Temperate,
+                Zone = zone,
                 AverageTemperature = 10,
                 IsBlizzard = false,
                 IsRain = false,

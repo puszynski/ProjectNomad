@@ -41,6 +41,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 throw new Exception("Localization in HumanTask can not be null");
 
             human.HumanTask = taskToAdd;
+            tribe.HumanTasks.Add(taskToAdd);
             // dokładnie w tej samej chwili dodają sie wraz z dodaniem taska do humanX dodaja sie do pozostalych ale bez lokalizacji.. 
 
             return new NotificationDto(human.Id,

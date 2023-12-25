@@ -38,13 +38,8 @@
         }
     }
 
-    string GetDestinyLocalization()
-    {
-        if (HumanUnitTask.LocalizationX.HasValue && HumanUnitTask.LocalizationY.HasValue)
-            return $" ( => {HumanUnitTask.LocalizationX}|{HumanUnitTask.LocalizationY})";
-
-        return string.Empty;
-    }
+    string GetDestinyLocalization() 
+        => $" ( => {HumanUnitTask.LocalizationX}|{HumanUnitTask.LocalizationY})";
 
     void UpdatePercentage()
     {

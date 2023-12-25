@@ -4,7 +4,7 @@ using ProjectNomad.Shared;
 
 namespace GameModule.Logic.Services
 {
-    internal class WeatherAndThermalService
+    internal class WeatherAndThermalService //todo  - split ThermalService from WatherZoneService
     {
         readonly IWorldZoneParameterRepository _worldZoneParameterRepository;
         public WeatherAndThermalService(IWorldZoneParameterRepository worldZoneParameterRepository)
@@ -40,7 +40,7 @@ namespace GameModule.Logic.Services
         internal void UpdateWorldZoneParameters(WorldZoneParameter worldZoneParameter)
         {
             //todo sth more..
-            worldZoneParameter.AverageTemperature = RandomCalculator.GetRandomInt(-11, 40);
+            worldZoneParameter.AverageTemperature = RandomCalculator.GetRandomInt(0, 40);
         }
 
         internal async Task<int> GetTemperatureFromZone(Tribe tribe)
@@ -49,11 +49,8 @@ namespace GameModule.Logic.Services
             //todo - other zone base on tribe localization...
             var zoneParameters = await _worldZoneParameterRepository.GetByZone(EWorldZoneParameter.Temperate);
 
-            if (zoneParameters == null) //temp solution - move to admin init database!! to avoid save in !
-            {
-                zoneParameters = await _worldZoneParameterRepository.Create();
-                await _worldZoneParameterRepository.SaveChangesAsync();
-            }
+            if (zoneParameters == null)
+                throw new ArgumentNullException($"(!) WorldZoneParameter does not exist in database for zone {EWorldZoneParameter.Temperate}");
 
             return zoneParameters.AverageTemperature;
         }

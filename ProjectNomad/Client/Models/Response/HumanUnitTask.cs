@@ -11,6 +11,6 @@ namespace ProjectNomad.Client.Models.Response
         DateTime From,
         DateTime To,
         bool IsCompleted,
-        int? LocalizationX,
-        int? LocalizationY) : IHumanTaskDto;
+        int LocalizationX,
+        int LocalizationY) : IHumanTaskDto;
 }

@@ -257,7 +257,7 @@ namespace GameModule
                 .HumanTasks
                 .Where(x => x.TribeId == tribeId)
                 .Include(b => b.Human)
-                .Select(x => new HumanUnitTaskDto(
+                .Select(x => new HumanTaskDto(
                     x.Id, 
                     x.TribeId, 
                     x.HumanId, 
@@ -265,11 +265,11 @@ namespace GameModule
                     x.Type, 
                     x.From, 
                     x.To,
-                    x.Localization != null ? x.Localization.X : null,
-                    x.Localization != null ? x.Localization.Y : null))
+                    x.Localization.X,
+                    x.Localization.Y))
                 .ToListAsync();
 
-            tribeTasks ??= new List<HumanUnitTaskDto>();
+            tribeTasks ??= new List<HumanTaskDto>();
             return tribeTasks;
         }
 
@@ -277,7 +277,7 @@ namespace GameModule
             => await _dbContext
             .HumanTaskOrders
             .Where(x => x.TribeId == tribeId)
-            .Select(x => new HumanUnitTaskOrderDto(x.Id, x.TribeId, x.Added, x.Type, x.Localization.X, x.Localization.Y))
+            .Select(x => new HumanTaskOrderDto(x.Id, x.TribeId, x.Added, x.Type, x.Localization.X, x.Localization.Y))
             .ToListAsync();
 
         public async Task AddHumanUnitTaskOrder(int tribeId, 

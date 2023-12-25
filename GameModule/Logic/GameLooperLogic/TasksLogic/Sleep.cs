@@ -23,7 +23,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
             if (human == null)
                 return default;
 
-            var entity = new HumanTask
+            var task = new HumanTask
             {
                 From = currentTimeInLoop,
                 HumanId = human.Id,
@@ -31,15 +31,17 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 TribeId = tribe.Id,
                 Type = ETaskType.Sleep,
                 To = currentTimeInLoop.AddMinutes(DayNightService.NIGHT_DURATION_MINUTES),
-                Localization = null
+                Localization = tribe.Localization
             };
-            tribe.HumanTasks.Add(entity);
+
+            tribe.HumanTasks.Add(task);
+            human.HumanTask = task;
 
             return new NotificationDto(human.Id,
                 human.Name,
                 currentTimeInLoop,
                 ENotificationType.SleepStart,
-                entity.To.ToString());
+                task.To.ToString());
         }
 
         INotification? ITaskEnd.End(HumanTask taskToEnd,

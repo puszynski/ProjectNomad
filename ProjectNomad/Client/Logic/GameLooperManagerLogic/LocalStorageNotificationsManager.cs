@@ -28,7 +28,8 @@ namespace ProjectNomad.Client.Logic.GameLooperManagerLogic
             return actualNotifications;
         }
 
-        internal async Task Add(int humanUnitId,
+        internal async Task Add(
+            int humanUnitId,
             string humanUnitName,
             ENotificationType type,
             string? customValue)
@@ -43,11 +44,7 @@ namespace ProjectNomad.Client.Logic.GameLooperManagerLogic
                 ?? new List<Notification>();
 
             var notificationsList = tribeNotificationsFromStorage.ToList();
-
-            if (type is ENotificationType.GameOver)
-                notificationsList = new List<Notification>();
-            else
-                notificationsList.Add(notification);
+            notificationsList.Add(notification);
 
             await _localStorageService.SetItemAsync(LOCAL_STORAGE_KEY, notificationsList.OrderByDescending(x => x.Added));
         }

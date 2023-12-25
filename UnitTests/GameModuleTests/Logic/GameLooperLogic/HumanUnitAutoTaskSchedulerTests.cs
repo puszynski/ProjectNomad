@@ -37,7 +37,7 @@ namespace UnitTests.GameModuleTests.Logic.GameLooperLogic
             tribeRepository.GetByAccountId(accountId).Returns(System.Threading.Tasks.Task.FromResult(tribe));
 
             //Act
-            var humanUnitAutoTaskScheduler = new HumanUnitAutoTaskScheduler();
+            var humanUnitAutoTaskScheduler = new HumanUAutoTaskScheduler();
             await humanUnitAutoTaskScheduler.Execute(humanUnits, tribe, humanUnitTasks, new DateTime(2020, 01, 01));
 
             //Assert

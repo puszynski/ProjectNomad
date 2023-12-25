@@ -12,7 +12,7 @@ namespace ProjectNomad.Shared.Interfaces
         public DateTime From { get; }
         public DateTime To { get; }
 
-        public int? LocalizationX { get; }
-        public int? LocalizationY { get; }
+        public int LocalizationX { get; }
+        public int LocalizationY { get; }
     }
 }

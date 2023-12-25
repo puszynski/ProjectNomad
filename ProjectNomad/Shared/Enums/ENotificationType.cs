@@ -2,7 +2,7 @@
 {
     public enum ENotificationType
     {
-        GameOver,
+        //GameOver,
 
         Starvation,
         DeathFromStarvation,

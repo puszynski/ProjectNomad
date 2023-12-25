@@ -58,7 +58,8 @@ namespace GameModule.Logic.GameLooperLogic
 
             var worldZoneParameters = await _worldZoneParameterRepository.GetByZone(EWorldZoneParameter.Temperate);//todo get from tribe localization
             if (worldZoneParameters == null)
-                worldZoneParameters = await _worldZoneParameterRepository.Create();
+                throw new ApplicationException($"(!) WorldZoneParameters for zone {EWorldZoneParameter.Temperate} not exists.");
+                //worldZoneParameters = await _worldZoneParameterRepository.Create(EWorldZoneParameter.Temperate);//todo move to admin section => initialize game data
 
             if (tribe.Humans == null || !tribe.Humans.Any())
                 return GetGameOverResponse(tribe);
@@ -175,7 +176,7 @@ namespace GameModule.Logic.GameLooperLogic
                 throw new NullReferenceException();
 
             var humanUnitTaskDtos = tribe.HumanTasks
-                .Select(x => new HumanUnitTaskDto(
+                .Select(x => new HumanTaskDto(
                     x.Id,
                     x.TribeId,
                     x.HumanId,
@@ -183,10 +184,10 @@ namespace GameModule.Logic.GameLooperLogic
                     x.Type,
                     x.From,
                     x.To,
-                    x.Localization != null ? x.Localization.X : null,
-                    x.Localization != null ? x.Localization.Y : null));
+                    x.Localization.X,
+                    x.Localization.Y));
 
-            var humanUnitTaskOrderDtos = tribe.HumanTaskOrders.Select(x => new HumanUnitTaskOrderDto(x.Id,
+            var humanUnitTaskOrderDtos = tribe.HumanTaskOrders.Select(x => new HumanTaskOrderDto(x.Id,
                 x.TribeId,
                 x.Added,
                 x.Type,
@@ -219,17 +220,10 @@ namespace GameModule.Logic.GameLooperLogic
                     tribe.Started,
                     ETribeRelocationStatus.None),
                 new List<HumanUnitDto>(),
-                new List<HumanUnitTaskDto>(),
-                new List<HumanUnitTaskOrderDto>(),
+                new List<HumanTaskDto>(),
+                new List<HumanTaskOrderDto>(),
                 new List<TribeStructuresDto>(),
-                new List<NotificationDto>()
-                {
-                    new NotificationDto(0,
-                        "none",
-                        _dateTimeProvider.UtcNow(),
-                        ProjectNomad.Shared.Enums.ENotificationType.GameOver,
-                        null)
-                },
-                new WorldParametersDto(50, false, false, false, false));
+                new List<NotificationDto>(),
+                new WorldParametersDto(0, false, false, false, false));
     }
 }

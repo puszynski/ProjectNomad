@@ -28,7 +28,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
             if (tribe.Resources.FreshFood < GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit)
                 return default;
 
-            var entity = new HumanTask
+            var task = new HumanTask
             {
                 From = currentTimeInLoop,
                 HumanId = human.Id,
@@ -36,10 +36,11 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 TribeId = tribe.Id,
                 Type = ETaskType.ConsumeFood,
                 To = currentTimeInLoop.AddMinutes(GameSETTINGS.Food.MinutesToConsumeFoodToFill20PercentageOfFood),
-                Localization = null
+                Localization = tribe.Localization
             };
 
-            tribe.HumanTasks.Add(entity);
+            tribe.HumanTasks.Add(task);
+            human.HumanTask = task;
             tribe.Resources.FreshFood -= GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit;
             human.FoodLevelPercentage += 20;
 
@@ -47,7 +48,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 human.Name,
                 currentTimeInLoop,
                 ENotificationType.FoodConsumptionStarted,
-                entity.To.ToString());
+                task.To.ToString());
         }
 
         INotification ITaskEnd.End(HumanTask taskToEnd,

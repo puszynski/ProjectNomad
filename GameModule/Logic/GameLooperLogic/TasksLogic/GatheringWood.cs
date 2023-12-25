@@ -56,6 +56,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 Type = ETaskType.GatheringWood
             };
 
+            tribe.HumanTasks.Add(taskToAdd);
             human.HumanTask = taskToAdd;
 
             return new NotificationDto(

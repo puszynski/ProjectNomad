@@ -18,6 +18,6 @@ namespace GameModule.Entities
         public DateTime From { get; set; }
         public DateTime To { get; set; }
 
-        public Localization? Localization { get; set; }
+        public Localization Localization { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
             if (!tribe.TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp && x.PowerAndDurability > 1))
                 return default;
 
-            var entity = new HumanTask
+            var task = new HumanTask
             {
                 From = currentTimeInLoop,
                 HumanId = human.Id,
@@ -37,17 +37,18 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 TribeId = tribe.Id,
                 Type = ETaskType.HeatUpHumanByFireEnded,
                 To = currentTimeInLoop.AddMinutes(GameSETTINGS.Fire.TimeToHeatUpHumanByFire),
-                Localization = null
+                Localization = tribe.Localization
             };
 
-            tribe.HumanTasks.Add(entity);
+            tribe.HumanTasks.Add(task);
+            human.HumanTask = task;
             human.ThermalLevelPercentage += HEAT_UP_POINTS;
 
             return new NotificationDto(human.Id,
                 human.Name,
                 currentTimeInLoop,
                 ENotificationType.FoodConsumptionStarted,
-                entity.To.ToString());
+                task.To.ToString());
         }
 
         INotification ITaskEnd.End(
