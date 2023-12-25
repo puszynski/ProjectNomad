@@ -39,13 +39,13 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic.Helpers
         {
             return x => (x.FoodLevelPercentage > GameSETTINGS.HumanConditions.CriticalFoodLevel)
                         || (x.ThermalLevelPercentage > GameSETTINGS.HumanConditions.CriticalLowThermalLevel
-                        && x.ThermalLevelPercentage< GameSETTINGS.HumanConditions.CriticalHighThermalLevel);
+                        && x.ThermalLevelPercentage < GameSETTINGS.HumanConditions.CriticalHighThermalLevel);
         }
         internal static Expression<Func<Human, bool>> HumansInCriticalCondition()
         {
-            return x => (x.FoodLevelPercentage <= GameSETTINGS.HumanConditions.CriticalFoodLevel)
-                        || (x.ThermalLevelPercentage <= GameSETTINGS.HumanConditions.CriticalLowThermalLevel
-                        && x.ThermalLevelPercentage >= GameSETTINGS.HumanConditions.CriticalHighThermalLevel);
+            return x => x.FoodLevelPercentage <= GameSETTINGS.HumanConditions.CriticalFoodLevel
+                        || x.ThermalLevelPercentage <= GameSETTINGS.HumanConditions.CriticalLowThermalLevel
+                        || x.ThermalLevelPercentage >= GameSETTINGS.HumanConditions.CriticalHighThermalLevel;
         }
     }
 }

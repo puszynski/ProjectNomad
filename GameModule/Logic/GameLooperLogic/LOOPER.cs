@@ -3,6 +3,7 @@ using GameModule.Entities;
 using GameModule.Logic.GameLooperLogic.MinuteExecutorLogic;
 using GameModule.Logic.GameLooperLogic.SharedExecutorLogic;
 using GameModule.Logic.GameLooperLogic.TasksLogic.Helpers;
+using GameModule.Logic.Services;
 using GameModule.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ProjectNomad.Shared;
@@ -16,6 +17,7 @@ namespace GameModule.Logic.GameLooperLogic
     {
         readonly IDayExecutor _dayExecutor;
         readonly IHourExecutor _hourExecutor;
+        readonly WeatherService _weatherService;
         readonly MapTileFetcher _mapTileFetcher;
         readonly ISecundExecutor _secundExecutor;
         readonly IMinuteExecutor _minuteExecutor;
@@ -29,6 +31,7 @@ namespace GameModule.Logic.GameLooperLogic
         public LOOPER(
             IDayExecutor dayExecutor,
             IHourExecutor hourExecutor,
+            WeatherService weatherService,
             MapTileFetcher mapTileFetcher,
             ISecundExecutor secondExecutor,
             IMinuteExecutor minuteExecutor,
@@ -41,6 +44,7 @@ namespace GameModule.Logic.GameLooperLogic
         {
             _dayExecutor = dayExecutor;
             _hourExecutor = hourExecutor;
+            _weatherService = weatherService;
             _mapTileFetcher = mapTileFetcher;
             _secundExecutor = secondExecutor;
             _minuteExecutor = minuteExecutor;
@@ -70,7 +74,7 @@ namespace GameModule.Logic.GameLooperLogic
             if (lastUpdated > _dateTimeProvider.UtcNow().AddSeconds(-1))
                 return GetResponseModel(tribe,
                     notifications,
-                    worldZoneParameters);
+                    await worldZoneParameters.ToWorldParametersDto(_weatherService, lastUpdated));
 
             var mapTiles = await _mapTileFetcher.GetMapTilesCurrentlyAssigned(tribe);
 
@@ -146,7 +150,7 @@ namespace GameModule.Logic.GameLooperLogic
 
                 return GetResponseModel(tribe, 
                     notifications,
-                    worldZoneParameters);
+                    await worldZoneParameters.ToWorldParametersDto(_weatherService, lastUpdated));
             }
         }
 
@@ -174,6 +178,11 @@ namespace GameModule.Logic.GameLooperLogic
 
             if (tribe.HumanTasks == null || tribe.HumanTaskOrders == null || tribe.TribeStructures == null)
                 throw new NullReferenceException();
+
+            if (tribe.HumanTasks.Any(x => x.Localization == null))
+            {
+                var tt = "dupa nie może być null - dlaczego jest???!!!";
+            }
 
             var humanUnitTaskDtos = tribe.HumanTasks
                 .Select(x => new HumanTaskDto(

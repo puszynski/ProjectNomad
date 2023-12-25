@@ -18,17 +18,17 @@ namespace GameModule.Logic.GameLooperLogic
         readonly MapTileRegenerator _mapTileRegenerator;
         readonly BreedingApplicator _breedingApplicator;
         readonly IHumansDeathApplicator _humansDeathApplicator;
-        readonly WeatherAndThermalService _weatherAndThermalService;
+        readonly WeatherService _weatherService;
 
         public HourExecutor(MapTileRegenerator mapTileRegenerator,
             BreedingApplicator breedingApplicator,
             IHumansDeathApplicator humansDeathApplicator,
-            WeatherAndThermalService weatherAndThermalService)
+            WeatherService weatherAndThermalService)
         {
             _mapTileRegenerator = mapTileRegenerator;
             _breedingApplicator = breedingApplicator;
             _humansDeathApplicator = humansDeathApplicator;
-            _weatherAndThermalService = weatherAndThermalService;
+            _weatherService = weatherAndThermalService;
         }
 
         void IHourExecutor.Execute(Tribe tribe, 
@@ -45,7 +45,7 @@ namespace GameModule.Logic.GameLooperLogic
                 _humansDeathApplicator.AgeOrIllnessDeath(tribe.Humans, notifications);
 
             _mapTileRegenerator.Execute(mapTiles);//todo - move to global scheduled tasks
-            _weatherAndThermalService.UpdateWorldZoneParameters(worldZoneParameter);//todo - move to global scheduled tasks
+            _weatherService.UpdateWorldZoneParameters(worldZoneParameter);//todo - move to global scheduled tasks
         }
     }
 }

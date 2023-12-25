@@ -97,11 +97,17 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 if (tribe.Humans == null || !tribe.Humans.Any())
                     return;
 
+                var temp = tribe.Humans
+                    .Where(x => x.HumanTask != null)
+                    .Where(x => x.HumanTask.Type == ETaskType.Sleep)
+                    .ToList();
+
                 var humansInCriticalConditionsWithTasksAssigned = tribe.Humans
                     .Where(x => x.HumanTask != null)
                     .Where(x => x.HumanTask.Type == ETaskType.Sleep)
                     .AsQueryable()
-                    .Where(BasicDataSelector.HumansInCriticalCondition());
+                    .Where(BasicDataSelector.HumansInCriticalCondition())
+                    .ToList();
 
                 foreach (var human in humansInCriticalConditionsWithTasksAssigned)
                 {

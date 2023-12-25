@@ -38,7 +38,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
             };
 
             if (taskToAdd.Localization == null)
-                throw new Exception("Localization in HumanTask can not be null");
+                throw new Exception("(!) Localization in HumanTask can not be null");
 
             human.HumanTask = taskToAdd;
             tribe.HumanTasks.Add(taskToAdd);
@@ -72,7 +72,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 return default;
 
             if (taskToEnd.Localization == null)
-                throw new Exception("Localization in HumanTask can not be null");
+                throw new Exception("(!) Localization in HumanTask can not be null");
 
             var mapTile = mapTiles
                 .Single(x => x.Localization.Equals(taskToEnd.Localization));

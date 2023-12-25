@@ -80,10 +80,11 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 default: throw new NotImplementedException();
             }
             
-            var notification = taskEnd.End(taskToEnd,
-                    tribe,
-                    currentTimeInLoop,
-                    mapTiles);
+            var notification = taskEnd.End(
+                taskToEnd,
+                tribe,
+                currentTimeInLoop,
+                mapTiles);
 
             tribe.HumanTasks?.Remove(taskToEnd);
             var human = tribe.Humans.Single(x => x.Id == taskToEnd.HumanId);

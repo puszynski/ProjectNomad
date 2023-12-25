@@ -17,7 +17,7 @@ namespace GameModule.Configurations
         /// <summary>
         /// to run migration
         ///     cd .\GameModule
-        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add RemoveIsComplitedFromHumanTask -c GameModuleDbContext
+        ///     dotnet ef --startup-project ..\ProjectNomad\Server\ migrations add TaskLocalizationNotNull -c GameModuleDbContext
         ///     
         ///  note: you are in migration and context library project and are referring to startup project
         ///  plus specify context where multiple are detected by -c Name
@@ -76,8 +76,10 @@ namespace GameModule.Configurations
             services.AddScoped<ITaskAssigner, TaskAssigner>();
             services.AddScoped<IHumansDeathApplicator, HumansDeathApplicator>();
             services.AddScoped<IGameOverApplicator, GameOverApplicator>();
+
             services.AddScoped<ITribeRelocationService, TribeRelocationService>();
-            services.AddScoped<WeatherAndThermalService>();
+            services.AddScoped<WeatherService>();
+            services.AddScoped<HumanThermalService>();
         }
     }
 }

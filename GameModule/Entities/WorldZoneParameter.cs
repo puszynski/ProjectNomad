@@ -1,4 +1,5 @@
-﻿using ProjectNomad.Shared.DTOs.ServerToWasm;
+﻿using GameModule.Logic.Services;
+using ProjectNomad.Shared.DTOs.ServerToWasm;
 
 namespace GameModule.Entities
 {
@@ -12,8 +13,11 @@ namespace GameModule.Entities
         public bool IsSnow { get; set; }
         public bool IsBlizzard { get; set; }
 
-        public static implicit operator WorldParametersDto(WorldZoneParameter model) 
-            => new WorldParametersDto(model.AverageTemperature, model.IsWind, model.IsRain, model.IsSnow, model.IsBlizzard);
+        internal async Task<WorldParametersDto> ToWorldParametersDto(WeatherService weatherService, DateTime now)
+        {
+            var temperature = await weatherService.GetTemperatureFromZone(AverageTemperature, now);
+            return new WorldParametersDto(temperature, IsWind, IsRain, IsSnow, IsBlizzard);
+        }
     }
 
     internal enum EWorldZoneParameter
