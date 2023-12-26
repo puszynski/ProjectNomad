@@ -146,11 +146,22 @@ namespace GameModule.Logic.GameLooperLogic
             else
             {
                 tribe.Updated = lastUpdated;
-                await _tribeRepository.SaveChangesAsync();
 
-                return GetResponseModel(tribe, 
+                if (tribe.HumanTasks.Any(x => x.Localization == null))
+                    throw new ApplicationException("(!) Localization cannot be null in human task object");
+                
+                var responseModel = GetResponseModel(tribe,
                     notifications,
                     await worldZoneParameters.ToWorldParametersDto(_weatherService, lastUpdated));
+                                
+                await _tribeRepository.SaveChangesAsync();
+
+                //dziwne - po zapisaniu sie robia null`e na localization..
+                //if (tribe.HumanTasks.Any(x => x.Localization == null))
+                  //  throw new ApplicationException("(!) Localization cannot be null in human task object");
+
+                return responseModel;
+
             }
         }
 
@@ -181,9 +192,9 @@ namespace GameModule.Logic.GameLooperLogic
 
             if (tribe.HumanTasks.Any(x => x.Localization == null))
             {
-                var tt = "dupa nie może być null - dlaczego jest???!!!";
+                throw new NotImplementedException("nope");
             }
-
+                        
             var humanUnitTaskDtos = tribe.HumanTasks
                 .Select(x => new HumanTaskDto(
                     x.Id,

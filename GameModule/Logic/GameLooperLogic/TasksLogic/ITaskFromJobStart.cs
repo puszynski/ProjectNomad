@@ -6,7 +6,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
     //todo: ITaskFromOrder
     internal interface ITaskFromJobStart
     {
-        internal INotification? Start(
+        internal (HumanTask? HumanTask, INotification Notification) Start(
             Human human,
             Tribe tribe,
             DateTime currentTimeInLoop,
@@ -15,7 +15,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
 
     internal interface IAutoTaskStart
     {
-        internal INotification? Start(
+        internal (HumanTask? HumanTask, INotification Notification) Start(
             Tribe tribe,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles);

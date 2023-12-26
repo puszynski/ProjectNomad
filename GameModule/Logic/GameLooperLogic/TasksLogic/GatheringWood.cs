@@ -17,7 +17,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
             _mapTileFetcher = mapTileFetcher;
         }
 
-        INotification ITaskFromJobStart.Start(
+        (HumanTask?, INotification) ITaskFromJobStart.Start(
             Human human,
             Tribe tribe,
             DateTime currentTimeInLoop,
@@ -29,12 +29,15 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 tribe.Localization);
 
             if (destinyMapTile == null)
-                return new NotificationDto(
-                    human.Id,
-                    human.Name,
-                    currentTimeInLoop,
-                    ENotificationType.NoWoodInCampArea,
-                    CustomValue: null);
+            {
+                return (default, 
+                    new NotificationDto(
+                        human.Id,
+                        human.Name,
+                        currentTimeInLoop,
+                        ENotificationType.NoWoodInCampArea,
+                        CustomValue: null));
+            }
 
             if (destinyMapTile.Wood.ActualPoints < GameSETTINGS.Wood.WoodAmountGatheredFromMap)
                 return default;
@@ -44,8 +47,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                     destinyMapTile.Localization.X,
                     destinyMapTile.Localization.Y);
 
-
-            var taskToAdd = new HumanTask
+            var task = new HumanTask
             {
                 From = currentTimeInLoop,
                 HumanId = human.Id,
@@ -56,15 +58,14 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 Type = ETaskType.GatheringWood
             };
 
-            tribe.HumanTasks.Add(taskToAdd);
-            human.HumanTask = taskToAdd;
-
-            return new NotificationDto(
+            var notification = new NotificationDto(
                 human.Id,
                 human.Name,
                 currentTimeInLoop,
                 ENotificationType.WoodGatheringStarted,
-                CustomValue: taskToAdd.To.ToString());
+                CustomValue: task.To.ToString());
+
+            return (task, notification);
         }
 
 

@@ -38,100 +38,9 @@
 
     <br />
 
-    var buttons = new List<ButtonTaskOrders>();
-    //todo HumanUnitTaskOrders where removed - just display HumanTasks (not in relation to HumanUnitTaskOrders..)
-
     @foreach (var jobTasks in HumanUnitTasks.Where(x => TaskTypeExtensions.GetJobs().Contains(x.Type)))
     {
         <ProjectNomad.Client.Components.TasksComponents.ProgressButton HumanUnitTask="jobTasks" />
-    }
-
-    //outdated codes (orders + tasks grouped by task orders)
-    @* @foreach (var taskOrder in HumanUnitTaskOrders.OrderBy(x => x.Added))
-    {
-        var lastButton = buttons.LastOrDefault();
-
-        IHumanUnitTaskDto matchingTask = null;
-
-        if (taskOrder.HumanTaskId.HasValue)
-            matchingTask = HumanUnitTasks.Single(x => x.Id == taskOrder.HumanTaskId);
-
-        if (lastButton == null || taskOrder.Type != lastButton.Type)
-        {
-            var buttonToAdd = new ButtonTaskOrders { Type = taskOrder.Type, AllCount = 1, InProgressCount = taskOrder.HumanTaskId.HasValue ? 1 : 0 };
-            if (matchingTask != null)
-            {
-                buttonToAdd.MatchedTasks.Add(matchingTask);
-            }
-            buttons.Add(buttonToAdd);
-        }
-        else
-        {
-            if (taskOrder.HumanTaskId.HasValue)
-                lastButton.InProgressCount++;
-            lastButton.AllCount++;
-
-            if (matchingTask != null)
-                lastButton.MatchedTasks.Add(matchingTask);
-        }
-    } *@
-    @* ⏵⏸ *@
-
-    @* @foreach (var button in buttons)
-    {
-        var desc = TaskTypeExtensions.GetDescription(button.Type);
-        var symbol = TaskTypeExtensions.GetSymbol(button.Type);
-
-        @if (TaskTypeExtensions.GetConstantTasks().Contains(button.Type))
-        {
-            if (button.InProgressCount != button.AllCount)
-            {
-                <button type="button" class="button_active" style="width: 250px;">@(desc) @symbol</button>
-            }
-            else
-            {
-                <button type="button" class="button_inactive" style="width: 250px;">@(desc) @symbol</button>
-            }
-        }
-        else
-        {
-            if (button.InProgressCount != button.AllCount)
-            {
-                <button type="button" class="button_active" style="width: 250px;">@(desc) @button.InProgressCount/@button.AllCount@symbol</button>
-            }
-            else
-            {
-                <button type="button" class="button_inactive" style="width: 250px;">@(desc) @button.InProgressCount/@button.AllCount@symbol</button>
-            }
-        }
-        
-
-        foreach (var task in button.MatchedTasks)
-        {
-            <ProjectNomad.Client.Components.TasksComponents.ProgressButton HumanUnitTask="task" />
-        }
-
-        <br/>
-    } *@
-
-
-    <br />
-    <br />
-    <hr />
-    @if (TribeStructures.Any(x => x.Type == ETribeStructureType.Firecamp))
-    {
-        @if (TribeStructures.Single(x => x.Type == ETribeStructureType.Firecamp).PowerAndDurability == 0)
-        {
-            <p>Po ognisku został jedynie popiół</p>
-        }
-        else
-        {
-            <p>Ognisko pali się (@TribeStructures.Single(x => x.Type == ETribeStructureType.Firecamp).PowerAndDurability%)</p>
-        }
-    }
-    else
-    {
-        <p>Brak ogniska..</p>
     }
 }
 else
@@ -139,6 +48,9 @@ else
     <p>Loading..</p>
 }
 
+
+<br />
+<br />
 
 @code {
     [ParameterAttribute]

@@ -23,7 +23,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
             tribeStructure.PowerAndDurability -= GameSETTINGS.Fire.BurningCampFireEch10Seconds;
         }
 
-        INotification? ITaskFromJobStart.Start(
+        (HumanTask?, INotification) ITaskFromJobStart.Start(
             Human human,
             Tribe tribe,
             DateTime looperNow,
@@ -31,11 +31,12 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
         {
             if (tribe.Resources.Wood < GameSETTINGS.Fire.WoodUsedToKeepTheCampfireBurning)
             {
-                return new NotificationDto(human.Id,
-                    human.Name,
-                    looperNow,
-                    ENotificationType.NoWoodForCampfire,
-                    CustomValue: null);
+                return (default, 
+                    new NotificationDto(human.Id,
+                        human.Name,
+                        looperNow,
+                        ENotificationType.NoWoodForCampfire,
+                        CustomValue: null));
             }
 
             var firecamp = tribe
@@ -46,7 +47,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 if (firecamp.PowerAndDurability > FIRE_POWER_TO_ADD_WOOD)
                     return default;
 
-            var taskToAdd = new HumanTask
+            var task = new HumanTask
             {
                 From = looperNow,
                 Human = human,
@@ -57,14 +58,13 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 Localization = tribe.Localization
             };
 
-            tribe.HumanTasks.Add(taskToAdd);//needed?
-            human.HumanTask = taskToAdd;
-
-            return new NotificationDto(human.Id,
+            var notification = new NotificationDto(human.Id,
                     human.Name,
                     looperNow,
                     ENotificationType.AttemptToStartFireStarted,
                     CustomValue: null);
+
+            return (task, notification);
         }
 
         INotification? ITaskEnd.End(

@@ -28,6 +28,9 @@ namespace ProjectNomad.Client.Logic.GameLooperManagerLogic
             return actualNotifications;
         }
 
+        internal async Task Clean() 
+            => await _localStorageService.SetItemAsync(LOCAL_STORAGE_KEY, new List<Notification>());
+
         internal async Task Add(
             int humanUnitId,
             string humanUnitName,

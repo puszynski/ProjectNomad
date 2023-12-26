@@ -66,11 +66,11 @@
         </div>
     </div>
 
-    <div class="footer">
+    @* <div class="footer">
         <center>
             <smaller> pr◯ject n◯mad &nbsp;&nbsp; 2023 - early development version</smaller>
         </center>
-    </div>
+    </div> *@
 }
 else
 {
@@ -174,6 +174,23 @@ else
                 .ToList();
 
             messages.Add($"{string.Join(", ", names)} hungry");
+        }
+
+        if (GameObjectsViewModel.TribeStructures.Any(x => x.Type == ProjectNomad.Shared.Enums.ETribeStructureType.Firecamp))
+        {
+            @if (GameObjectsViewModel.TribeStructures.Single(x => x.Type == ProjectNomad.Shared.Enums.ETribeStructureType.Firecamp).PowerAndDurability == 0)
+            {
+                messages.Add("Po ognisku został jedynie popiół");
+           }
+            else
+            {
+                var percentage = GameObjectsViewModel.TribeStructures.Single(x => x.Type == ProjectNomad.Shared.Enums.ETribeStructureType.Firecamp).PowerAndDurability;
+                messages.Add($"Ognisko pali się {percentage} %");
+            }
+        }
+        else
+        {
+            messages.Add("Brak ogniska");
         }
 
         return string.Join(". ", messages);

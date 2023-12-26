@@ -12,7 +12,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
         const int HUMAN_THERMAL_PERCENTAGE_TO_START = 30;
         const int HEAT_UP_POINTS = 40;
 
-        INotification IAutoTaskStart.Start(
+        (HumanTask?, INotification) IAutoTaskStart.Start(
             Tribe tribe,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)
@@ -40,15 +40,15 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 Localization = tribe.Localization
             };
 
-            tribe.HumanTasks.Add(task);
-            human.HumanTask = task;
-            human.ThermalLevelPercentage += HEAT_UP_POINTS;
-
-            return new NotificationDto(human.Id,
+            var notification = new NotificationDto(human.Id,
                 human.Name,
                 currentTimeInLoop,
                 ENotificationType.FoodConsumptionStarted,
                 task.To.ToString());
+
+            human.ThermalLevelPercentage += HEAT_UP_POINTS;
+
+            return (task, notification);
         }
 
         INotification ITaskEnd.End(

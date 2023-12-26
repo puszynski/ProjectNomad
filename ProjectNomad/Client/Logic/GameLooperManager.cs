@@ -57,7 +57,10 @@ namespace ProjectNomad.Client.Logic
                 }
 
                 if (!responseContent.HumanUnits.Any())
+                {
+                    _notificationsManager.Clean();
                     _navigationManager.NavigateTo("gameOver");
+                }
 
                 if (responseContent.Tribe.RelocationStatus == ETribeRelocationStatus.InProgress)
                     _navigationManager.NavigateTo($"/relocation/" + _dateTimeProvider.UtcNow().ToString("s", System.Globalization.CultureInfo.InvariantCulture));

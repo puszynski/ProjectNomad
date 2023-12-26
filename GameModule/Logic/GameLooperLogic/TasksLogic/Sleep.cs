@@ -10,7 +10,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
 {
     public class Sleep : IAutoTaskStart, ITaskEnd
     {
-        INotification? IAutoTaskStart.Start(
+        (HumanTask?, INotification) IAutoTaskStart.Start(
             Tribe tribe,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)
@@ -34,14 +34,13 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 Localization = tribe.Localization
             };
 
-            tribe.HumanTasks.Add(task);
-            human.HumanTask = task;
-
-            return new NotificationDto(human.Id,
+            var notification = new NotificationDto(human.Id,
                 human.Name,
                 currentTimeInLoop,
                 ENotificationType.SleepStart,
                 task.To.ToString());
+
+            return (task, notification);
         }
 
         INotification? ITaskEnd.End(HumanTask taskToEnd,

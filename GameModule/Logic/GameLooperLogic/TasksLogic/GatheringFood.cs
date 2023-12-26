@@ -15,7 +15,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
             _mapTileFetcher = mapTileFetcher;
         }
 
-        INotification? ITaskFromJobStart.Start(
+        (HumanTask?, INotification) ITaskFromJobStart.Start(
             Human human,
             Tribe tribe,
             DateTime currentTimeInLoop,
@@ -26,7 +26,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 ETaskType.GatheringFood,
                 tribe.Localization);
 
-            var taskToAdd = new HumanTask
+            var task = new HumanTask
             {
                 From = currentTimeInLoop,
                 HumanId = human.Id,
@@ -37,18 +37,13 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 Type = ETaskType.GatheringFood
             };
 
-            if (taskToAdd.Localization == null)
-                throw new Exception("(!) Localization in HumanTask can not be null");
-
-            human.HumanTask = taskToAdd;
-            tribe.HumanTasks.Add(taskToAdd);
-            // dokładnie w tej samej chwili dodają sie wraz z dodaniem taska do humanX dodaja sie do pozostalych ale bez lokalizacji.. 
-
-            return new NotificationDto(human.Id,
+            var notification = new NotificationDto(human.Id,
                 human.Name,
-                taskToAdd.From,
+                task.From,
                 ENotificationType.FoodGatheringStarted,
-                taskToAdd.To.ToString());
+                task.To.ToString());
+
+            return (task, notification);
 
             DateTime CalculateTimeToEndTask()
             {

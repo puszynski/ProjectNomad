@@ -11,7 +11,7 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
     {
         private const int HUMAN_FOOD_PERCENTAGE_TO_START_CONSUME = 80;
 
-        INotification IAutoTaskStart.Start(
+        (HumanTask?, INotification) IAutoTaskStart.Start(
             Tribe tribe,
             DateTime currentTimeInLoop,
             IEnumerable<MapTile> mapTiles)
@@ -39,16 +39,16 @@ namespace GameModule.Logic.GameLooperLogic.TasksLogic
                 Localization = tribe.Localization
             };
 
-            tribe.HumanTasks.Add(task);
-            human.HumanTask = task;
-            tribe.Resources.FreshFood -= GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit;
-            human.FoodLevelPercentage += 20;
-
-            return new NotificationDto(human.Id,
+            var notification = new NotificationDto(human.Id,
                 human.Name,
                 currentTimeInLoop,
                 ENotificationType.FoodConsumptionStarted,
                 task.To.ToString());
+
+            tribe.Resources.FreshFood -= GameSETTINGS.Food.TribeFoodNeededToFill20PercentageOfHumanUnit;
+            human.FoodLevelPercentage += 20;
+
+            return (task, notification);
         }
 
         INotification ITaskEnd.End(HumanTask taskToEnd,

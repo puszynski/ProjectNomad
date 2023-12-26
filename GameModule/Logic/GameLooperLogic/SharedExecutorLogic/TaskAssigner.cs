@@ -42,10 +42,10 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                 return;
 
 
-            AutoTaskAssign();
-            SkipRegularTasksWhenInCriticalCondition();//todo
             CriticalTasksAutoAssign();
+            AutoTaskAssign();
             JobTaskAssign();
+            SkipRegularTasksWhenInCriticalCondition();//todo
             //OrderTaskAssign();
 
             void AutoTaskAssign()
@@ -86,9 +86,27 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                         }
                     }
 
-                    var notification = assigner?.Start(tribe, currentTimeInLoop, mapTiles);
-                    if (notification != null)
-                        notifications.Add(notification);
+                    var result = assigner?.Start(tribe, currentTimeInLoop, mapTiles);
+                    AssignTaskAndNotification(result);
+                }
+            }
+
+            void AssignTaskAndNotification((HumanTask HumanTask, INotification Notification)? result)
+            {
+                if (!result.HasValue)
+                    return;
+
+                if (result.Value.Notification != null)
+                    notifications.Add(result.Value.Notification);
+
+                if (result.Value.HumanTask != null)
+                {
+                    if (result.Value.HumanTask.Localization == null)
+                        throw new Exception("(!) Localization in HumanTask can not be null");
+
+                    tribe.HumanTasks.Add(result.Value.HumanTask);
+                    var human = result.Value.HumanTask.Human;
+                    human.HumanTask = result.Value.HumanTask;
                 }
             }
 
@@ -141,7 +159,8 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                             null));
 
                         ITaskFromJobStart assigner = _gatheringFood;
-                        assigner.Start(starvingHuman, tribe, currentTimeInLoop, mapTiles);
+                        var result = assigner.Start(starvingHuman, tribe, currentTimeInLoop, mapTiles);
+                        AssignTaskAndNotification(result);
                     }
                 }
 
@@ -160,7 +179,8 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                             null));
 
                         ITaskFromJobStart assigner = new Campfire();
-                        assigner.Start(freezingHuman, tribe, currentTimeInLoop, mapTiles);
+                        var result = assigner.Start(freezingHuman, tribe, currentTimeInLoop, mapTiles);
+                        AssignTaskAndNotification(result);
                     }
                 }
             }
@@ -220,9 +240,8 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                         }
                     }
 
-                    var notification = assigner?.Start(human, tribe, currentTimeInLoop, mapTiles);
-                    if (notification != null)
-                        notifications.Add(notification);
+                    var result = assigner?.Start(human, tribe, currentTimeInLoop, mapTiles);
+                    AssignTaskAndNotification(result);
                 }
 
                 //    [Obsolete("use JobTaskAssign")]
