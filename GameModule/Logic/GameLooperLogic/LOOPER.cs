@@ -185,7 +185,8 @@ namespace GameModule.Logic.GameLooperLogic
                 x.Localization.X,
                 x.Localization.Y,
                 x.FoodLevelPercentage,
-                x.ThermalLevelPercentage));
+                x.ThermalLevelPercentage))
+                .ToList();
 
             if (tribe.HumanTasks == null || tribe.HumanTaskOrders == null || tribe.TribeStructures == null)
                 throw new NullReferenceException();
@@ -194,7 +195,13 @@ namespace GameModule.Logic.GameLooperLogic
             {
                 throw new NotImplementedException("nope");
             }
-                        
+            var test = tribe.HumanTasks.Select(x => x.Localization.X).ToList();
+
+            if (tribe.HumanTasks.Any())
+            {
+                var testIf = 2;
+            }
+
             var humanUnitTaskDtos = tribe.HumanTasks
                 .Select(x => new HumanTaskDto(
                     x.Id,
@@ -205,18 +212,21 @@ namespace GameModule.Logic.GameLooperLogic
                     x.From,
                     x.To,
                     x.Localization.X,
-                    x.Localization.Y));
+                    x.Localization.Y))
+                .ToList();
 
             var humanUnitTaskOrderDtos = tribe.HumanTaskOrders.Select(x => new HumanTaskOrderDto(x.Id,
                 x.TribeId,
                 x.Added,
                 x.Type,
                 x.Localization.X,
-                x.Localization.Y));
+                x.Localization.Y))
+                .ToList();
 
             var tribeStructureDtos = tribe.TribeStructures.Select(x => new TribeStructuresDto(x.Id,
                 x.Type,
-                x.PowerAndDurability));
+                x.PowerAndDurability))
+                .ToList();
 
             return new TriggerGameLooperResponse(
                     tribeDto,

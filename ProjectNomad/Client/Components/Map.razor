@@ -115,7 +115,7 @@ A storm seems to be coming that way. *@
             await Reload();
     }
 
-    void EventHandler(EActionWASM actionWASM)
+    void EventHandler(EActionWASM actionWASM, string value)
     {
         if (actionWASM != EActionWASM.FoodGatheringStart)
             return;

@@ -59,7 +59,7 @@
 
         public static class  Population
         {
-            public const double BreedingChancePerHumanPerHour = 0.02;
+            public const double BreedingChancePerHumanPerHour = 0.1; // 0.02;  //for tests..
             public const double NaturalDeathChancePerHumanPerHour = 0.01;
         }
 

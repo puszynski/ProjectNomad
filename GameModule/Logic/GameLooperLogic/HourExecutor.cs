@@ -36,13 +36,8 @@ namespace GameModule.Logic.GameLooperLogic
             WorldZoneParameter worldZoneParameter, 
             List<INotification> notifications)
         {
-            if (tribe.HumanTasks == null)
-                return;
-
             _breedingApplicator.Execute(tribe, notifications); 
-
-            if (tribe.Humans != null)
-                _humansDeathApplicator.AgeOrIllnessDeath(tribe.Humans, notifications);
+            _humansDeathApplicator.AgeOrIllnessDeath(tribe.Humans, notifications);
 
             _mapTileRegenerator.Execute(mapTiles);//todo - move to global scheduled tasks
             _weatherService.UpdateWorldZoneParameters(worldZoneParameter);//todo - move to global scheduled tasks

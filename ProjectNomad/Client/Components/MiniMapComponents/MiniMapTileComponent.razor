@@ -1,7 +1,15 @@
-﻿@using ProjectNomad.Client.Models.Response;
+﻿@using ProjectNomad.Client.Logic
+@using ProjectNomad.Client.Models.Response;
 @using ProjectNomad.Client.ViewModels.Game;
 @using ProjectNomad.Shared;
-<div>
+
+@inject EventBroadcastService _eventBroadcastService;
+
+<div style="position: absolute; background-color:@BackGroundColour" 
+    @onmouseover=SetActiveBackground 
+    @onmouseout=SetDefaultBackground 
+    @onclick=ActivateMapTileSelection>
+
     @if (MapTile.Type is ProjectNomad.Shared.Enums.EMapType.Ocean)
     {
         var waveSymbol = "𝀈";
@@ -71,9 +79,17 @@
             </div>
         }
     }
-
-    
+        
 </div>
+
+@if (BackGroundColour == "#FFFFFF")
+{
+    <div style="position: relative; z-index: 1; left: 60px;">
+        <button type="button" class="button_active" style="width: 80px;">@MapTile.Type (@MapTile.X|@MapTile.Y)</button>
+        <button type="button" class="button_active" style="width: 80px;">wood: @MapTile.WoodPoints</button>
+        <button type="button" class="button_active" style="width: 80px;">food: @MapTile.FoodPoints</button>
+    </div>
+}
 
 @code {
     [ParameterAttribute]
@@ -81,4 +97,10 @@
 
     [ParameterAttribute]
     public bool IsCamp { get; set; }
+
+    string BackGroundColour = "transparent";
+    void SetActiveBackground() => BackGroundColour = "#FFFFFF";
+    void SetDefaultBackground() => BackGroundColour = "transparent";
+
+    void ActivateMapTileSelection() => _eventBroadcastService.AddEvent(EActionWASM.MapTileSelected, $"{MapTile.X} {MapTile.Y}"); //jak skomunikować się z głównym elementem?
 }

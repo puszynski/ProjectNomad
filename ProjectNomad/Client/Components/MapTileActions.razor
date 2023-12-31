@@ -1,0 +1,41 @@
+﻿@using ProjectNomad.Client.Logic
+
+@inject EventBroadcastService _eventBroadcastService
+@inject TaskOrderManager _taskOrderManager
+
+@if (DisplayMapTileAction)
+{
+    <button type="button" class="button_active" style="width: 250px;" @onclick=OrderToGatherFood>przemieść plemie</button>
+    <br />
+
+    
+
+    <button type="button" class="button_active" style="width: 250px;" @onclick=HideMapTileAction>zamknij</button>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        _eventBroadcastService.OnAction += EventHandler;
+    }
+    bool DisplayMapTileAction = false;
+    void HideMapTileAction() => DisplayMapTileAction = false;
+    void EventHandler(EActionWASM actionWASM, string value)
+    {
+        if (actionWASM != EActionWASM.MapTileSelected)
+            return;
+
+        DisplayMapTileAction = true;
+
+        //DisplayActions(); //todo get localization from value
+        //+ togo get send tileId via value + get all MapTiles 
+        var data = value.Split(' ');
+
+        _eventBroadcastService.ClearEvent();
+    }
+
+    async Task OrderToGatherFood()
+    {
+        //_taskOrderManager.Add(Tribe.Id, ETaskType.GatheringFood, Tribe.X, Tribe.Y);
+    }
+}

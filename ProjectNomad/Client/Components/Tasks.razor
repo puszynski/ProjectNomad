@@ -13,23 +13,7 @@
 
 @if (HumanUnitIds != null && HumanUnitTasks != null)
 {
-    <button type="button" class="button_active" style="width: 250px;" @onclick="OrderToGatherFood">zbierz jedzenie w okolicy</button>
-    <br />
-    <button type="button" class="button_active" style="width: 250px;" @onclick="OrderToGatherWood">zbierz drewno w okolicy</button>
-    <br />
-
-    @if (!HumanUnitTaskOrders.Any(x => x.Type == ETaskType.CampfireUp))
-    {
-        <button type="button" class="button_active" style="width: 250px;" @onclick="OrderCampfireUp">pal ognisko</button>
-        <br />
-    }
-    else
-    {
-        <button type="button" class="button_inactive" style="width: 250px;">pal ognisko</button>
-        <br />
-    }
-    <br />
-
+    <ProjectNomad.Client.Components.MapTileActions />    
 
     @foreach (var autoTask in HumanUnitTasks.Where(x => TaskTypeExtensions.GetAutoTasks().Contains(x.Type)))
     {
@@ -68,20 +52,8 @@ else
     [ParameterAttribute]
     public IEnumerable<ITribeStructure> TribeStructures { get; set; }
 
-
-    IReadOnlyList<ETaskType> AutoTasks = new List<ETaskType>() { ETaskType.ConsumeFood };
-
-
     protected override async Task OnInitializedAsync()
     {
     }
 
-    async Task OrderCampfireUp()
-        => _taskOrderManager.Add(Tribe.Id, ETaskType.CampfireUp, Tribe.X, Tribe.Y);
-
-    async Task OrderToGatherFood()
-        => _taskOrderManager.Add(Tribe.Id, ETaskType.GatheringFood, Tribe.X, Tribe.Y);
-
-    async Task OrderToGatherWood()
-        => _taskOrderManager.Add(Tribe.Id, ETaskType.GatheringWood, Tribe.X, Tribe.Y);
 }

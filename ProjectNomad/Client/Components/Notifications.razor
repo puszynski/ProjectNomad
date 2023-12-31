@@ -39,7 +39,7 @@
         await RefreshNotifications();        
     }
 
-    private void EventHandler(EActionWASM actionWASM)
+    private void EventHandler(EActionWASM actionWASM, string values)
     {
         if (actionWASM != EActionWASM.NotificationAdded)
             return;

@@ -104,6 +104,11 @@ namespace GameModule.Logic.GameLooperLogic.SharedExecutorLogic
                     if (result.Value.HumanTask.Localization == null)
                         throw new Exception("(!) Localization in HumanTask can not be null");
 
+                    if (result.Value.HumanTask.Localization.X == 0)
+                    {
+                        var devInfo = "jest zero a nie plowinno - zbadaj stack trace..";
+                    }
+
                     tribe.HumanTasks.Add(result.Value.HumanTask);
                     var human = result.Value.HumanTask.Human;
                     human.HumanTask = result.Value.HumanTask;
